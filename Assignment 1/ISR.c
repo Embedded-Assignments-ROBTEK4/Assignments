@@ -1,42 +1,79 @@
+/*****************************************************************************
+* University of Southern Denmark
+* Embedded Programming (EMP)
+*
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
+*
+* MODULENAME.: ISR.c
+*
+* PROJECT....: Assingment 1
+*
+* DESCRIPTION: Contains the interrupt service routines.
+*
+* Change Log:
+******************************************************************************
+* Date    Id    Change
+* YYMMDD
+* --------------------
+* 150212  MS    Syntax Fixed.
+*
+*****************************************************************************/
+
+/***************************** Include files ********************************/
 #include "ISR.h"
-#include "inc/emp_type.h"
-#include <stdbool.h>
-#include  <iso646.h>
-#define FCPU 16000000 //CPU frequency
-#define DEBOUNCETIMEUS 100000 //debounce time in Âµs
-#define DEBOUNCEVAL FCPU/1000000*DEBOUNCETIMEUS
-#define DOUBLE_CLICK_TIME_US 500000 //time between clicks for doubleclick
-#define DOUBLE_CLICK_VAL FCPU/1000000*DOUBLE_CLICK_TIME_US
+
+/*****************************    Defines    ********************************/
+#define FCPU 									16000000 	// CPU frequency.
+#define DEBOUNCETIMEUS 				100000 		// Debounce time in µs.
+#define DEBOUNCEVAL 					FCPU / 1000000 * DEBOUNCETIMEUS
+#define DOUBLE_CLICK_TIME_US 	500000 		// Time between clicks for doubleclick.
+#define DOUBLE_CLICK_VAL 			FCPU / 1000000 * DOUBLE_CLICK_TIME_US
 #define AUTOMODE_HOLD_TIME_US 2000000
-#define AUTOMODE_HOLD_VAL FCPU/1000000*AUTOMODE_HOLD_TIME_US
-//Defines for LEDs
+#define AUTOMODE_HOLD_VAL 		FCPU / 1000000 * AUTOMODE_HOLD_TIME_US
 
-#define LED_RED 0x02
-#define LED_BLUE 0x04
+// Defines for I/O.
+#define LED_RED 	0x02
+#define LED_BLUE 	0x04
 #define LED_GREEN 0x08
-#define LED_PORT GPIO_PORTF_DATA_R
-#define SW1_PIN 0x10
+#define LED_PORT 	GPIO_PORTF_DATA_R
+#define SW1_PIN 	0x10
 
+/*****************************   Constants   ********************************/
+static bool count_direction = 1; // 1 is forward, 0 is backward.
 
-static bool count_direction = 1; //1 is forward, 0 is backward
-
-
+/*****************************   Functions   *******************************/
 void start_automode()
+/**********************************************
+* Input : None
+* Output : None
+* Function : Enable and start systick timer used for automode.
+**********************************************/
 {
-  // Enable and start timer
-  NVIC_ST_CTRL_R |= NVIC_ST_CTRL_ENABLE;
+  NVIC_ST_CTRL_R |= NVIC_ST_CTRL_ENABLE;	// Enable and start timer.
 }
 
 void stop_automode()
+/**********************************************
+* Input : None
+* Output : None
+* Function : Stop systick timer used for automode.
+**********************************************/
 {
-  // stop timer
-  NVIC_ST_CTRL_R &= ~NVIC_ST_CTRL_ENABLE;	
+  NVIC_ST_CTRL_R &= ~NVIC_ST_CTRL_ENABLE;	// Stop timer.
 }
 
-void set_leds(INT8U val)
+void set_leds(INT8U counter_val)
+/**********************************************
+* Input : Value of the counter.
+* Output : None
+* Function : Set LEDs accordingly to the input value.
+**********************************************/
 {
-	GPIO_PORTF_DATA_R &= ~(LED_BLUE | LED_GREEN | LED_RED);
-	switch (val)
+	// Turn off LEDs.
+	GPIO_PORTF_DATA_R &= ~(LED_RED | LED_GREEN | LED_BLUE);
+
+	// Set LEDs.
+	switch (counter_val)
 	{
 		case 1:
 			GPIO_PORTF_DATA_R |= LED_GREEN;
@@ -60,66 +97,91 @@ void set_leds(INT8U val)
 			GPIO_PORTF_DATA_R |= LED_RED | LED_GREEN | LED_BLUE;
 			break;
 		default :
-			__asm("NOP");
+			__asm("NOP");	// Do nothing.
 	}
 }
 
 void count()
+/**********************************************
+* Input : None
+* Output : None
+* Function : Set LEDs accordingly to the input value.
+**********************************************/
 {
-		static INT8U counter = 0;
-		if(count_direction)
-		{
-			counter++;
-			if(counter >= 8)
-				counter = 0;
-		}
-		else
-		{
-			if (counter == 0)
-				counter = 7;
-			else
-				counter--;
-		}
-		set_leds(counter);
+	static INT8U counter = 0;
+
+	// Check the direction and increment or decrement accordingly.
+	if (count_direction)
+	{
+		counter++;
+		if (counter >= 8)
+			counter = 0;
+	}
+	else
+	{
+		counter--;
+		if (counter <= 0)
+			counter = 7;
+	}
+	set_leds(counter);
 }
 
-#pragma GCC optimize "-O0" //Don't optimise the ISR
+#pragma GCC optimize "-O0" // Don't optimize the ISR.
 void systick_timer_isr()
+/**********************************************
+* Input : None
+* Output : None
+* Function : When in auto mode the systick
+* 					 interrupt is triggered
+* 					 and count is called.
+**********************************************/
 {
-	  // Hardware clears systick int reguest
+	  // Hardware clears systick int reguest.
 		count();
 }
-#pragma GCC optimize "-O0" //Don't optimise the ISR
-void sw1_isr()
-{
-	INT32U timerval = TIMER0_TAV_R;
-	GPIO_PORTF_ICR_R = SW1_PIN;  // Clear interrupt flag
-	static bool edge = 0; //0 is falling, 1 is rising
 
-	if (edge == 0)	//falling edge tasks
+#pragma GCC optimize "-O0" // Don't optimize the ISR
+void sw1_isr()
+/**********************************************
+* Input : None
+* Output : None
+* Function : When SW1 is pressed this interrupt
+* 					 is triggered. Check if a dobble click
+* 					 occurs the direction is changed,
+* 					 if SW1 is pressed for 2 sec then
+* 					 automode is enabled and the systick timer.
+**********************************************/
+{
+	INT32U timerval  = TIMER0_TAV_R;
+	GPIO_PORTF_ICR_R = SW1_PIN;  						// Clear interrupt flag.
+	static bool edge = 0; 									// 0 is falling, 1 is rising.
+
+	if (edge == 0)													// Falling edge tasks.
 	{
-		GPIO_PORTF_IEV_R |= SW1_PIN; //next interrupt should be rising edge
+		GPIO_PORTF_IEV_R |= SW1_PIN;				 	// Next interrupt should be rising edge.
 		edge = 1;
 
-		if(timerval < DOUBLE_CLICK_VAL and timerval > DEBOUNCEVAL)
+		if (timerval < DOUBLE_CLICK_VAL and timerval > DEBOUNCEVAL)
 		{
-			count_direction = !count_direction;	//change direction on doublclick
+			count_direction = !count_direction;	// Change direction on doublclick.
 		}
-		if ( timerval > DEBOUNCEVAL)
+
+		if (timerval > DEBOUNCEVAL)
 		{
 			count();
 			stop_automode();
-			TIMER0_TAV_R = 0; //set timer to zero
+			TIMER0_TAV_R = 0; 									// Set timer to zero.
 		}
 	}
-	else	//rising edge tasks
+	else																		// Rising edge tasks.
 	{
-		GPIO_PORTF_IEV_R &= ~SW1_PIN; //next interrupt should be falling edge
+		GPIO_PORTF_IEV_R &= ~SW1_PIN; 				// Next interrupt should be falling edge.
 		edge = 0;
 
-		if(timerval > AUTOMODE_HOLD_VAL)
+		if (timerval > AUTOMODE_HOLD_VAL)
 		  start_automode();
-			
 	}
 	return;
 }
+
+/****************************** End of module *******************************/

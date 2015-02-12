@@ -4,11 +4,11 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
 *
-* MODULENAME.: setup.h
+* MODULENAME.: main.c
 *
 * PROJECT....: Assingment 1
 *
-* DESCRIPTION: Contains the different function used in setup.c
+* DESCRIPTION: Main loop
 *
 * Change Log:
 ******************************************************************************
@@ -19,18 +19,27 @@
 *
 *****************************************************************************/
 
-#ifndef _SETUP_H
-  #define _SETUP_H
-
 /***************************** Include files ********************************/
 #include <stdint.h>
-#include "inc/emp_type.h"
+#include "headers/setup.h"
 #include "inc/tm4c123gh6pm.h"
 
 /*****************************   Functions   ********************************/
-void setup();
-void enable_global_int();
-void disable_global_int();
+int main(void)
+/**********************************************
+* Input : None
+* Output : None
+* Function : Call the setup function in which
+						 the interrupts and timers is setup.
+* 					 Then enter a while loop where
+* 					 it will stay forever.
+**********************************************/
+{
+	setup();
+	while (1)
+	{
+	}
+	return (0);
+}
 
 /****************************** End of module *******************************/
-#endif
