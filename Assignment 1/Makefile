@@ -7,7 +7,7 @@ PROJECT=TEST
 #Define BUILDDIR
 BUILDDIR=bin
 #C source files
-SOURCES=TEST.c
+SOURCES=main.c
 SOURCES+=startup_gcc.c
 SOURCES+=setup.c
 SOURCES+=ISR.c

@@ -20,13 +20,13 @@
 *****************************************************************************/
 
 /***************************** Include files ********************************/
-#include "ISR.h"
+#include "headers/ISR.h"
 
 /*****************************    Defines    ********************************/
 #define FCPU 									16000000 	// CPU frequency.
-#define DEBOUNCETIMEUS 				100000 		// Debounce time in µs.
+#define DEBOUNCETIMEUS 				1500 		// Debounce time in µs.
 #define DEBOUNCEVAL 					FCPU / 1000000 * DEBOUNCETIMEUS
-#define DOUBLE_CLICK_TIME_US 	500000 		// Time between clicks for doubleclick.
+#define DOUBLE_CLICK_TIME_US 	200000 		// Time between clicks for doubleclick.
 #define DOUBLE_CLICK_VAL 			FCPU / 1000000 * DOUBLE_CLICK_TIME_US
 #define AUTOMODE_HOLD_TIME_US 2000000
 #define AUTOMODE_HOLD_VAL 		FCPU / 1000000 * AUTOMODE_HOLD_TIME_US
@@ -119,9 +119,10 @@ void count()
 	}
 	else
 	{
-		counter--;
 		if (counter <= 0)
 			counter = 7;
+		else
+			counter--;
 	}
 	set_leds(counter);
 }
@@ -170,7 +171,6 @@ void sw1_isr()
 		{
 			count();
 			stop_automode();
-			TIMER0_TAV_R = 0; 									// Set timer to zero.
 		}
 	}
 	else																		// Rising edge tasks.
@@ -181,6 +181,7 @@ void sw1_isr()
 		if (timerval > AUTOMODE_HOLD_VAL)
 		  start_automode();
 	}
+	TIMER0_TAV_R=0; //zero timer.
 	return;
 }
 
