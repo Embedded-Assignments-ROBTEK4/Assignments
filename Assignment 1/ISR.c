@@ -24,7 +24,7 @@
 
 /*****************************    Defines    ********************************/
 #define FCPU 									16000000 	// CPU frequency.
-#define DEBOUNCETIMEUS 				1500 		// Debounce time in µs.
+#define DEBOUNCETIMEUS 				1500 			// Debounce time in µs.
 #define DEBOUNCEVAL 					FCPU / 1000000 * DEBOUNCETIMEUS
 #define DOUBLE_CLICK_TIME_US 	200000 		// Time between clicks for doubleclick.
 #define DOUBLE_CLICK_VAL 			FCPU / 1000000 * DOUBLE_CLICK_TIME_US
@@ -141,7 +141,7 @@ void systick_timer_isr()
 		count();
 }
 
-#pragma GCC optimize "-O0" // Don't optimize the ISR
+#pragma GCC optimize "-O0"	// Don't optimize the ISR.
 void sw1_isr()
 /**********************************************
 * Input : None
@@ -181,7 +181,7 @@ void sw1_isr()
 		if (timerval > AUTOMODE_HOLD_VAL)
 		  start_automode();
 	}
-	TIMER0_TAV_R=0; //zero timer.
+	TIMER0_TAV_R = 0; 											// Zero timer.
 	return;
 }
 
