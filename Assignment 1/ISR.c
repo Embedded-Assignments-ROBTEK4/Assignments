@@ -16,6 +16,7 @@
 * YYMMDD
 * --------------------
 * 150212  MS    Syntax Fixed.
+* 150514  StefanRvO Changed descriptions, deleted optimise pragmas.
 *
 *****************************************************************************/
 
@@ -38,7 +39,7 @@
 #define LED_PORT 	GPIO_PORTF_DATA_R
 #define SW1_PIN 	0x10
 
-/*****************************   Constants   ********************************/
+/*****************************   Variables   ********************************/
 static bool count_direction = 1; // 1 is forward, 0 is backward.
 
 /*****************************   Functions   *******************************/
@@ -105,7 +106,7 @@ void count()
 /**********************************************
 * Input : None
 * Output : None
-* Function : Set LEDs accordingly to the input value.
+* Function : Count one step in the desired direction and set leds to current count.
 **********************************************/
 {
 	static INT8U counter = 0;
@@ -127,7 +128,7 @@ void count()
 	set_leds(counter);
 }
 
-#pragma GCC optimize "-O0" // Don't optimize the ISR.
+
 void systick_timer_isr()
 /**********************************************
 * Input : None
@@ -141,7 +142,7 @@ void systick_timer_isr()
 		count();
 }
 
-#pragma GCC optimize "-O0"	// Don't optimize the ISR.
+
 void sw1_isr()
 /**********************************************
 * Input : None

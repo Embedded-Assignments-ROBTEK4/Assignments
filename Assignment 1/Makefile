@@ -3,7 +3,7 @@
 #Losely based on TI StellarisWare examples
 
 #Define project name
-PROJECT=TEST
+PROJECT=LED_Counter
 #Define BUILDDIR
 BUILDDIR=bin
 #C source files
@@ -39,7 +39,6 @@ AFLAGS=-mthumb \
        ${FPU}  \
        -MD
 
-LIBRARIES=./driverlib/gcc-cm4f/libdriver-cm4f.a
 
 #
 # The flags passed to the compiler.
@@ -124,13 +123,13 @@ ${BUILDDIR}${SUFFIX}/%.axf:
 	          --entry ${ENTRY_${notdir ${@:.axf=}}}                       \
 	          ${LDFLAGSgcc_${notdir ${@:.axf=}}}                          \
 	          ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^})                  \
-	          '${LIBRARIES}' '${LIBM}' '${LIBC}' '${LIBGCC}' ;                            \
+	           '${LIBM}' '${LIBC}' '${LIBGCC}' ;                            \
 	 fi;                                                                  \
 	${LD} -T $${ldname}                                                   \
 	      --entry ${ENTRY_${notdir ${@:.axf=}}}                           \
 	      ${LDFLAGSgcc_${notdir ${@:.axf=}}}                              \
 	      ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^})                      \
-	      '${LIBRARIES}' '${LIBM}' '${LIBC}' '${LIBGCC}'
+	       '${LIBM}' '${LIBC}' '${LIBGCC}'
 	@${OBJCOPY} -O binary ${@} ${@:.axf=.bin}
 #endif
 

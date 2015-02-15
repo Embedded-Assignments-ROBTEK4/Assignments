@@ -3,7 +3,7 @@
 #Losely based on TI StellarisWare examples
 
 #Define project name
-PROJECT=TEST
+PROJECT=LED_Counter
 #Define BUILDDIR
 BUILDDIR=bin
 #C source files
