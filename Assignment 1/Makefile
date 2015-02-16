@@ -51,6 +51,7 @@ CFLAGS=-mthumb             \
        -MD                 \
        -std=c99            \
        -Wall               \
+       -Wextra             \
        -pedantic           \
        -DPART_${PART}      \
 

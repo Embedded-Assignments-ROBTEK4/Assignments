@@ -50,7 +50,8 @@ CFLAGS=-target arm-none-eabi \
        -fdata-sections     \
        -MD                 \
        -std=c99            \
-       -Wall               \
+       -Wall        			 \
+			 -Wextra						 \
        -pedantic           \
        -I/usr/arm-none-eabi/include/	\
 
