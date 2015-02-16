@@ -1,38 +1,9 @@
-# TM4C123G
-Template code for the Tiva TM4C123G ARM Cortex m4 board
+# EMP ASSIGNMENT 1
 
-#DEPENDENCIES
-You first need to install lm4flash
+Uses timer0 to monitor keypresses on SW1
 
+Short press on SW1 counts the LED's
 
-`git clone https://github.com/utzig/lm4tools.git`
+Long press (2 sec) puts the board into automode with autocounting, handled by systick timer.
 
-
-`cd lm4tools/lm4flash/`
-
-
-`make`
-
-
-`sudo cp lm4flash /usr/bin/`
-
-
-You then need no install OpenOCD with ICDI support
-
-
-`git clone git://git.code.sf.net/p/openocd/code`
-
-
-`cd openocd.git`
-
-
-`./bootstrap`
-
-
-`./configure --prefix=/usr --enable-maintainer-mode --enable-stlink --enable-ti-icdi`
-
-
-`make`
-
-
-`sudo make install`
+Double click changes count direction.
