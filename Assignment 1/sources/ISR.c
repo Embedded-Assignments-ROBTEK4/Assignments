@@ -170,7 +170,6 @@ void sw1_isr()
 
 		if (timerval > DEBOUNCEVAL)
 		{
-			count();
 			stop_automode();
 		}
 	}
@@ -178,6 +177,10 @@ void sw1_isr()
 	{
 		GPIO_PORTF_IEV_R &= ~SW1_PIN; 				// Next interrupt should be falling edge.
 		edge = 0;
+		if (timerval > DEBOUNCEVAL)
+		{
+			count();
+		}
 
 		if (timerval > AUTOMODE_HOLD_VAL)
 		  start_automode();
