@@ -24,8 +24,8 @@
 
 /***************************** Include files ********************************/
 #include <stdint.h>
-#include "inc/emp_type.h"
-#include "inc/tm4c123gh6pm.h"
+#include "emp_type.h"
+#include "tm4c123gh6pm.h"
 
 /*****************************   Functions   ********************************/
 void setup();

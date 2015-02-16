@@ -53,7 +53,6 @@ CFLAGS=-mthumb             \
        -Wall               \
        -pedantic           \
        -DPART_${PART}      \
-       -I./								 	\
 
 
 #Locate gcc libraries
