@@ -21,8 +21,8 @@
 
 /***************************** Include files ********************************/
 #include <stdint.h>
-#include "headers/setup.h"
-#include "headers/tm4c123gh6pm.h"
+#include "../headers/setup.h"
+#include "../headers/tm4c123gh6pm.h"
 
 /*****************************   Functions   ********************************/
 int main(void)

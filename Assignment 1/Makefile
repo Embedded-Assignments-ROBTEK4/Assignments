@@ -7,10 +7,10 @@ PROJECT=LED_Counter
 #Define BUILDDIR
 BUILDDIR=bin
 #C source files
-SOURCES=main.c
-SOURCES+=startup_gcc.c
-SOURCES+=setup.c
-SOURCES+=ISR.c
+SOURCES=sources/main.c
+SOURCES+=sources/startup_gcc.c
+SOURCES+=sources/setup.c
+SOURCES+=sources/ISR.c
 
 
 #objects from the C files
