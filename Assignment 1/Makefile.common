@@ -56,11 +56,12 @@ AFLAGS=-mthumb \
        -MD
 
 all: ${BUILDDIR}
-all: ${BUILDDIR}/${PROJECT}.bin
+all: ${PROJECT}.bin
 
 .PHONY: clean
 clean:
 	rm -rf ${BUILDDIR}
+	rm -rf ${PROJECT}.bin
 
 
 flash: all
@@ -98,6 +99,6 @@ ${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${PROJECT}.ld
 	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
 	@echo "LD ${@}"
 	
-${BUILDDIR}/${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
+${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
 	@${OBJCOPY} -O binary ${<} ${@}
 	@echo "OBJCOPY ${@}"
