@@ -58,11 +58,12 @@ AFLAGS=-mthumb \
 all: ${BUILDDIR}
 all: ${BUILDDIR}/${PROJECT}.bin
 
+.PHONY: clean
 clean:
 	rm -rf ${BUILDDIR}
 
 
-flash: ${BUILDDIR}/${PROJECT}.bin
+flash: all
 	echo "Flashing chip"
 	sudo lm4flash bin/${PROJECT}.bin
 
