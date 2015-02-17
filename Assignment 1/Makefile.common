@@ -46,6 +46,7 @@ CFLAGS=-mthumb             \
        -Wall               \
        -Wextra             \
        -pedantic           \
+       -fno-short-enums    \
 
 #
 # The flags passed to the assembler.
