@@ -1,8 +1,12 @@
 #Define project name
 PROJECT=Traffic_Light
+
+LDFILE=${PROJECT}.ld
+
 #Define BUILDDIR
 BUILDDIR=bin
 SOURCEDIR=sources
+
 #C source files
 SOURCES=main.c
 SOURCES+=startup_gcc.c
@@ -13,11 +17,12 @@ SOURCES+=button_events.c
 SOURCES+=counter.c
 SOURCES+=leds.c
 
-#objects from the C files
-OBJECTS=$(join $(addsuffix ${SOURCEDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
-#DUMMY FILES for detecting header changes (don't work atm)
-DUMMYFILES=$(join $(addsuffix ${SOURCEDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.d)))
+OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
 
+
+#define linkerfile and ENTRY
+SCATTERgcc_${PROJECT}=${PROJECT}.ld
+ENTRY_${PROJECT}=ResetISR
 
 #Define linker, archiver, etc. Compiler is defined in main makefile
 PREFIX=arm-none-eabi-
@@ -25,102 +30,73 @@ AR=${PREFIX}ar
 LD=${PREFIX}ld
 OBJCOPY=${PREFIX}objcopy
 
+#define CPU and FPU
 CPU=-mcpu=cortex-m4
 FPU=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
+
+#
+# The flags passed to the compiler.
+#
+CFLAGS=-mthumb             \
+       ${CPU}              \
+       ${FPU}              \
+       -ffunction-sections \
+       -fdata-sections     \
+       -std=c99            \
+       -Wall               \
+       -Wextra             \
+       -pedantic           \
 
 #
 # The flags passed to the assembler.
 #
 AFLAGS=-mthumb \
        ${CPU}  \
-       ${AFPU}  \
+       ${FPU}  \
        -MD
 
-
-
 all: ${BUILDDIR}
-all: ${BUILDDIR}/${PROJECT}.axf
+all: ${BUILDDIR}/${PROJECT}.bin
 
-
-#
-# The rule to clean out all the build products.
-#
 clean:
-	@rm -rf ${BUILDDIR} ${wildcard *~}
-	@echo rm -rf ${BUILDDIR}
-	rm ${OBJECTS}
-	rm ${DUMMYFILES}
+	rm -rf ${BUILDDIR}
+
 
 flash: ${BUILDDIR}/${PROJECT}.bin
 	echo "Flashing chip"
 	sudo lm4flash bin/${PROJECT}.bin
 
-#
-# Include the automatically generated dependency files.
-#
-ifneq (${MAKECMDGOALS},clean)
--include ${wildcard ${BUILDDIR}/*.d} __dummy__
-endif
+# pull in dependency info for *existing* .o files
+-include $(OBJECTS:.o=.d)
 
-
-#
-# The rule for building the object file from each C source file.
-#
-
-${BUILDDIR}/%.o: ${SOURCEDIR}%.c 
-			 ${CC} ${INCLUDEDIRS} ${CFLAGS} -D${BUILDDIR} -o ${@} ${<}
-
-
- #The rule for building the object file from each assembly source file. This may not work with clang
-
-${BUILDDIR}/%.o: ${SOURCEDIR}%.c 
-			 ${CC} ${AFLAGS} ${INCLUDEDIRS} -D${BUILDDIR} -o ${@} -c ${<}
-
- #The rule for creating an object library.
-
-${BUILDDIR}/%.a:
-			${AR} -cr ${@} ${^}
-
-
-# The rule for linking the application. this is magic, do not touch..
-
-
-${BUILDDIR}/%.axf:
-	@if [ 'x${SCATTERgcc_${notdir ${@:.axf=}}}' = x ];                    \
-	 then                                                                 \
-	     ldname="${ROOT}/gcc/standalone.ld";                              \
-	 else                                                                 \
-	     ldname="${SCATTERgcc_${notdir ${@:.axf=}}}";                     \
-	 fi;                                                                  \
-	 if [ 'x${VERBOSE}' = x ];                                            \
-	 then                                                                 \
-	     echo "  LD    ${@} ${LNK_SCP}";                                  \
-	 else                                                                 \
-	     echo ${LD} -T $${ldname}                                         \
-	          --entry ${ENTRY_${notdir ${@:.axf=}}}                       \
-	          ${LDFLAGSgcc_${notdir ${@:.axf=}}}                          \
-	          ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^})                  \
-	           '${LIBM}' '${LIBC}' '${LIBGCC}' ;                            \
-	 fi;                                                                  \
-	${LD} -T $${ldname}                                                   \
-	      --entry ${ENTRY_${notdir ${@:.axf=}}}                           \
-	      ${LDFLAGSgcc_${notdir ${@:.axf=}}}                              \
-	      ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^})                      \
-	       '${LIBM}' '${LIBC}' '${LIBGCC}'
-	@${OBJCOPY} -O binary ${@} ${@:.axf=.bin}
-#endif
-
-#
-# The rule to create the target directory.
-#
 ${BUILDDIR}:
-	@mkdir -p ${BUILDDIR}
+	mkdir ${BUILDDIR} -p
 
-#
-# Rules for building the binary.
-#
-${BUILDDIR}/${PROJECT}.axf ${BUILDDIR}/${PROJECT}.bin: ${OBJECTS}
-${BUILDDIR}/${PROJECT}.axf ${BUILDDIR}/${PROJECT}.bin: ${LIBRARIES}
-${BUILDDIR}/${PROJECT}.axf ${BUILDDIR}/${PROJECT}.bin: ${PROJECT}.ld
-SCATTERgcc_${PROJECT}=${PROJECT}.ld
-ENTRY_${PROJECT}=ResetISR
+${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
+	@${CC} ${CFLAGS} -c $< -o $@
+	@echo "CC $@"
+#create dependency file to detect changes in header
+#http://scottmcpeak.com/autodepend/autodepend.html is used as reference
+
+	@${CC} -MM $(CFLAGS) $< > ${@:.o=.d}
+	@mv -f ${@:.o=.d} ${@:.o=.d.tmp}
+	@sed -e 's|.*:|$@:|' < ${@:.o=.d.tmp} > ${@:.o=.d}
+	@sed -e 's/.*://' -e 's/\\$$//' < ${@:.o=.d.tmp} | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> ${@:.o=.d}
+	@rm -f ${@:.o=.d.tmp}
+
+${BUILDDIR}/%.o: ${SOURCEDIR}/%.S
+	@${CC} ${AFLAGS} -c $< -o $@
+	@echo "CC $@"
+	
+${BUILDDIR}/%.a:
+	@${AR} -cr ${@} ${^}
+	@echo "CC ${@}"
+
+${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${PROJECT}.ld
+	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
+	@echo "LD ${@}"
+	
+${BUILDDIR}/${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
+	@${OBJCOPY} -O binary ${<} ${@}
+	@echo "OBJCOPY ${@}"

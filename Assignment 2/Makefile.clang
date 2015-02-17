@@ -9,24 +9,11 @@ include  Makefile.common
 COMPILER=clang-3.5
 CC=${COMPILER}
 
-#define CPU model and floating point behavior
-CPU=-mcpu=cortex-m4
 
-#
-# The flags passed to the compiler.
-#
-CFLAGS=-target arm-none-eabi \
-       -mthumb             \
-       ${CPU}              \
-       ${FPU}              \
-       -ffunction-sections \
-       -fdata-sections     \
-       -MD                 \
-       -std=c99            \
-       -Wall        			 \
-			 -Wextra						 \
-       -pedantic           \
-       -I/usr/arm-none-eabi/include/	\
+#add target to clang flags, and gcc include folder
+CFLAGS+= -target arm-none-eabi \
+         -I/usr/arm-none-eabi/include/
+
 
 #Locate gcc libraries
 INCLUDES=-I/usr/arm-none-eabi/include/
