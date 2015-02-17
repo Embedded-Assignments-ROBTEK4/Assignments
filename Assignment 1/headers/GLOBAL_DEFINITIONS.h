@@ -6,28 +6,35 @@
 *
 * MODULENAME.: ISR.h
 *
-* PROJECT....: Assingment 2
+* PROJECT....: Assingment 1
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: definitions which is used for many parts of the application.
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    Syntax Fixed.
-*	150217 StefanRvo Changed to only use systick interrupt
+* 150217  StefanRvo    Created file.
 *
 *****************************************************************************/
 
-#ifndef _ISR_H
-  #define _ISR_H
+#ifndef _GLOBAL_DEFINITIONS_H
+	#define _GLOBAL_DEFINITIONS_H
 
 /***************************** Include files ********************************/
-#include "tm4c123gh6pm.h"
-#include "globals.h"
+#include <stdint.h>
+#include <iso646.h>
 
-/*****************************   Functions   ********************************/
-void systick_timer_isr();
+/***************************** Defines **************************************/
+#define FCPU                 			16000000 		// Hz.
+#define TIMEOUT_SYSTICK      			5        	 // ms.
+
+#define LED_RED 	0x02
+#define LED_BLUE 	0x04
+#define LED_GREEN 0x08
+#define SW1_PIN 	0x10
 
 /****************************** End of module *******************************/
+
 #endif

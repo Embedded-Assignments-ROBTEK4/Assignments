@@ -6,28 +6,29 @@
 *
 * MODULENAME.: ISR.h
 *
-* PROJECT....: Assingment 2
+* PROJECT....: Assingment 1
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: global variables.
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    Syntax Fixed.
-*	150217 StefanRvo Changed to only use systick interrupt
+* 150217  StefanRvo    Created file.
 *
 *****************************************************************************/
+#ifndef _GLOBALS_
+	#define _GLOBALS_
 
-#ifndef _ISR_H
-  #define _ISR_H
 
 /***************************** Include files ********************************/
-#include "tm4c123gh6pm.h"
-#include "globals.h"
+#include "emp_type.h"
 
-/*****************************   Functions   ********************************/
-void systick_timer_isr();
+/*****************************   Variables   ********************************/
+
+extern volatile INT32U ticks; //system tick
 
 /****************************** End of module *******************************/
+
 #endif

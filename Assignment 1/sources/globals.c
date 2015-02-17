@@ -4,29 +4,25 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
 *
-* MODULENAME.: ISR.h
+* MODULENAME.: main.c
 *
-* PROJECT....: Assingment 2
+* PROJECT....: Assingment 1
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: Main loop
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    Syntax Fixed.
+* 150212  StefanRvo    Created file.
 *
 *****************************************************************************/
 
-#ifndef _ISR_H
-  #define _ISR_H
-
 /***************************** Include files ********************************/
-#include "tm4c123gh6pm.h"
-#include "globals.h"
+#include "../headers/globals.h"
 
-/*****************************   Functions   ********************************/
-void systick_timer_isr();
+/***************************** Variables ************************************/
+volatile INT32U ticks = 0; //global systick
 
 /****************************** End of module *******************************/
-#endif

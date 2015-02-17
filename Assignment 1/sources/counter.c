@@ -26,6 +26,12 @@
 
 void count_up(INT8U *counter)
 {
+/**********************************************
+* Input : int pointer
+* Output : None
+* Function : count the int up
+* 					 
+**********************************************/
 	if (*counter == MAX_VAL)
 		*counter = 0;
 	else
@@ -33,6 +39,12 @@ void count_up(INT8U *counter)
 }
 void count_down(INT8U *counter)
 {
+/**********************************************
+* Input : int pointer
+* Output : None
+* Function : count the int down
+* 					 
+**********************************************/
 	if (*counter == 0)
 	{
 		*counter = MAX_VAL;

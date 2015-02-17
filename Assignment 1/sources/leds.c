@@ -15,49 +15,50 @@
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    Syntax Fixed.
+* 150217  StefanRvO    Create file
 *
 *****************************************************************************/
 
 /***************************** Include files ********************************/
-#include <stdint.h>
-#include "../headers/setup.h"
-#include "../headers/tm4c123gh6pm.h"
-#include "../headers/GLOBAL_DEFINITIONS.h"
-#include "../headers/globals.h"
-#include "../headers/button_events.h"
-#include "../headers/counter.h"
 #include "../headers/leds.h"
 
 /*****************************   Functions   ********************************/
-int main(void)
+void set_leds(INT8U counter_val)
 /**********************************************
-* Input : None
+* Input : Value of the counter.
 * Output : None
-* Function : Call the setup function in which
-						 the interrupts and timers is setup.
-* 					 Then enter a while loop where
-* 					 it will stay forever.
+* Function : Set LEDs accordingly to the input value.
 **********************************************/
 {
-	INT8U counter;
-	event button_event;
-	
-	disable_global_int();
-	setup_gpio();
-	setup_timers();
-	enable_global_int();
+	// Turn off LEDs.
+	GPIO_PORTF_DATA_R &= ~(LED_RED | LED_GREEN | LED_BLUE);
 
-	while (1)
+	// Set LEDs.
+	switch (counter_val)
 	{
-		while( !ticks )
-			;
-		ticks--;
-		button_event = get_button_event();
-		counter = count(button_event);
-		set_leds(counter);
+		case 1:
+			GPIO_PORTF_DATA_R |= LED_GREEN;
+			break;
+		case 2:
+			GPIO_PORTF_DATA_R |= LED_BLUE;
+			break;
+		case 3:
+			GPIO_PORTF_DATA_R |= LED_GREEN | LED_BLUE;
+			break;
+		case 4:
+			GPIO_PORTF_DATA_R |= LED_RED;
+			break;
+		case 5:
+			GPIO_PORTF_DATA_R |= LED_RED | LED_GREEN;
+			break;
+		case 6:
+			GPIO_PORTF_DATA_R |= LED_RED | LED_BLUE;
+			break;
+		case 7:
+			GPIO_PORTF_DATA_R |= LED_RED | LED_GREEN | LED_BLUE;
+			break;
+		default :
+			break;
 	}
-	return (0);
 }
-
 /****************************** End of module *******************************/

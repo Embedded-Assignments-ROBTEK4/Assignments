@@ -4,43 +4,57 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
 *
-* MODULENAME.: setup.h
+* MODULENAME.: ISR.h
 *
 * PROJECT....: Assingment 1
 *
-* DESCRIPTION: Contains the different functions used in setup.c
+* DESCRIPTION: functions for getting button presses.
 *
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    		Syntax Fixed.
-* 150217  StefanRvO Split setup into multple functions
+* 150217  StefanRvo    Created file.
 *
 *****************************************************************************/
 
-#ifndef _SETUP_H
-  #define _SETUP_H
+#ifndef _BUTTON_EVENT_
+	#define _BUTTON_EVENT_
+
 
 /***************************** Include files ********************************/
+#include "emp_type.h"
+#include "GLOBAL_DEFINITIONS.h"
+#include <stdbool.h>
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
-#include "GLOBAL_DEFINITIONS.h"
 
+/***************************** Defines **************************************/
+#define LONG_PRESS_TIME 2000 //Long press time in ms
+#define DOUBLE_PRESS_TIME 100 //Double click time in ms
 
-/*****************************    Defines    ********************************/
-#define SYSTICK_RELOAD_VALUE 			FCPU / 1000 * TIMEOUT_SYSTICK - 1
+/***************************** Enum Definitions *****************************/
+typedef enum {
+	NO_EVENT,
+	SINGLE_PRESS,
+	DOUBLE_PRESS,
+	LONG_PRESS,
+} event;
 
-#if (SYSTICK_RELOAD_VALUE > 0xFFFFFF)
-	#error "SYSTICK_RELOAD_VALUE is too high"
-#endif
+typedef enum {
+	IDLE,
+	FIRST_PUSH,
+	SECOND_PUSH,
+	LONG_PUSH,
+	FIRST_RELEASE,
+} button_state;
 
 /*****************************   Functions   ********************************/
-void setup_gpio();
-void setup_timers();
-void enable_global_int();
-void disable_global_int();
+
+bool button_pressed(uint32_t GPIO_PORT, uint32_t GPIO_PIN);
+event get_button_event();
 
 /****************************** End of module *******************************/
 #endif
+

@@ -1,10 +1,46 @@
+/*****************************************************************************
+* University of Southern Denmark
+* Embedded Programming (EMP)
+*
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
+*
+* MODULENAME.: main.c
+*
+* PROJECT....: Assingment 1
+*
+* DESCRIPTION: see header
+*
+* Change Log:
+******************************************************************************
+* Date    Id    Change
+* YYMMDD
+* --------------------
+* 150217  StefanRvo	Created file
+*
+*****************************************************************************/
+
+/***************************** Include files ********************************/
+
 #include "../headers/button_events.h"
 
+/*****************************   Functions   ********************************/
 bool button_pressed(uint32_t GPIO_PORT, uint32_t GPIO_PIN)
+/**********************************************
+* Input : Port, Pin
+* Output : outputs false if pin is high, true if low
+* Function : check if button is pressed
+* 					 
+**********************************************/
 {
 	return !(GPIO_PORT & GPIO_PIN);
 }
 event get_button_event()
+/**********************************************
+* Input : None
+* Output : button event
+* Function : check if a button event have ocured and returns the event
+* 					 
+**********************************************/
 {
 	static button_state state	= IDLE;
 	static INT16U timer 			= 0;
