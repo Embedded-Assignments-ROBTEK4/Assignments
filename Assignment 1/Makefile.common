@@ -67,7 +67,7 @@ clean:
 
 flash: all
 	echo "Flashing chip"
-	sudo lm4flash bin/${PROJECT}.bin
+	sudo lm4flash ${PROJECT}.bin
 
 # pull in dependency info for *existing* .o files
 -include $(OBJECTS:.o=.d)
