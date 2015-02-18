@@ -55,6 +55,9 @@ AFLAGS=-mthumb \
        ${FPU}  \
        -MD
 
+LDFLAGS=--gc-sections
+
+
 all: ${BUILDDIR}
 all: ${PROJECT}.bin
 
