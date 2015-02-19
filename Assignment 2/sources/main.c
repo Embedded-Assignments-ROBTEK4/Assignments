@@ -26,7 +26,7 @@
 #include "../headers/GLOBAL_DEFINITIONS.h"
 #include "../headers/globals.h"
 #include "../headers/button_events.h"
-#include "../headers/counter.h"
+#include "../headers/traffic_control.h"
 #include "../headers/leds.h"
 
 /*****************************   Functions   ********************************/
@@ -39,7 +39,7 @@ int main(void)
 * 					 
 **********************************************/
 {
-	INT8U counter;
+	INT8U traffic_val;
 	event button_event;
 	
 	disable_global_int();
@@ -53,8 +53,8 @@ int main(void)
 			;
 		ticks--;
 		button_event = get_button_event();
-		counter = count(button_event);
-		set_leds(counter);
+		traffic_val = traffic_control(button_event);
+		set_leds(traffic_val);
 	}
 	return (0);
 }

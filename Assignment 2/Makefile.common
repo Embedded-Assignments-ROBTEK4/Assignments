@@ -15,7 +15,7 @@ SOURCES+=ISR.c
 SOURCES+=globals.c
 SOURCES+=button_events.c
 SOURCES+=leds.c
-SOURCES+=counter.c
+SOURCES+=traffic_control.c
 
 OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
 

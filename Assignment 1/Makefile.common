@@ -4,7 +4,7 @@ PROJECT=LED_CONTROL
 LDFILE=${PROJECT}.ld
 
 #Define BUILDDIR
-BUILDDIR=bin
+BUILDDIR=build
 SOURCEDIR=sources
 
 #C source files
