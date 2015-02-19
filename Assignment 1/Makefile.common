@@ -14,8 +14,8 @@ SOURCES+=setup.c
 SOURCES+=ISR.c
 SOURCES+=globals.c
 SOURCES+=button_events.c
-SOURCES+=counter.c
 SOURCES+=leds.c
+SOURCES+=counter.c
 
 OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
 
@@ -46,7 +46,6 @@ CFLAGS=-mthumb             \
        -Wall               \
        -Wextra             \
        -pedantic           \
-       -fno-short-enums    \
 
 #
 # The flags passed to the assembler.
@@ -55,6 +54,9 @@ AFLAGS=-mthumb \
        ${CPU}  \
        ${FPU}  \
        -MD
+
+LDFLAGS=--gc-sections
+
 
 all: ${BUILDDIR}
 all: ${PROJECT}.bin
