@@ -35,7 +35,7 @@ void systick_timer_isr()
 **********************************************/
 {
 	  // Hardware clears systick int reguest.
-		ticks++;
+	ticks++;
 }
 
 

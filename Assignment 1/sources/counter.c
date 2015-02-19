@@ -46,9 +46,7 @@ void count_down(INT8U *counter)
 * 					 
 **********************************************/
 	if (*counter == 0)
-	{
 		*counter = MAX_VAL;
-	}
 	else
 		(*counter)--;
 }
