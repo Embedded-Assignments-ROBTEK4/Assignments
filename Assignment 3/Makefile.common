@@ -1,0 +1,109 @@
+#Define project name
+PROJECT=LED_CONTROL
+
+LDFILE=${PROJECT}.ld
+
+#Define BUILDDIR
+BUILDDIR=bin
+SOURCEDIR=sources
+
+#C source files
+SOURCES=main.c
+SOURCES+=startup_gcc.c
+SOURCES+=setup.c
+SOURCES+=ISR.c
+SOURCES+=globals.c
+SOURCES+=button_events.c
+SOURCES+=lcd.c
+SOURCES+=SWDelay.c
+SOURCES+=clock.c
+SOURCES+=display_clock.c
+
+OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
+
+
+#define linkerfile and ENTRY
+SCATTERgcc_${PROJECT}=${PROJECT}.ld
+ENTRY_${PROJECT}=ResetISR
+
+#Define linker, archiver, etc. Compiler is defined in main makefile
+PREFIX=arm-none-eabi-
+AR=${PREFIX}ar
+LD=${PREFIX}ld
+OBJCOPY=${PREFIX}objcopy
+
+#define CPU and FPU
+CPU=-mcpu=cortex-m4
+FPU=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
+
+#
+# The flags passed to the compiler.
+#
+CFLAGS=-mthumb             \
+       ${CPU}              \
+       ${FPU}              \
+       -ffunction-sections \
+       -fdata-sections     \
+       -std=c99            \
+       -Wall               \
+       -Wextra             \
+       -pedantic           \
+
+#
+# The flags passed to the assembler.
+#
+AFLAGS=-mthumb \
+       ${CPU}  \
+       ${FPU}  \
+       -MD
+
+LDFLAGS=--gc-sections
+
+
+all: ${BUILDDIR}
+all: ${PROJECT}.bin
+
+.PHONY: clean
+clean:
+	rm -rf ${BUILDDIR}
+	rm -rf ${PROJECT}.bin
+
+
+flash: all
+	echo "Flashing chip"
+	sudo lm4flash ${PROJECT}.bin
+
+# pull in dependency info for *existing* .o files
+-include $(OBJECTS:.o=.d)
+
+${BUILDDIR}:
+	mkdir ${BUILDDIR} -p
+
+${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
+	@${CC} ${CFLAGS} -c $< -o $@
+	@echo "CC $@"
+#create dependency file to detect changes in header
+#http://scottmcpeak.com/autodepend/autodepend.html is used as reference
+
+	@${CC} -MM $(CFLAGS) $< > ${@:.o=.d}
+	@mv -f ${@:.o=.d} ${@:.o=.d.tmp}
+	@sed -e 's|.*:|$@:|' < ${@:.o=.d.tmp} > ${@:.o=.d}
+	@sed -e 's/.*://' -e 's/\\$$//' < ${@:.o=.d.tmp} | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> ${@:.o=.d}
+	@rm -f ${@:.o=.d.tmp}
+
+${BUILDDIR}/%.o: ${SOURCEDIR}/%.S
+	@${CC} ${AFLAGS} -c $< -o $@
+	@echo "CC $@"
+	
+${BUILDDIR}/%.a:
+	@${AR} -cr ${@} ${^}
+	@echo "CC ${@}"
+
+${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${PROJECT}.ld
+	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
+	@echo "LD ${@}"
+	
+${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
+	@${OBJCOPY} -O binary ${<} ${@}
+	@echo "OBJCOPY ${@}"

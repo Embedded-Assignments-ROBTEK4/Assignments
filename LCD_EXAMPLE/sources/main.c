@@ -1,13 +1,14 @@
 #include "../headers/setup.h"
 #include "../headers/lcd.h"
+#include <stdlib.h>
 #define LCD_D4 1<<4
 #define LCD_D5 1<<5
 #define LCD_D6 1<<6
 #define LCD_D7 1<<7
 #define LCD_RS 1<<2
 #define LCD_E  1<<3
-#define LCD_RS_E_PORT GPIO_PORTD_DATA_R
-#define LCD_DATA_PORT GPIO_PORTC_DATA_R
+#define LCD_RS_E_PORT GPIO_PORTC_DATA_R
+#define LCD_DATA_PORT GPIO_PORTD_DATA_R
 
 char* itoa(int i, char b[]){ //Converts an int to a string 
     char const digit[] = "0123456789";
@@ -41,18 +42,14 @@ int main()
 		
 	lcd_begin(&lcd_disp,2);
 	
-	lcd_write_string(&lcd_disp, "SEKUNDER SIDEN");
-	lcd_set_cursor(&lcd_disp,0,1);
-	lcd_write_string(&lcd_disp, "START");
-	
-	char timestr[8];
-	INT32U time = 0;
+	int time = 0;
+	char timestr[10];
 	while(1)
 	{
 		time++;
-		delay_milliseconds(1000);
-		lcd_set_cursor(&lcd_disp,6,1);
-		itoa(time, timestr);
-		lcd_write_string(&lcd_disp, timestr);
+		//delay_milliseconds(100);
+		lcd_set_cursor(&lcd_disp,0,0);
+		itoa(time,timestr);
+		lcd_write_string(&lcd_disp,timestr);
 	}
 }

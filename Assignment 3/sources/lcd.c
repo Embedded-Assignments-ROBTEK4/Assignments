@@ -271,11 +271,11 @@ void lcd_send(lcd *lcd_s, uint8_t value, uint8_t mode) {
   
   if (lcd_s->_displayfunction & LCD_8BITMODE) {
     lcd_write_8_bits(lcd_s, value); 
-    delay_microseconds(37);
+   // delay_microseconds(37); //Need to wait 37 µs between commands
   } else {
-    lcd_write_4_bits(lcd_s, value>>4);
-    lcd_write_4_bits(lcd_s, value);
-    delay_microseconds(37);
+    lcd_write_4_bits(lcd_s, value>>4); //Send 4 high bits
+    lcd_write_4_bits(lcd_s, value);		//Send 4 low bits
+   // delay_microseconds(37); //Need to wait 37 µs between commands
   }
 }
 
@@ -283,6 +283,7 @@ void lcd_pulse_enable(lcd *lcd_s) {
 	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
 	*(lcd_s->_rs_enable_port) |= lcd_s->_enable_pin;
 	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
+	delay_microseconds(37);
 }
 
 void lcd_write_4_bits(lcd *lcd_s, uint8_t value) {
