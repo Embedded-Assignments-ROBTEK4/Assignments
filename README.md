@@ -2,8 +2,9 @@
 Template code for the Tiva TM4C123G ARM Cortex m4 board
 
 #DEPENDENCIES
-automake
 
+libusb
+automake
 build-essential
 
 arm-none-eabi-gcc (on ubuntu, get it from https://launchpad.net/~terry.guo/+archive/ubuntu/gcc-arm-embedded)
