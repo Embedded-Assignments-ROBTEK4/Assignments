@@ -161,6 +161,8 @@ void lcd_begin(lcd *lcd_s, uint8_t lines)
 
 		// Finally, set to 4-bit interface.
 		lcd_write_4_bits(lcd_s, 0x02);
+		// Need to wait 37 µs between commands.
+		delay_microseconds(37);
 	}
 	else  // 8 bit setup
 	{
@@ -292,7 +294,7 @@ void lcd_set_cursor(lcd *lcd_s, uint8_t col, uint8_t row)
 * Function : Set cursor to input location.
 **********************************************/
 {
-	int row_offsets[] = {0x00, 0x40, 0x14, 0x54};
+	uint8_t row_offsets[] = {0x00, 0x40, 0x14, 0x54};
 	if(row > lcd_s->_numlines) {
 		 row = lcd_s->_numlines-1;    // We count rows starting w/0.
 	}
@@ -428,7 +430,6 @@ void lcd_pulse_enable(lcd *lcd_s)
 	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
 	*(lcd_s->_rs_enable_port) |=  lcd_s->_enable_pin;
 	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
-	delay_microseconds(37);
 }
 
 void lcd_write_4_bits(lcd *lcd_s, uint8_t value)
@@ -482,14 +483,13 @@ void lcd_send(lcd *lcd_s, uint8_t value, uint8_t mode)
 	if(lcd_s->_displayfunction & LCD_8BITMODE)
 	{
 		lcd_write_8_bits(lcd_s, value);
-	 // delay_microseconds(37); 				 // Need to wait 37 µs between commands.
 	}
 	else
 	{
 		lcd_write_4_bits(lcd_s, value>>4); // Send 4 high bits.
 		lcd_write_4_bits(lcd_s, value);		 // Send 4 low bits.
-	 // delay_microseconds(37); 				 // Need to wait 37 µs between commands.
 	}
+	delay_microseconds(37); 				 		 // Need to wait 37 µs between commands.
 }
 
 /****************************** End of module *******************************/
