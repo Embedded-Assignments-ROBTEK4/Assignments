@@ -2,26 +2,24 @@
 * University of Southern Denmark
 * Embedded Programming (EMP)
 *
-* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* MODULENAME.: ISR.h
+* MODULENAME.: button_events.h
 *
-* PROJECT....: Assingment 1
+* PROJECT....: Assingment 3
 *
-* DESCRIPTION: functions for getting button presses.
+* DESCRIPTION: Functions for initialize button and getting button presses.
 *
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150217  StefanRvo    Created file.
-*
+* 150217  StefanRvo		Created file.
+* 150226	MS 					Fixed syntax.
 *****************************************************************************/
-
-#ifndef _BUTTON_EVENT_
-	#define _BUTTON_EVENT_
-
+#ifndef _BUTTON_EVENTS_
+	#define _BUTTON_EVENTS_
 
 /***************************** Include files ********************************/
 #include "emp_type.h"
@@ -30,11 +28,11 @@
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
 
-/***************************** Defines **************************************/
-#define LONG_PRESS_TIME 2000 //Long press time in ms
-#define DOUBLE_PRESS_TIME 100 //Double click time in ms
+/*******************************   Defines    *******************************/
+#define LONG_PRESS_TIME 2000 	// Long press time in ms.
+#define DOUBLE_PRESS_TIME 100 // Double click time in ms.
 
-/***************************** Enum Definitions *****************************/
+/*******************************    Enums     *******************************/
 typedef enum {
 	NO_EVENT,
 	SINGLE_PRESS,
@@ -50,21 +48,19 @@ typedef enum {
 	FIRST_RELEASE,
 } button_state;
 
-
-/***************************** Structs **************************************/
-
+/*******************************   Structs    *******************************/
 typedef struct {
 	volatile uint32_t *port;
 	uint32_t pin;
 	button_state state;
 	INT16U timer;
-	
 } button;
-/*****************************   Functions   ********************************/
 
+/*****************************   Functions   ********************************/
 bool button_pressed(button *button_s);
 event get_button_event(button *button_s);
 button button_init(volatile uint32_t *port, uint32_t pin);
+
 /****************************** End of module *******************************/
 #endif
 
