@@ -1,7 +1,7 @@
 #Define project name
-PROJECT=LED_CONTROL
+PROJECT=Traffic_Light
 
-LDFILE=${PROJECT}.ld
+LDFILE=Linker.ld
 
 #Define BUILDDIR
 BUILDDIR=bin
@@ -16,7 +16,7 @@ OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:
 
 
 #define linkerfile and ENTRY
-SCATTERgcc_${PROJECT}=${PROJECT}.ld
+SCATTERgcc_${PROJECT}=$(LDFILE)
 ENTRY_${PROJECT}=ResetISR
 
 #Define linker, archiver, etc. Compiler is defined in main makefile
@@ -93,7 +93,7 @@ ${BUILDDIR}/%.a:
 	@${AR} -cr ${@} ${^}
 	@echo "CC ${@}"
 
-${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${PROJECT}.ld
+${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} $(LDFILE)
 	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
 	@echo "LD ${@}"
 	

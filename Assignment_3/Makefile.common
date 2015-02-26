@@ -1,27 +1,22 @@
 #Define project name
-PROJECT=LED_CONTROL
+PROJECT=LCD_CLOCK
 
-LDFILE=${PROJECT}.ld
+LDFILE=Linker.ld
 
 #Define BUILDDIR
 BUILDDIR=bin
 SOURCEDIR=sources
 
 #C source files
-SOURCES=main.c
-SOURCES+=startup_gcc.c
-SOURCES+=setup.c
-SOURCES+=ISR.c
-SOURCES+=globals.c
-SOURCES+=button_events.c
-SOURCES+=leds.c
-SOURCES+=traffic_control.c
+SOURCES_=$(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
+
+SOURCES = $(SOURCES_:$(SOURCEDIR)/%=%) #Remove leading $(SOURCEDIR)/
 
 OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
 
 
 #define linkerfile and ENTRY
-SCATTERgcc_${PROJECT}=${PROJECT}.ld
+SCATTERgcc_${PROJECT}=$(LDFILE)
 ENTRY_${PROJECT}=ResetISR
 
 #Define linker, archiver, etc. Compiler is defined in main makefile
@@ -98,7 +93,7 @@ ${BUILDDIR}/%.a:
 	@${AR} -cr ${@} ${^}
 	@echo "CC ${@}"
 
-${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${PROJECT}.ld
+${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} $(LDFILE)
 	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
 	@echo "LD ${@}"
 	
