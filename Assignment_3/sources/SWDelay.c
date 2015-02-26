@@ -16,10 +16,11 @@ void delay_microseconds(INT32U delayus)
 	
 }
 
-#pragma GCC optimize "-O0"
 void setup_delay() //setup the timer0 to be used in the delay functions
 {
 	SYSCTL_RCGC1_R |= SYSCTL_RCGC1_TIMER0; //Enable the timer hardware
+	__asm__("NOP");
+	__asm__("NOP");
 	TIMER0_CTL_R &= ~(TIMER_CTL_TAEN | TIMER_CTL_TBEN); //disable the timer
 	TIMER0_CFG_R = 0; // 32 bit mode (no RTC)
 	TIMER0_TAMR_R = TIMER_TAMR_TACDIR ;// up, periodic
