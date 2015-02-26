@@ -46,14 +46,15 @@ lcd lcd_init(uint8_t fourbitmode, uint32_t rs, uint32_t enable, volatile uint32_
 						 uint32_t d0, 				uint32_t d1, uint32_t d2, 		uint32_t d3,
 						 uint32_t d4, 				uint32_t d5, uint32_t d6, 		uint32_t d7,
 						 volatile uint32_t *data_port)
-/**********************************************
-* Input : , , ,
-*         , , ,
-*         , , ,
-*          .
-* Output : .
-* Function : .
-**********************************************/
+/*****************************************************
+* Input : mode. are we running 4 bit?,rs pin, 
+					enable pin ,port for rs_pin and enable_pin,
+* 				data0 pin, data1 pin ,data2 pin,
+* 				data3 pin, data4 pin, data5 pin,
+*					data6 pin, data7 pin, port for data pins.
+* Output : lcd struct.
+* Function : Initialises a lcd struct to 4 or 8 bit mode and returns it.
+******************************************************/
 {
 	lcd lcd_s;
 	lcd_s._rs_pin = rs;
@@ -83,11 +84,11 @@ lcd lcd_init_4bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_por
 									uint32_t d0, uint32_t d1, 		uint32_t d2,
 									uint32_t d3, uint32_t volatile *data_port)
 /**********************************************
-* Input : , , ,
-* 				, , ,
-* 				, , .
-* Output : .
-* Function : .
+* Input : rs pin, enable pin ,port for rs_pin and enable_pin,
+* 				data0 pin, data1 pin ,data2 pin ,
+* 				data3 pin, port for data pins.
+* Output : lcd struct.
+* Function : Initialises a lcd struct to 4 bit mode and returns it.
 **********************************************/
 {
 	return lcd_init(1, rs, enable, rs_enable_port, d0, d1, d2, d3, 0, 0, 0, 0, data_port);
@@ -98,12 +99,12 @@ lcd lcd_init_8bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_por
 								uint32_t d3, uint32_t d4, 		uint32_t d5,
 								uint32_t d6, uint32_t d7,	 	  volatile uint32_t *data_port)
 /**********************************************
-* Input : , , ,
-* 			  , , ,
-* 			  , , ,
-* 			  , , , .
-* Output : .
-* Function : .
+* Input : rs pin, enable pin ,port for rs_pin and enable_pin,
+* 				data0 pin, data1 pin ,data2 pin ,
+* 				data3 pin, data4 pin, data5 pin,
+*					data6 pin, data7 pin, port for data pins.
+* Output : lcd struct.
+* Function : initialises a lcd struct to 8 bit mode and returns it.
 **********************************************/
 {
 	return lcd_init(0, rs, enable, rs_enable_port, d0, d1, d2, d3, d4, d5, d6, d7, data_port);
@@ -112,9 +113,10 @@ lcd lcd_init_8bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_por
 /*****************************   Functions   ********************************/
 void lcd_begin(lcd *lcd_s, uint8_t lines)
 /**********************************************
-* Input : Pointer to lcd, .
+* Input : Pointer to lcd, does the lcd hav 2 lines?
 * Output : None
-* Function : .
+* Function : sets up the lcd display, clears it,
+	and sets cursor to (0,0).
 **********************************************/
 {
 	uint8_t dotsize = LCD_5x8DOTS;
@@ -401,9 +403,9 @@ void lcd_write_string(lcd *lcd_s, char *string)
 /*************** Mid level commands, for sending data/cmds ******************/
 void lcd_command(lcd *lcd_s, uint8_t value)
 /**********************************************
-* Input : Pointer to lcd, .
+* Input : Pointer to lcd, command to send .
 * Output : None.
-* Function : .
+* Function : sends a command to the LCD.
 **********************************************/
 {
 	lcd_send(lcd_s, value, 0);
@@ -411,9 +413,9 @@ void lcd_command(lcd *lcd_s, uint8_t value)
 
 void lcd_write(lcd *lcd_s, uint8_t value)
 /**********************************************
-* Input : Pointer to lcd, .
+* Input : Pointer to lcd, char to write .
 * Output : None.
-* Function : .
+* Function : writes a char to the display.
 **********************************************/
 {
 	lcd_send(lcd_s, value, 1);
@@ -435,7 +437,7 @@ void lcd_write_4_bits(lcd *lcd_s, uint8_t value)
 /**********************************************
 * Input : Pointer to lcd, .
 * Output : None.
-* Function :  .
+* Function : writes four bits to the display .
 **********************************************/
 {
 	for(INT8U i = 0; i < 4; i++)
@@ -452,7 +454,7 @@ void lcd_write_8_bits(lcd *lcd_s, uint8_t value)
 /**********************************************
 * Input : Pointer to lcd,
 * Output : None.
-* Function : .
+* Function : writes 8 bit to the display.
 **********************************************/
 {
 	for(INT8U i = 0; i < 8; i++)
