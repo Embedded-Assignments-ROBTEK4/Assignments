@@ -8,16 +8,9 @@ BUILDDIR=bin
 SOURCEDIR=sources
 
 #C source files
-SOURCES=main.c
-SOURCES+=startup_gcc.c
-SOURCES+=setup.c
-SOURCES+=ISR.c
-SOURCES+=globals.c
-SOURCES+=button_events.c
-SOURCES+=lcd.c
-SOURCES+=SWDelay.c
-SOURCES+=clock.c
-SOURCES+=display_clock.c
+SOURCES_=$(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
+
+SOURCES = $(SOURCES_:$(SOURCEDIR)/%=%) #Remove leading $(SOURCEDIR)/
 
 OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
 
