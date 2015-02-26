@@ -2,11 +2,11 @@
 * University of Southern Denmark
 * Embedded Programming (EMP)
 *
-* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Overeem
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
 * MODULENAME.: ISR.h
 *
-* PROJECT....: Assingment 2
+* PROJECT....: Assingment 3
 *
 * DESCRIPTION: Interrupt functions.
 * Change Log:
@@ -14,11 +14,9 @@
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    Syntax Fixed.
-*	150217 StefanRvo Changed to only use systick interrupt
-*
+* 150212  MS    			Syntax Fixed.
+*	150217  StefanRvo 	Changed to only use systick interrupt.
 *****************************************************************************/
-
 #ifndef _ISR_H
   #define _ISR_H
 
