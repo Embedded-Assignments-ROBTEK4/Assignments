@@ -427,7 +427,6 @@ void lcd_pulse_enable(lcd *lcd_s)
 * Function : Toggle enable pin.
 **********************************************/
 {
-	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
 	*(lcd_s->_rs_enable_port) |=  lcd_s->_enable_pin;
 	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
 }
