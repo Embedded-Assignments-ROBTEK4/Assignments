@@ -56,8 +56,8 @@ int main(void)
 	event sw2_event;
 
 	// Initiate LCD Display.
-	lcd lcd_disp = lcd_init_4bit(LCD_RS, LCD_E, (INT32U *)&LCD_RS_E_PORT, LCD_D4,
-															 LCD_D5, LCD_D6, LCD_D7, (INT32U *)&LCD_DATA_PORT);
+	lcd lcd_disp = lcd_init_4bit(LCD_RS, LCD_E, (volatile INT32U *)&LCD_RS_E_PORT, LCD_D4,
+															 LCD_D5, LCD_D6, LCD_D7, (volatile INT32U *)&LCD_DATA_PORT);
 	lcd_begin(&lcd_disp, 2);
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;

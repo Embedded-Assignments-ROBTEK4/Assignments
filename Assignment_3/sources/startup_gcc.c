@@ -40,8 +40,7 @@ static void IntDefaultHandler(void);
 // External declarations for the interrupt handlers used by the application.
 //
 //*****************************************************************************
-extern void sw1_isr();
-extern void systick_timer_isr();
+extern void systick_timer_isr(void);
 
 //*****************************************************************************
 //

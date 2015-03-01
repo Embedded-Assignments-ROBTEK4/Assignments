@@ -40,9 +40,13 @@ CFLAGS=-mthumb             	\
        -std=c99            	\
        -Wall               	\
        -Wextra             	\
-       -pedantic           	\
        -Wmissing-prototypes \
-       -Werror
+			 -Wshadow							\
+			 -Wpointer-arith			\
+			 -Wstrict-prototypes	\
+			 -Wcast-qual					\
+       -Werror							\
+       -pedantic           	\
 
 #
 # The flags passed to the assembler.
