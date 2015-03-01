@@ -31,7 +31,7 @@
 #define MS_CYCLES FCPU / 1000
 
 /*****************************   Functions   ********************************/
-void setup_delay(); // Setup the timer0 to be used in the delay functions.
+void setup_delay(void); // Setup the timer0 to be used in the delay functions.
 void delay_cycles(INT32U delay);
 void delay_microseconds(INT32U delayus); 
 void delay_milliseconds(INT32U delayms); 

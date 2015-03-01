@@ -34,10 +34,10 @@
 #endif
 
 /*****************************   Functions   ********************************/
-void setup_gpio();
-void setup_timers();
-void enable_global_int();
-void disable_global_int();
+void setup_gpio(void);
+void setup_timers(void);
+void enable_global_int(void);
+void disable_global_int(void);
 
 /****************************** End of module *******************************/
 #endif

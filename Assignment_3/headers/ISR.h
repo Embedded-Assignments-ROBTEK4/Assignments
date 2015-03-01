@@ -25,7 +25,7 @@
 #include "globals.h"
 
 /*****************************   Functions   ********************************/
-void systick_timer_isr();
+void systick_timer_isr(void);
 
 /****************************** End of module *******************************/
 #endif
