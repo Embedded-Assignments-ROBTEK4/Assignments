@@ -69,7 +69,8 @@
 #define LCD_5x10DOTS 		0x04
 #define LCD_5x8DOTS 		0x00
 
-//Line adress offsets
+//Line adress offsets. These can be found at http://www.vishay.com/docs/37314/lcd020n004l.pdf
+//Page 1.
 #define LINE0_OFFSET 0x00
 #define LINE1_OFFSET 0x40
 #define LINE2_OFFSET 0x14
