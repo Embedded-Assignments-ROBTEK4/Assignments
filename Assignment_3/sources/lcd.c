@@ -42,10 +42,10 @@
 #include "../headers/lcd.h"
 
 /*************************** Initialize Functions ***************************/
-lcd lcd_init(uint8_t fourbitmode, uint32_t rs, uint32_t enable, volatile uint32_t *	rs_enable_port,
-						 uint32_t d0, 				uint32_t d1, uint32_t d2, 		uint32_t d3,
-						 uint32_t d4, 				uint32_t d5, uint32_t d6, 		uint32_t d7,
-						 volatile uint32_t *data_port)
+lcd lcd_init(INT8U fourbitmode, INT32U rs, INT32U enable, volatile INT32U *	rs_enable_port,
+						 INT32U d0, 				INT32U d1, INT32U d2, 		INT32U d3,
+						 INT32U d4, 				INT32U d5, INT32U d6, 		INT32U d7,
+						 volatile INT32U *data_port)
 /*****************************************************
 * Input : mode. are we running 4 bit?,rs pin, 
 					enable pin ,port for rs_pin and enable_pin,
@@ -80,9 +80,9 @@ lcd lcd_init(uint8_t fourbitmode, uint32_t rs, uint32_t enable, volatile uint32_
 	return lcd_s;
 }
 
-lcd lcd_init_4bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_port,
-									uint32_t d0, uint32_t d1, 		uint32_t d2,
-									uint32_t d3, uint32_t volatile *data_port)
+lcd lcd_init_4bit(INT32U rs, INT32U enable, volatile INT32U *rs_enable_port,
+									INT32U d0, INT32U d1, 		INT32U d2,
+									INT32U d3, INT32U volatile *data_port)
 /**********************************************
 * Input : rs pin, enable pin ,port for rs_pin and enable_pin,
 * 				data0 pin, data1 pin ,data2 pin ,
@@ -94,10 +94,10 @@ lcd lcd_init_4bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_por
 	return lcd_init(1, rs, enable, rs_enable_port, d0, d1, d2, d3, 0, 0, 0, 0, data_port);
 }
 
-lcd lcd_init_8bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_port,
-								uint32_t d0, uint32_t d1, 		uint32_t d2,
-								uint32_t d3, uint32_t d4, 		uint32_t d5,
-								uint32_t d6, uint32_t d7,	 	  volatile uint32_t *data_port)
+lcd lcd_init_8bit(INT32U rs, INT32U enable, volatile INT32U *rs_enable_port,
+								INT32U d0, INT32U d1, 		INT32U d2,
+								INT32U d3, INT32U d4, 		INT32U d5,
+								INT32U d6, INT32U d7,	 	  volatile INT32U *data_port)
 /**********************************************
 * Input : rs pin, enable pin ,port for rs_pin and enable_pin,
 * 				data0 pin, data1 pin ,data2 pin ,
@@ -111,7 +111,7 @@ lcd lcd_init_8bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_por
 }
 
 /*****************************   Functions   ********************************/
-void lcd_begin(lcd *lcd_s, uint8_t lines)
+void lcd_begin(lcd *lcd_s, INT8U lines)
 /**********************************************
 * Input : Pointer to lcd, does the lcd hav 2 lines?
 * Output : None
@@ -119,7 +119,7 @@ void lcd_begin(lcd *lcd_s, uint8_t lines)
 	and sets cursor to (0,0).
 **********************************************/
 {
-	uint8_t dotsize = LCD_5x8DOTS;
+	INT8U dotsize = LCD_5x8DOTS;
 
 	if(lines > 1)
 		lcd_s->_displayfunction |= LCD_2LINE;
@@ -289,14 +289,14 @@ void lcd_no_cursor(lcd *lcd_s)
 	lcd_command(lcd_s, LCD_DISPLAYCONTROL | lcd_s->_displaycontrol);
 }
 
-void lcd_set_cursor(lcd *lcd_s, uint8_t col, uint8_t row)
+void lcd_set_cursor(lcd *lcd_s, INT8U col, INT8U row)
 /**********************************************
 * Input : Pointer to lcd, column position, row position.
 * Output : None.
 * Function : Set cursor to input location.
 **********************************************/
 {
-	uint8_t row_offsets[] = {0x00, 0x40, 0x14, 0x54};
+	INT8U row_offsets[] = {LINE0_OFFSET, LINE1_OFFSET, LINE2_OFFSET, LINE3_OFFSET};
 	if(row > lcd_s->_numlines) {
 		 row = lcd_s->_numlines-1;    // We count rows starting w/0.
 	}
@@ -368,7 +368,7 @@ void lcd_right_to_left(lcd *lcd_s)
 	lcd_command(lcd_s, LCD_ENTRYMODESET | lcd_s->_displaymode);
 }
 
-void lcd_create_char(lcd *lcd_s, uint8_t location, uint8_t charmap[])
+void lcd_create_char(lcd *lcd_s, INT8U location, INT8U charmap[])
 /**********************************************
 * Input : Pointer to lcd, location col/row, desired char.
 * Output : None.
@@ -401,7 +401,7 @@ void lcd_write_string(lcd *lcd_s, char *string)
 }
 
 /*************** Mid level commands, for sending data/cmds ******************/
-void lcd_command(lcd *lcd_s, uint8_t value)
+void lcd_command(lcd *lcd_s, INT8U value)
 /**********************************************
 * Input : Pointer to lcd, command to send .
 * Output : None.
@@ -411,7 +411,7 @@ void lcd_command(lcd *lcd_s, uint8_t value)
 	lcd_send(lcd_s, value, 0);
 }
 
-void lcd_write(lcd *lcd_s, uint8_t value)
+void lcd_write(lcd *lcd_s, INT8U value)
 /**********************************************
 * Input : Pointer to lcd, char to write .
 * Output : None.
@@ -433,7 +433,7 @@ void lcd_pulse_enable(lcd *lcd_s)
 	*(lcd_s->_rs_enable_port) &= ~lcd_s->_enable_pin;
 }
 
-void lcd_write_4_bits(lcd *lcd_s, uint8_t value)
+void lcd_write_4_bits(lcd *lcd_s, INT8U value)
 /**********************************************
 * Input : Pointer to lcd, .
 * Output : None.
@@ -450,7 +450,7 @@ void lcd_write_4_bits(lcd *lcd_s, uint8_t value)
 	lcd_pulse_enable(lcd_s);
 }
 
-void lcd_write_8_bits(lcd *lcd_s, uint8_t value)
+void lcd_write_8_bits(lcd *lcd_s, INT8U value)
 /**********************************************
 * Input : Pointer to lcd,
 * Output : None.
@@ -468,7 +468,7 @@ void lcd_write_8_bits(lcd *lcd_s, uint8_t value)
 	lcd_pulse_enable(lcd_s);
 }
 
-void lcd_send(lcd *lcd_s, uint8_t value, uint8_t mode)
+void lcd_send(lcd *lcd_s, INT8U value, INT8U mode)
 /**********************************************
 * Input : Pointer to lcd, , .
 * Output : None.

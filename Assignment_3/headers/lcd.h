@@ -69,36 +69,43 @@
 #define LCD_5x10DOTS 		0x04
 #define LCD_5x8DOTS 		0x00
 
+//Line adress offsets
+#define LINE0_OFFSET 0x00
+#define LINE1_OFFSET 0x40
+#define LINE2_OFFSET 0x14
+#define LINE3_OFFSET 0x54
+
 /*******************************   Structs    *******************************/
 typedef struct {
-  uint32_t _rs_pin; // LOW: command.  HIGH: character.
-  uint32_t _enable_pin; // Activated by a HIGH pulse.
-  volatile uint32_t *_rs_enable_port;
-  uint32_t _data_pins[8];
-  volatile uint32_t *_data_port;
-  uint8_t _displayfunction;
-  uint8_t _displaycontrol;
-  uint8_t _displaymode;
-  uint8_t _initialized;
-  uint8_t _numlines,_currline;
+  INT32U _rs_pin; // LOW: command.  HIGH: character.
+  INT32U _enable_pin; // Activated by a HIGH pulse.
+  volatile INT32U *_rs_enable_port;
+  INT32U _data_pins[8];
+  volatile INT32U *_data_port;
+  INT8U _displayfunction;
+  INT8U _displaycontrol;
+  INT8U _displaymode;
+  INT8U _initialized;
+  INT8U _numlines;
+  INT8U _currline;
   } lcd;
 
 /*************************** Initialize Functions ***************************/
-lcd lcd_init(uint8_t fourbitmode, 		 uint32_t rs, uint32_t enable, volatile uint32_t *	rs_enable_port,
-						 uint32_t d0, 						 uint32_t d1, uint32_t d2, 		 uint32_t d3,
-						 uint32_t d4, uint32_t d5, uint32_t d6, uint32_t d7, 		 volatile uint32_t *data_port);
+lcd lcd_init(INT8U fourbitmode, 		 INT32U rs, INT32U enable, volatile INT32U *	rs_enable_port,
+						 INT32U d0, 						 INT32U d1, INT32U d2, 		 INT32U d3,
+						 INT32U d4, INT32U d5, INT32U d6, INT32U d7, 		 volatile INT32U *data_port);
 
-lcd lcd_init_4bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_port,
-									uint32_t d0, uint32_t d1, 		uint32_t d2,
-									uint32_t d3, uint32_t volatile *data_port);
+lcd lcd_init_4bit(INT32U rs, INT32U enable, volatile INT32U *rs_enable_port,
+									INT32U d0, INT32U d1, 		INT32U d2,
+									INT32U d3, INT32U volatile *data_port);
 
-lcd lcd_init_8bit(uint32_t rs, uint32_t enable, volatile uint32_t *rs_enable_port,
-									uint32_t d0, uint32_t d1, 		uint32_t d2, uint32_t d3,
-									uint32_t d4, uint32_t d5, 		uint32_t d6, uint32_t d7,
-									volatile uint32_t *data_port);
+lcd lcd_init_8bit(INT32U rs, INT32U enable, volatile INT32U *rs_enable_port,
+									INT32U d0, INT32U d1, 		INT32U d2, INT32U d3,
+									INT32U d4, INT32U d5, 		INT32U d6, INT32U d7,
+									volatile INT32U *data_port);
 
 /*****************************   Functions   ********************************/
-void lcd_begin(lcd *lcd_s, uint8_t lines);
+void lcd_begin(lcd *lcd_s, INT8U lines);
 void lcd_home(lcd *lcd_s); 	// This takes a long time. Needs 1,6 ms before next command.
 void lcd_clear(lcd *lcd_s); // This takes a long time. Needs 1,6 ms before next command.
 
@@ -110,7 +117,7 @@ void lcd_no_blink(lcd *lcd_s);
 
 void lcd_cursor(lcd *lcd_s);
 void lcd_no_cursor(lcd *lcd_s);
-void lcd_set_cursor(lcd *lcd_s, uint8_t col, uint8_t row);
+void lcd_set_cursor(lcd *lcd_s, INT8U col, INT8U row);
 
 void lcd_autoscroll(lcd *lcd_s);
 void lcd_no_autoscroll(lcd *lcd_s);
@@ -120,15 +127,15 @@ void lcd_scroll_display_right(lcd *lcd_s);
 void lcd_left_to_right(lcd *lcd_s);
 void lcd_right_to_left(lcd *lcd_s);
 
-void lcd_write(lcd *lcd_s, uint8_t value);
-void lcd_write_4_bits(lcd *lcd_s, uint8_t value);
-void lcd_write_8_bits(lcd *lcd_s, uint8_t value);
+void lcd_write(lcd *lcd_s, INT8U value);
+void lcd_write_4_bits(lcd *lcd_s, INT8U value);
+void lcd_write_8_bits(lcd *lcd_s, INT8U value);
 void lcd_write_string(lcd *lcd_s, char *string);
 
-void lcd_create_char(lcd *lcd_s, uint8_t location, uint8_t charmap[]);
+void lcd_create_char(lcd *lcd_s, INT8U location, INT8U charmap[]);
 
-void lcd_send(lcd *lcd_s, uint8_t value, uint8_t mode);
-void lcd_command(lcd *lcd_s, uint8_t value);
+void lcd_send(lcd *lcd_s, INT8U value, INT8U mode);
+void lcd_command(lcd *lcd_s, INT8U value);
 
 void lcd_pulse_enable(lcd *lcd_s);
 
