@@ -32,6 +32,7 @@
 #include "../headers/systick.h"
 #include "../headers/ringbuffer.h"
 #include "../headers/UART.h"
+#include "../headers/print.h"
 
 /*****************************    Defines    ********************************/
 #define STATUS_BLINK_TIME 500 // Blink time for status led in ms.
@@ -67,7 +68,7 @@ int main(void)
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
 	INT8U chars[100];
-	INT16U recieved = 0;
+	INT16U i = 0;
 
 	while(1)
 	{
@@ -94,9 +95,14 @@ int main(void)
 		while(uart0_data_avaliable())
 		{
 			INT8U outchar = uart0_in_char();
-			*(chars+(recieved++)) = outchar;
-			uart0_send_char(outchar);
-			if(recieved>99) recieved=0;
+			*(chars+(i++)) = outchar;
+			
+			if(i == 10) 
+			{
+				chars[i] = 0;
+				vprintf_(&uart0_out_string, chars);
+				i=0;
+			}
 		}
 	}
 	return (0);

@@ -16,7 +16,7 @@ void uart0_out_string(unsigned char *string)
 	INT16U index = 0;
 	while(string[index])
 	{
-		uart0_send_char(string[index]);
+		uart0_out_char(string[index++]);
 	}
 }
 
@@ -30,7 +30,7 @@ unsigned char uart0_in_char(void){
   return sys_ringbuf_uchar_pop(buffer_in);
 }
 
-void uart0_send_char(unsigned char data){
+void uart0_out_char(unsigned char data){
 	if(!(UART0_FR_R & UART_FR_TXFF) && sys_ringbuf_uchar_size(buffer_out) == 0)  //check if transmit fifo is full, if not, and buffer is empty, just push to FIFO
 	  UART0_DR_R = data;
 	else	
@@ -87,17 +87,16 @@ void setup_uart0(void){
 
 void uart0_isr(void)
 {
-	GPIO_PORTF_DATA_R |= LED_GREEN;
 	//check if we have been interrupted for recieve or transmit
 	if(UART0_MIS_R & UART_MIS_TXMIS)
 		uart0_tx_isr();
 	if (UART0_MIS_R & UART_MIS_RXMIS)
 		uart0_rx_isr();
-		GPIO_PORTF_DATA_R &= ~LED_GREEN;
 }
 
 static void uart0_tx_isr(void)
 {
+	GPIO_PORTF_DATA_R |= LED_GREEN;
 	//fill FIFO from ringbuffer
 	while( (!(UART0_FR_R & UART_FR_TXFF)) && sys_ringbuf_uchar_size(buffer_out)) //while not full and buffer not empty
 	{
@@ -105,10 +104,13 @@ static void uart0_tx_isr(void)
 	}
 	//clear interrupt
 	UART0_ICR_R |= UART_ICR_TXIC;
+	
+	GPIO_PORTF_DATA_R &= ~LED_GREEN;
 }
 
 static void uart0_rx_isr(void)
 {
+		GPIO_PORTF_DATA_R |= LED_RED;
 	//fill ringbuffer from FIFO
 	INT8U inchar;
 	while( !(UART0_FR_R & UART_FR_RXFE) ) //while FIFO not empty.
@@ -119,4 +121,5 @@ static void uart0_rx_isr(void)
 			sys_ringbuf_uchar_push(buffer_in, inchar);
 		}
 	}
+			GPIO_PORTF_DATA_R &= ~LED_RED;
 }

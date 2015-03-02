@@ -53,7 +53,7 @@
 
 void uart0_out_string(unsigned char *string);
 unsigned char uart0_in_char(void);
-void uart0_send_char(unsigned char data);
+void uart0_out_char(unsigned char data);
 INT8U uart0_data_avaliable(void);
 void setup_uart0(void);
 void uart0_isr(void);
