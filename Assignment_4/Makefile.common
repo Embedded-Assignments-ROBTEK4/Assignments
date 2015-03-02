@@ -1,0 +1,118 @@
+#Define project name
+PROJECT=LCD_CLOCK_UART
+
+LDFILE=Linker.ld
+
+#Define BUILDDIR
+BUILDDIR=bin
+SOURCEDIR=sources
+
+#C source files
+SOURCES_=$(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
+
+SOURCES = $(SOURCES_:$(SOURCEDIR)/%=%) #Remove leading $(SOURCEDIR)/
+
+OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
+
+
+#define linkerfile and ENTRY
+SCATTERgcc_${PROJECT}=$(LDFILE)
+ENTRY_${PROJECT}=ResetISR
+
+#Define linker, archiver, etc. Compiler is defined in main makefile
+PREFIX=arm-none-eabi-
+AR=${PREFIX}ar
+LD=${PREFIX}ld
+OBJCOPY=${PREFIX}objcopy
+
+#define CPU and FPU
+CPU=-mcpu=cortex-m4
+FPU=-mfpu=fpv4-sp-d16 -mfloat-abi=hard
+
+#
+# The flags passed to the compiler.
+#
+CFLAGS=-mthumb             	\
+       ${CPU}              	\
+       ${FPU}              	\
+       -ffunction-sections 	\
+       -fdata-sections     	\
+       -std=c99            	\
+       -Wall               	\
+       -Wextra             	\
+       -Wmissing-prototypes \
+			 -Wshadow							\
+			 -Wpointer-arith			\
+			 -Wstrict-prototypes	\
+			 -Wcast-qual					\
+			 -Wno-keyword-macro		\
+       -Werror							\
+       -pedantic           	\
+#
+# The flags passed to the assembler.
+#
+AFLAGS=-mthumb \
+       ${CPU}  \
+       ${FPU}  \
+       -MD
+
+LDFLAGS=--gc-sections
+
+
+all: ${BUILDDIR}
+all: ${PROJECT}.bin
+
+.PHONY: clean
+clean:
+	rm -rf ${BUILDDIR}
+	rm -rf ${PROJECT}.bin
+
+
+flash: all
+	echo "Flashing chip"
+	sudo lm4flash ${PROJECT}.bin
+
+# pull in dependency info for *existing* .o files
+-include $(OBJECTS:.o=.d)
+
+${BUILDDIR}:
+	mkdir ${BUILDDIR} -p
+
+${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
+	@${CC} ${CFLAGS} -c $< -o $@
+	@echo "CC $@"
+#create dependency file to detect changes in header
+#http://scottmcpeak.com/autodepend/autodepend.html is used as reference
+
+	@${CC} -MM $(CFLAGS) $< > ${@:.o=.d}
+	@mv -f ${@:.o=.d} ${@:.o=.d.tmp}
+	@sed -e 's|.*:|$@:|' < ${@:.o=.d.tmp} > ${@:.o=.d}
+	@sed -e 's/.*://' -e 's/\\$$//' < ${@:.o=.d.tmp} | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> ${@:.o=.d}
+	@rm -f ${@:.o=.d.tmp}
+
+${BUILDDIR}/%.o: ${SOURCEDIR}/%.S
+	@${CC} ${AFLAGS} -c $< -o $@
+	@echo "CC $@"
+	
+${BUILDDIR}/%.a:
+	@${AR} -cr ${@} ${^}
+	@echo "CC ${@}"
+
+${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} $(LDFILE)
+	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
+	@echo "LD ${@}"
+	
+${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
+	@${OBJCOPY} -O binary ${<} ${@}
+	@echo "OBJCOPY ${@}"
+
+
+projectname:
+	@echo "$(PROJECT)"	
+debug: clean
+debug: CFLAGS+=-g -D DEBUG
+debug: all
+debug:
+	@echo "Starting debugger. This may take a while"
+	sudo ./debug_nemiver.sh
