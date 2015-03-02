@@ -45,9 +45,9 @@ CFLAGS=-mthumb             	\
 			 -Wpointer-arith			\
 			 -Wstrict-prototypes	\
 			 -Wcast-qual					\
+			 -Wno-keyword-macro		\
        -Werror							\
        -pedantic           	\
-
 #
 # The flags passed to the assembler.
 #
@@ -106,3 +106,13 @@ ${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} $(LDFILE)
 ${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
 	@${OBJCOPY} -O binary ${<} ${@}
 	@echo "OBJCOPY ${@}"
+
+
+projectname:
+	@echo "$(PROJECT)"	
+debug: clean
+debug: CFLAGS+=-g -D DEBUG
+debug: all
+debug:
+	@echo "Starting debugger. This may take a while"
+	sudo ./debug_nemiver.sh

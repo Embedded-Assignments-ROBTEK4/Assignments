@@ -26,7 +26,7 @@ You first need to install lm4flash
 `sudo cp lm4flash /usr/bin/`
 
 
-You then need no install OpenOCD with ICDI support
+You then need to install OpenOCD with ICDI support (for debugging)
 
 
 `git clone git://git.code.sf.net/p/openocd/code`
@@ -45,3 +45,7 @@ You then need no install OpenOCD with ICDI support
 
 
 `sudo make install`
+
+Install nmiver to get a graphical debugger
+
+`sudo apt-get install nemiver`

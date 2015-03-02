@@ -6,7 +6,7 @@
 include  Makefile.common
 
 #define compiler
-COMPILER=clang-3.5
+COMPILER=clang-3.6
 CC=${COMPILER}
 
 
