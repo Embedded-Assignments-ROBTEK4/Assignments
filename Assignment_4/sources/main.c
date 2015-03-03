@@ -67,13 +67,11 @@ int main(void)
 	lcd_begin(&lcd_disp, 2);
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
-	INT8U chars[100];
-	INT16U i = 0;
-
+	//INT16U i = 0;
 	while(1)
 	{
-		while(!ticks);
-		ticks--;
+		//while(!ticks);
+		//ticks--;
 
 		/************ Start Status LED  ************/
 		if(led_status_timer > 0)
@@ -92,18 +90,8 @@ int main(void)
 		time time_s = clock(sw1_event, sw2_event);
 		display_clock(&lcd_disp, &time_s);*/
 		//lcd_clear(&lcd_disp);
-		while(uart0_data_avaliable())
-		{
-			INT8U outchar = uart0_in_char();
-			*(chars+(i++)) = outchar;
-			
-			if(i == 10) 
-			{
-				chars[i] = 0;
-				vprintf_(&uart0_out_string, chars);
-				i=0;
-			}
-		}
+		
+		vprintf_(uart0_out_string, "test: %d@\n", 345678 );
 	}
 	return (0);
 }

@@ -33,6 +33,7 @@
 #include "emp_type.h"
 #include "ringbuffer.h"
 #include "GLOBAL_DEFINITIONS.h"
+#include <string.h>
 // standard ASCII symbols
 #define CR   0x0D
 #define LF   0x0A
@@ -51,11 +52,13 @@
 // Input: none
 // Output: ASCII code for key typed
 
-void uart0_out_string(unsigned char *string);
-unsigned char uart0_in_char(void);
-void uart0_out_char(unsigned char data);
-INT8U uart0_data_avaliable(void);
+void uart0_out_string(char *string);
+char uart0_in_char(void);
+void uart0_out_char(char data);
+RBUF_INDEX_TYPE uart0_data_avaliable(void);
 void setup_uart0(void);
 void uart0_isr(void);
+void uart0_in_clear(void);
+void uart0_out_clear(void);
 
 #endif

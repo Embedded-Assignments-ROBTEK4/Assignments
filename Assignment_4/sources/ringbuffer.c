@@ -49,9 +49,15 @@ bool sys_ringbuf_uchar_full(INT8U id)
 	return 	ringbuffer_uchar_full(&system_buffers[id]);
 }
 
-INT8U sys_ringbuf_uchar_size(INT8U id)
+
+RBUF_INDEX_TYPE sys_ringbuf_uchar_size(INT8U id)
 {
 	return system_buffers[id].size;
+}
+
+RBUF_INDEX_TYPE sys_ringbuf_uchar_max(INT8U id)
+{
+	return system_buffers[id].max;
 }
 INT8U ringbuffer_uchar_pop(ringbuffer_uchar *buffer)
 {

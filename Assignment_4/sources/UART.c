@@ -11,7 +11,7 @@ INT8U buffer_out;
 // Input: none
 // Output: ASCII code for key typed
 
-void uart0_out_string(unsigned char *string)
+void uart0_out_string(char *string)
 {
 	INT16U index = 0;
 	while(string[index])
@@ -20,7 +20,19 @@ void uart0_out_string(unsigned char *string)
 	}
 }
 
-unsigned char uart0_in_char(void){
+void uart0_in_clear(void)
+{
+	sys_ringbuf_uchar_release(buffer_in);
+	buffer_in = sys_ringbuf_uchar_request();
+}
+
+void uart0_out_clear(void)
+{
+	sys_ringbuf_uchar_release(buffer_out);
+	buffer_out = sys_ringbuf_uchar_request();
+}
+
+char uart0_in_char(void){
   while(uart0_data_avaliable() == 0 && (UART0_FR_R & UART_FR_RXFE)); //wait while both ringbuffer and FIFO is empty
 	
 	//Fill ringbuffer from fifo if avaliable
@@ -30,7 +42,7 @@ unsigned char uart0_in_char(void){
   return sys_ringbuf_uchar_pop(buffer_in);
 }
 
-void uart0_out_char(unsigned char data){
+void uart0_out_char(char data){
 	if(!(UART0_FR_R & UART_FR_TXFF) && sys_ringbuf_uchar_size(buffer_out) == 0)  //check if transmit fifo is full, if not, and buffer is empty, just push to FIFO
 	  UART0_DR_R = data;
 	else	
@@ -42,7 +54,7 @@ void uart0_out_char(unsigned char data){
   
 }
 
-INT8U uart0_data_avaliable(void)
+RBUF_INDEX_TYPE uart0_data_avaliable(void)
 {
 	//Fill ringbuffer from fifo if avaliable
 	if ( !(UART0_FR_R & UART_FR_RXFE))

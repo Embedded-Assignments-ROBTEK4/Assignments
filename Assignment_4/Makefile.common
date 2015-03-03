@@ -6,13 +6,17 @@ LDFILE=Linker.ld
 #Define BUILDDIR
 BUILDDIR=bin
 SOURCEDIR=sources
+ASSEMBLYDIR=assembly/sources
 
 #C source files
 SOURCES_=$(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
+SOURCES__=$(wildcard $(ASSEMBLYDIR)/*.S) #Grab all .S files in assemblydir dir
 
 SOURCES = $(SOURCES_:$(SOURCEDIR)/%=%) #Remove leading $(SOURCEDIR)/
+SOURCES += $(SOURCES__:$(ASSEMBLYDIR)/%=%) #Remove leading $(ASSEMBLYDIR)/
 
-OBJECTS=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
+OBJECTS_=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
+OBJECTS = $(OBJECTS_:.S=.o)
 
 
 #define linkerfile and ENTRY
@@ -23,6 +27,7 @@ ENTRY_${PROJECT}=ResetISR
 PREFIX=arm-none-eabi-
 AR=${PREFIX}ar
 LD=${PREFIX}ld
+AS=${PREFIX}gcc
 OBJCOPY=${PREFIX}objcopy
 
 #define CPU and FPU
@@ -48,6 +53,8 @@ CFLAGS=-mthumb             	\
 			 -Wno-keyword-macro		\
        -Werror							\
        -pedantic           	\
+
+       
 #
 # The flags passed to the assembler.
 #
@@ -91,8 +98,8 @@ ${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
 	  sed -e 's/^ *//' -e 's/$$/:/' >> ${@:.o=.d}
 	@rm -f ${@:.o=.d.tmp}
 
-${BUILDDIR}/%.o: ${SOURCEDIR}/%.S
-	@${CC} ${AFLAGS} -c $< -o $@
+${BUILDDIR}/%.o: ${ASSEMBLYDIR}/%.S
+	@${AS} ${AFLAGS} -c $< -o $@
 	@echo "CC $@"
 	
 ${BUILDDIR}/%.a:
