@@ -90,7 +90,7 @@ void setup_uart0(void){
   GPIO_PORTA_DEN_R |= 0x01 | 0x02;             // enable digital I/O on PA1-0
                                         
                                         // configure PA1-0 as UART
-  GPIO_PORTA_PCTL_R = (GPIO_PORTA_PCTL_R & ~(GPIO_PCTL_PA0_M | GPIO_PCTL_PA0_M)) |
+  GPIO_PORTA_PCTL_R = (GPIO_PORTA_PCTL_R & ~(GPIO_PCTL_PA0_M | GPIO_PCTL_PA1_M)) |
   										GPIO_PCTL_PA0_U0RX | GPIO_PCTL_PA1_U0TX;
   	
   GPIO_PORTA_AMSEL_R &= ~(0x01 | 0x02);          // disable analog functionality on PA
