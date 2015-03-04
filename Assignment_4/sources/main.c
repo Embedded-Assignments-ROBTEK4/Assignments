@@ -95,7 +95,8 @@ int main(void)
 		/*sw1_event 	= get_button_event(&sw1);
 		sw2_event 	= get_button_event(&sw2);
 		time time_s = clock(sw1_event, sw2_event); */
-		vprintf_(uart0_out_string, "A1:%x\nA2:%x\n",tmp2, tmp);
+		INT32U tmp2 = 2;
+		vprintf_(uart0_out_string, 200, "A1:%d\n",(unsigned int)tmp2);
 		//delay_milliseconds(500);
 	}
 	return (0);

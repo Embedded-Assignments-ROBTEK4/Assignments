@@ -1,15 +1,17 @@
 #include "../headers/print.h"
 
-int vprintf_(void (*destfunc)(char *), char *string, ...)
+int vprintf_(void (*destfunc)(char *), size_t max_size, char *string, ...)
 {	//subset of vprintf. Only implents integers. Not threadsafe
 	
-	static char outstring[MAX_LINE_LENGHT]; //Max at this. To bad if not enough.
+	char *outstring = malloc(sizeof(char)*max_size); //Max at this. To bad if not enough.
+	if(outstring ==NULL) return 0; //check for error in allocation
+	
 	INT16U outstring_index = 0;
 	INT16U instring_index = 0;
 	va_list args;
 	va_start(args, string);
 	
-	while(string[instring_index]) //loop through whole string
+	while(string[instring_index] && instring_index < MAX_LINE_LENGHT-1) //loop through whole string
 	{
 		if( string[instring_index] == '%' ) //If we reach an %, switch on next char
 		{
@@ -80,7 +82,7 @@ int vprintf_(void (*destfunc)(char *), char *string, ...)
 	
 	outstring[outstring_index] = 0;
 	destfunc(outstring);
-	
+	free(outstring);
 	return 0;
 }
 
