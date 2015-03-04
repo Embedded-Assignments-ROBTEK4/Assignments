@@ -2,7 +2,8 @@
 
 int vprintf_(void (*destfunc)(char *), char *string, ...)
 {	//subset of vprintf. Only implents integers. Not threadsafe
-	static char outstring[MAX_LINE_LENGHT]; //Max at 4K. To bad if not enough.
+	
+	static char outstring[MAX_LINE_LENGHT]; //Max at this. To bad if not enough.
 	INT16U outstring_index = 0;
 	INT16U instring_index = 0;
 	va_list args;

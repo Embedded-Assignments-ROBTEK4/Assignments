@@ -296,10 +296,13 @@ void lcd_set_cursor(lcd *lcd_s, INT8U col, INT8U row)
 * Function : Set cursor to input location.
 **********************************************/
 {
+	row %= lcd_s->_numlines;
 	INT8U row_offsets[] = {LINE0_OFFSET, LINE1_OFFSET, LINE2_OFFSET, LINE3_OFFSET};
 	if(row > lcd_s->_numlines) {
 		 row = lcd_s->_numlines-1;    // We count rows starting w/0.
 	}
+	
+	lcd_s->_currline = row;
 
 	lcd_command(lcd_s, LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
@@ -418,7 +421,8 @@ void lcd_write(lcd *lcd_s, INT8U value)
 * Function : writes a char to the display.
 **********************************************/
 {
-	lcd_send(lcd_s, value, 1);
+	if(value == '\n') lcd_set_cursor(lcd_s, 0, lcd_s->_currline+1);
+	else lcd_send(lcd_s, value, 1);
 }
 
 /****************** Low level commands, for pushing data ********************/

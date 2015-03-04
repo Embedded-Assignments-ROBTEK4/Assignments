@@ -53,6 +53,15 @@ void uart0_out_char(char data){
 	}
   
 }
+RBUF_INDEX_TYPE uart0_in_space_left(void)
+{
+	return sys_ringbuf_uchar_max(buffer_in) - sys_ringbuf_uchar_size(buffer_in);
+}
+
+RBUF_INDEX_TYPE uart0_out_space_left(void)
+{
+	return sys_ringbuf_uchar_max(buffer_out) - sys_ringbuf_uchar_size(buffer_out);
+}
 
 RBUF_INDEX_TYPE uart0_data_avaliable(void)
 {
@@ -69,6 +78,8 @@ void setup_uart0(void){
 	buffer_out = sys_ringbuf_uchar_request();
   SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART0; // activate UART0
   SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOA; // activate port A
+  __asm__("NOP");
+  __asm__("NOP");
   UART0_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
   UART0_IBRD_R = IBRD;                    
   UART0_FBRD_R = FBRD;                 

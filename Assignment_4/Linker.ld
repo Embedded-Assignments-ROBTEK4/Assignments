@@ -67,6 +67,8 @@ MEMORY
  */
 ENTRY(Reset_Handler)
 
+heap_size = 0x6000;
+
 SECTIONS
 {
 	.text :
@@ -192,7 +194,9 @@ SECTIONS
 		__end__ = .;
 		PROVIDE(end = .);
 		*(.heap*)
+		. = ORIGIN(RAM) + LENGTH(RAM) ;
 		__HeapLimit = .;
+		PROVIDE(HeapLimit = .);
 	} > RAM
 
 	/* .stack_dummy section doesn't contains any symbols. It is only

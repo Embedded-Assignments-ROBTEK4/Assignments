@@ -3,6 +3,8 @@ PROJECT=LCD_CLOCK_UART
 
 LDFILE=Linker.ld
 
+MAPFILE=MAP.txt
+
 #Define BUILDDIR
 BUILDDIR=bin
 SOURCEDIR=sources
@@ -53,26 +55,36 @@ CFLAGS=-mthumb             	\
 			 -Wno-keyword-macro		\
        -Werror							\
        -pedantic           	\
+     
+     
+#
+# Add optimisation arguments
+#
+CFLAGS+=${OPTS}
 
        
 #
 # The flags passed to the assembler.
 #
+
+
 AFLAGS=-mthumb \
        ${CPU}  \
        ${FPU}  \
        -MD
 
-LDFLAGS=--gc-sections
-
+LDFLAGS=--gc-sections -Map ${MAPFILE}
 
 all: ${BUILDDIR}
 all: ${PROJECT}.bin
+
+
 
 .PHONY: clean
 clean:
 	rm -rf ${BUILDDIR}
 	rm -rf ${PROJECT}.bin
+	rm -rf ${MAPFILE}
 
 
 flash: all
@@ -106,8 +118,8 @@ ${BUILDDIR}/%.a:
 	@${AR} -cr ${@} ${^}
 	@echo "CC ${@}"
 
-${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} $(LDFILE)
-	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) '${LIBM}' '${LIBC}' '${LIBGCC}'
+${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${LDFILE}
+	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LIBM} ${LIBC} ${LIBGCC}
 	@echo "LD ${@}"
 	
 ${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf

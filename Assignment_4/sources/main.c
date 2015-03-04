@@ -21,6 +21,7 @@
 
 /***************************** Include files ********************************/
 #include <stdint.h>
+#include <stdlib.h>
 #include "../headers/setup.h"
 #include "../headers/tm4c123gh6pm.h"
 #include "../headers/GLOBAL_DEFINITIONS.h"
@@ -33,12 +34,19 @@
 #include "../headers/ringbuffer.h"
 #include "../headers/UART.h"
 #include "../headers/print.h"
+#include "../headers/syscalls.h"
 
 /*****************************    Defines    ********************************/
 #define STATUS_BLINK_TIME 500 // Blink time for status led in ms.
 
 /*****************************   Functions   ********************************/
+lcd lcd_disp;
+void lcd0_out_string(char* string);
 
+void lcd0_out_string(char* string)
+{
+	lcd_write_string(&lcd_disp, string);
+}
 int main(void)
 /**********************************************
 * Input : None.
@@ -62,12 +70,11 @@ int main(void)
 	event sw2_event;*/
 
 	// Initiate LCD Display.
-	lcd lcd_disp = lcd_init_4bit(LCD_RS, LCD_E, (volatile INT32U *)&LCD_RS_E_PORT, LCD_D4,
+	lcd_disp = lcd_init_4bit(LCD_RS, LCD_E, (volatile INT32U *)&LCD_RS_E_PORT, LCD_D4,
 															 LCD_D5, LCD_D6, LCD_D7, (volatile INT32U *)&LCD_DATA_PORT);
 	lcd_begin(&lcd_disp, 2);
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
-	//INT16U i = 0;
 	while(1)
 	{
 		//while(!ticks);
@@ -87,13 +94,10 @@ int main(void)
 		// Tasks.
 		/*sw1_event 	= get_button_event(&sw1);
 		sw2_event 	= get_button_event(&sw2);
-		time time_s = clock(sw1_event, sw2_event);
-		display_clock(&lcd_disp, &time_s);*/
-		//lcd_clear(&lcd_disp);
-		
-		vprintf_(uart0_out_string, "test: %d@\n", 345678 );
+		time time_s = clock(sw1_event, sw2_event); */
+		vprintf_(uart0_out_string, "A1:%x\nA2:%x\n",tmp2, tmp);
+		//delay_milliseconds(500);
 	}
 	return (0);
 }
-
 /****************************** End of module *******************************/

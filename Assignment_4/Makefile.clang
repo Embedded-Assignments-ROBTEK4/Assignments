@@ -8,16 +8,14 @@ include  Makefile.common
 #define compiler
 COMPILER=clang-3.6
 CC=${COMPILER}
+#Locate gcc libraries
+
+#don't define libs, they don't link correctly with clang.
+#If the binary don't compile without them, you should use gcc instead
 
 
+INCLUDES=-I/usr/arm-none-eabi/include/
 #add target to clang flags, and gcc include folder
 CFLAGS+= -target arm-none-eabi \
          -I/usr/arm-none-eabi/include/
-
-
-#Locate gcc libraries
-INCLUDES=-I/usr/arm-none-eabi/include/
-LIBGCC=${shell ${PREFIX}gcc  -print-libgcc-file-name}
-LIBC=${shell ${PREFIX}gcc  -print-file-name=libc.a}
-LIBM=${shell ${PREFIX}gcc  -print-file-name=libm.a}
 
