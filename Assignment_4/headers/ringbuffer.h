@@ -1,6 +1,7 @@
 #include "emp_type.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include "mutex.h"
 
 #ifndef _RINGBUFFER_H_
 #define _RINGBUFFER_H_
@@ -24,23 +25,8 @@ typedef struct
 	RBUF_INDEX_TYPE tail;
 	RBUF_INDEX_TYPE size;
 	INT8U buffer[BUFFER_SIZE];
+	mutex_t mutex;
 } ringbuffer_uchar;
-
-INT8U sys_ringbuf_uchar_pop(INT8U id);
-
-void sys_ringbuf_uchar_push(INT8U id, INT8U val);
-
-void sys_ringbuf_uchar_init(void);
-
-INT8U sys_ringbuf_uchar_request(void); //id 0xFF is none allocated
-
-
-void sys_ringbuf_uchar_release(INT8U id);
-
-bool sys_ringbuf_uchar_full(INT8U id);
-
-RBUF_INDEX_TYPE sys_ringbuf_uchar_size(INT8U id);
-RBUF_INDEX_TYPE sys_ringbuf_uchar_max(INT8U id);
 
 INT8U ringbuffer_uchar_pop(ringbuffer_uchar *buffer);
 

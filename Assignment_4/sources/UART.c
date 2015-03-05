@@ -1,5 +1,4 @@
 #include "../headers/UART.h"
-
 static void uart0_tx_isr(void);
 static void uart0_rx_isr(void);
 

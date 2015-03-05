@@ -30,7 +30,7 @@
 #include "../headers/clock.h"
 #include "../headers/display_clock.h"
 #include "../headers/systick.h"
-#include "../headers/ringbuffer.h"
+#include "../headers/system_buffers.h"
 #include "../headers/UART.h"
 #include "../headers/clock_uart0_controller.h"
 

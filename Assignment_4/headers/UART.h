@@ -31,7 +31,7 @@
 
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
-#include "ringbuffer.h"
+#include "system_buffers.h"
 #include "GLOBAL_DEFINITIONS.h"
 #include <string.h>
 // standard ASCII symbols
