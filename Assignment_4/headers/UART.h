@@ -47,10 +47,7 @@
 #define IBRD (BRD_BASE / 64)
 #define FBRD BRD_BASE - IBRD * 64
 
-//------------UART_InChar------------
-// Wait for new serial port input
-// Input: none
-// Output: ASCII code for key typed
+
 
 void uart0_out_string(char *string);
 char uart0_in_char(void);

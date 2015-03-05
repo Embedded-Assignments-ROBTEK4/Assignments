@@ -4,8 +4,8 @@ static void uart0_tx_isr(void);
 static void uart0_rx_isr(void);
 
 
-INT8U buffer_in;
-INT8U buffer_out;
+static INT8U buffer_in;
+static INT8U buffer_out;
 //------------UART_InChar------------
 // Wait for new serial port input
 // Input: none
@@ -133,7 +133,7 @@ static void uart0_tx_isr(void)
 
 static void uart0_rx_isr(void)
 {
-		GPIO_PORTF_DATA_R |= LED_RED;
+	GPIO_PORTF_DATA_R |= LED_RED;
 	//fill ringbuffer from FIFO
 	INT8U inchar;
 	while( !(UART0_FR_R & UART_FR_RXFE) ) //while FIFO not empty.

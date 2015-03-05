@@ -21,7 +21,6 @@
 
 /***************************** Include files ********************************/
 #include <stdint.h>
-#include <stdlib.h>
 #include "../headers/setup.h"
 #include "../headers/tm4c123gh6pm.h"
 #include "../headers/GLOBAL_DEFINITIONS.h"
@@ -31,22 +30,11 @@
 #include "../headers/clock.h"
 #include "../headers/display_clock.h"
 #include "../headers/systick.h"
-#include "../headers/ringbuffer.h"
-#include "../headers/UART.h"
-#include "../headers/print.h"
-#include "../headers/syscalls.h"
 
 /*****************************    Defines    ********************************/
 #define STATUS_BLINK_TIME 500 // Blink time for status led in ms.
 
 /*****************************   Functions   ********************************/
-lcd lcd_disp;
-void lcd0_out_string(char* string);
-
-void lcd0_out_string(char* string)
-{
-	lcd_write_string(&lcd_disp, string);
-}
 int main(void)
 /**********************************************
 * Input : None.
@@ -59,26 +47,25 @@ int main(void)
 	setup_gpio(); 				// Setup SW1, SW2 and LCD pins.
 	setup_delay(); 				// Setup timer0 for delay functions.
 	setup_systick(); 			// Setup systick timer.
-	sys_ringbuf_uchar_init();
-	setup_uart0();
 	enable_global_int();
 	
 	// Setup buttons and events.
-	/*button sw1 = button_init(&GPIO_PORTF_DATA_R, SW1_PIN);
+	button sw1 = button_init(&GPIO_PORTF_DATA_R, SW1_PIN);
 	button sw2 = button_init(&GPIO_PORTF_DATA_R, SW2_PIN);
 	event sw1_event;
-	event sw2_event;*/
+	event sw2_event;
 
 	// Initiate LCD Display.
-	lcd_disp = lcd_init_4bit(LCD_RS, LCD_E, (volatile INT32U *)&LCD_RS_E_PORT, LCD_D4,
+	lcd lcd_disp = lcd_init_4bit(LCD_RS, LCD_E, (volatile INT32U *)&LCD_RS_E_PORT, LCD_D4,
 															 LCD_D5, LCD_D6, LCD_D7, (volatile INT32U *)&LCD_DATA_PORT);
 	lcd_begin(&lcd_disp, 2);
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
+
 	while(1)
 	{
-		//while(!ticks);
-		//ticks--;
+		while(!ticks);
+		ticks--;
 
 		/************ Start Status LED  ************/
 		if(led_status_timer > 0)
@@ -92,13 +79,12 @@ int main(void)
 		/************  End Status LED   ************/
 		
 		// Tasks.
-		/*sw1_event 	= get_button_event(&sw1);
+		sw1_event 	= get_button_event(&sw1);
 		sw2_event 	= get_button_event(&sw2);
-		time time_s = clock(sw1_event, sw2_event); */
-		INT32U tmp2 = 2;
-		vprintf_(uart0_out_string, 200, "A1:%d\n",(unsigned int)tmp2);
-		//delay_milliseconds(500);
+		time time_s = clock(sw1_event, sw2_event);
+		display_clock(&lcd_disp, &time_s);
 	}
 	return (0);
 }
+
 /****************************** End of module *******************************/

@@ -61,10 +61,11 @@ RBUF_INDEX_TYPE sys_ringbuf_uchar_max(INT8U id)
 }
 INT8U ringbuffer_uchar_pop(ringbuffer_uchar *buffer)
 {
+	
 	INT8U returnval = buffer->buffer[buffer->tail];
 	buffer->tail =(buffer->tail + 1) % buffer->max;
 	buffer->size--;
-
+	
 	return returnval;
 }
 
