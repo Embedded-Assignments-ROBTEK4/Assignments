@@ -5,10 +5,18 @@ static void uart0_rx_isr(void);
 
 static INT8U buffer_in;
 static INT8U buffer_out;
-//------------UART_InChar------------
-// Wait for new serial port input
-// Input: none
-// Output: ASCII code for key typed
+
+static void disable_uart0_int(void);
+static void enable_uart0_int(void);
+
+static void disable_uart0_int(void)
+{
+  NVIC_EN0_R &= ~(0x01 << (INT_UART0-16));
+}
+static void enable_uart0_int(void)
+{
+  NVIC_EN0_R |= (0x01 << (INT_UART0-16));
+}
 
 void uart0_out_string(char *string)
 {
@@ -38,7 +46,10 @@ char uart0_in_char(void){
 	if ( !(UART0_FR_R & UART_FR_RXFE))
 		uart0_rx_isr();
 		
-  return sys_ringbuf_uchar_pop(buffer_in);
+	disable_uart0_int();	
+	char returnval = sys_ringbuf_uchar_pop(buffer_in);
+	enable_uart0_int();
+  return returnval;
 }
 
 void uart0_out_char(char data){
@@ -48,7 +59,9 @@ void uart0_out_char(char data){
 	{
 		while(sys_ringbuf_uchar_full(buffer_out));
 		
+		disable_uart0_int();
 		sys_ringbuf_uchar_push(buffer_out, data);
+		enable_uart0_int();
 	}
   
 }
@@ -103,7 +116,7 @@ void setup_uart0(void){
   UART0_IFLS_R = (UART0_IFLS_R &  ~UART_IFLS_TX_M) | UART_IFLS_TX7_8 ;
   
   //Enable uart interrupts
-  NVIC_EN0_R |= 0x01 << (INT_UART0-16);
+  enable_uart0_int();
   
 }
 
@@ -122,7 +135,9 @@ static void uart0_tx_isr(void)
 	//fill FIFO from ringbuffer
 	while( (!(UART0_FR_R & UART_FR_TXFF)) && sys_ringbuf_uchar_size(buffer_out)) //while not full and buffer not empty
 	{
+		disable_uart0_int();
 		UART0_DR_R = sys_ringbuf_uchar_pop(buffer_out);
+		enable_uart0_int();
 	}
 	//clear interrupt
 	UART0_ICR_R |= UART_ICR_TXIC;
@@ -140,7 +155,9 @@ static void uart0_rx_isr(void)
 		inchar = (INT8U)(UART0_DR_R&0xFF);
 		if (!sys_ringbuf_uchar_full(buffer_in))	//char is discarded if buffer is full.
 		{
+			disable_uart0_int();
 			sys_ringbuf_uchar_push(buffer_in, inchar);
+			enable_uart0_int();
 		}
 	}
 			GPIO_PORTF_DATA_R &= ~LED_RED;
