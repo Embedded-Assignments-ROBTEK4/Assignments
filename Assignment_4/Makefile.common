@@ -8,7 +8,7 @@ MAPFILE=MAP.txt
 #Define BUILDDIR
 BUILDDIR=bin
 SOURCEDIR=sources
-ASSEMBLYDIR=assembly/sources
+ASSEMBLYDIR=sources
 
 #C source files
 SOURCES_=$(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
