@@ -21,7 +21,7 @@
 
 
 void setup_spi(void);
-void spi3_write_data(INT16U data); //blocking
-INT16U spi3_read_data(void); //blocking
+void spi3_write_data(INT8U data); //blocking
+INT8U spi3_read_data(void); //blocking
 
 #endif

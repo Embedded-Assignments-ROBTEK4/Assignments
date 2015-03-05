@@ -9,3 +9,5 @@
 *.axf
 #ignore compiled bin files
 *.bin
+#ignore MAP file
+MAP.txt

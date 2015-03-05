@@ -30,6 +30,9 @@
 #include "../headers/clock.h"
 #include "../headers/display_clock.h"
 #include "../headers/systick.h"
+#include "../headers/ringbuffer.h"
+#include "../headers/UART.h"
+#include "../headers/clock_uart0_controller.h"
 
 /*****************************    Defines    ********************************/
 #define STATUS_BLINK_TIME 500 // Blink time for status led in ms.
@@ -47,6 +50,8 @@ int main(void)
 	setup_gpio(); 				// Setup SW1, SW2 and LCD pins.
 	setup_delay(); 				// Setup timer0 for delay functions.
 	setup_systick(); 			// Setup systick timer.
+	sys_ringbuf_uchar_init();
+	setup_uart0();
 	enable_global_int();
 	
 	// Setup buttons and events.
@@ -61,7 +66,7 @@ int main(void)
 	lcd_begin(&lcd_disp, 2);
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
-
+	static time time_s ={0, 0, 0};
 	while(1)
 	{
 		while(!ticks);
@@ -81,7 +86,9 @@ int main(void)
 		// Tasks.
 		sw1_event 	= get_button_event(&sw1);
 		sw2_event 	= get_button_event(&sw2);
-		time time_s = clock(sw1_event, sw2_event);
+		clock(sw1_event, sw2_event, &time_s);
+		clock_uart0_controller(&time_s);
+		
 		display_clock(&lcd_disp, &time_s);
 	}
 	return (0);

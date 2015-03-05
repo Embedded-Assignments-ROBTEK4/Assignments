@@ -54,25 +54,25 @@ void setup_spi(void)
 		SSI3_CR0_R |= SSI_CR0_FRF_MOTO;
 		
 		
-		//Select 16 bit datasize
+		//Select 8 bit datasize
 		SSI3_CR0_R &= ~SSI_CR0_DSS_M;
-		SSI3_CR0_R |= SSI_CR0_DSS_16;
+		SSI3_CR0_R |= SSI_CR0_DSS_8;
 		
 		//Enable SSI
 		SSI3_CR1_R |= SSI_CR1_SSE;
 				
 }
 
-void spi3_write_data(INT16U data) //blocking
+void spi3_write_data(INT8U data) //blocking
 {
 	while(!(SSI3_SR_R & SSI_SR_TNF)); //While buffer is full, wait
 	SSI3_DR_R = data;
 }
 
-INT16U spi3_read_data(void) //blocking
+INT8U spi3_read_data(void) //blocking
 {
 	while(!(SSI3_SR_R & SSI_SR_RNE)); //while buffer is empty, wait
-	return SSI3_DR_R & 0xFFFF;
+	return SSI3_DR_R & 0xFF;
 }
 
 

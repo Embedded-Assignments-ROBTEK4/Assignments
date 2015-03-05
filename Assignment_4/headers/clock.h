@@ -44,7 +44,7 @@ typedef struct {
 
 /*****************************   Functions   ********************************/
 void clock_tick(time *time_s);
-time clock(event button1_ev, event button2_ev);
+void clock(event button1_ev, event button2_ev, time *time_s);
 void clock_count_min(time *time_s, bool direction);
 void clock_count_hour(time *time_s, bool direction);
 
