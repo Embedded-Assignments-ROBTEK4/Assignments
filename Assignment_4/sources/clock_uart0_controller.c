@@ -48,9 +48,9 @@ static void send_time(time *time_s)
 static void set_time(INT8U *buffer, time *time_s)
 {
 	if( !(
-			(buffer[0] - '0') + (buffer[1] - '0') * 10 > 23 ||
-			(buffer[2] - '0') + (buffer[3] - '0') * 10 > 59 ||
-			(buffer[4] - '0') + (buffer[5] - '0') * 10 > 59 ))
+			(buffer[0] - '0') * 10 + (buffer[1] - '0') > 23 ||
+			(buffer[2] - '0') * 10 + (buffer[3] - '0') > 59 ||
+			(buffer[4] - '0') * 10 + (buffer[5] - '0') > 59 ))
 	{
 		time_s->hour = (buffer[0] - '0') * 10 + (buffer[1] - '0');
 		time_s->min = (buffer[2] - '0') * 10 + (buffer[3] - '0');
