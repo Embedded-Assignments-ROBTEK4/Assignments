@@ -31,6 +31,7 @@
 #include "../headers/print.h"
 #include "../headers/syscalls.h"
 #include "../headers/SPI.h"
+#include "../headers/UART.h"
 
 /*****************************    Defines    ********************************/
 #define STATUS_BLINK_TIME 500 // Blink time for status led in ms.
@@ -50,6 +51,7 @@ int main(void)
 	setup_delay(); 				// Setup timer0 for delay functions.
 	setup_systick(); 			// Setup systick timer.
 	sys_ringbuf_uchar_init();
+	setup_uart0();
 	setup_spi();
 	enable_global_int();
 	
@@ -61,7 +63,7 @@ int main(void)
 
 	// Initiate LCD Display.
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
-	INT8U i = 0;
+	INT8U i = 12;
 	while(1)
 	{
 		while(!ticks);
@@ -77,8 +79,9 @@ int main(void)
 			led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
 		}
 		/************  End Status LED   ************/
-		spi3_write_data(i++);
-		delay_milliseconds(500);
+	//	if(uart0_data_avaliable())
+			spi3_write_data(i);
+			delay_milliseconds(500);
 		
 		
 	}

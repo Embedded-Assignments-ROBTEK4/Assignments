@@ -35,11 +35,11 @@ void setup_spi(void)
 		SSI3_CC_R = SSI_CC_CS_PIOSC;
 		
 		//Set first clock divisor
-		SSI3_CPSR_R = CPSDVSR;
+		SSI3_CPSR_R = 254;
 		
 		//Set second clock divisor
 		SSI3_CR0_R &= ~SSI_CR0_SCR_M;
-		SSI3_CR0_R |= SSICR0DV << 8;
+		SSI3_CR0_R |= 255 << 8;
 		
 		
 		//Data is captured on the first clock edge transition.
@@ -56,7 +56,7 @@ void setup_spi(void)
 		
 		//Select 8 bit datasize
 		SSI3_CR0_R &= ~SSI_CR0_DSS_M;
-		SSI3_CR0_R |= SSI_CR0_DSS_8;
+		SSI3_CR0_R |= SSI_CR0_DSS_4;
 		
 		//Enable SSI
 		SSI3_CR1_R |= SSI_CR1_SSE;
@@ -66,13 +66,13 @@ void setup_spi(void)
 void spi3_write_data(INT8U data) //blocking
 {
 	while(!(SSI3_SR_R & SSI_SR_TNF)); //While buffer is full, wait
-	SSI3_DR_R = data;
+	SSI3_DR_R = 0xF & data;
 }
 
 INT8U spi3_read_data(void) //blocking
 {
 	while(!(SSI3_SR_R & SSI_SR_RNE)); //while buffer is empty, wait
-	return SSI3_DR_R & 0xFF;
+	return SSI3_DR_R & 0xF;
 }
 
 

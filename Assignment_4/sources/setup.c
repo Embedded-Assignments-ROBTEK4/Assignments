@@ -24,25 +24,6 @@
 #include "../headers/setup.h"
 
 /*****************************   Functions   ********************************/
-void enable_global_int()
-/**********************************************
-* Input : None.
-* Output : None.
-* Function : Enable global interrupt.
-**********************************************/
-{
-  __asm("cpsie i");	// Enable interrupts.
-}
-
-void disable_global_int()
-/**********************************************
-* Input : None.
-* Output : None.
-* Function : Disable global interrupt.
-**********************************************/
-{
-  __asm("cpsid i");	// Disable interrupts.
-}
 
 void setup_gpio()
 /**********************************************

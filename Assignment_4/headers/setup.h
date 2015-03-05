@@ -35,8 +35,28 @@
 
 /*****************************   Functions   ********************************/
 void setup_gpio(void);
-void enable_global_int(void);
-void disable_global_int(void);
+__attribute__((unused)) static void enable_global_int(void);
+__attribute__((unused)) static void disable_global_int(void);
+
+static void enable_global_int()
+/**********************************************
+* Input : None.
+* Output : None.
+* Function : Enable global interrupt.
+**********************************************/
+{
+  __asm("cpsie i");	// Enable interrupts.
+}
+
+static void disable_global_int()
+/**********************************************
+* Input : None.
+* Output : None.
+* Function : Disable global interrupt.
+**********************************************/
+{
+  __asm("cpsid i");	// Disable interrupts.
+}
 
 /****************************** End of module *******************************/
 #endif

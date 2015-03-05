@@ -4,7 +4,7 @@
 #include "emp_type.h"
 #include "tm4c123gh6pm.h"
 #define FSPI 16000000
-#define SPI_CLOCK_RATE 1000000
+#define SPI_CLOCK_RATE 100000
 #define TOTAL_DIVISION (FSPI / SPI_CLOCK_RATE)
 
 #if TOTAL_DIVISION > 254*256
