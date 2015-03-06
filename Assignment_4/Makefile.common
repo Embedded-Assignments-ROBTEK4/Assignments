@@ -1,23 +1,31 @@
 #Define project name
 PROJECT=LCD_CLOCK_UART
 
-LDFILE=Linker.ld
-
-MAPFILE=MAP.txt
+LDFILE = Linker.ld
+MAPFILE = MAP.txt
 
 #Define BUILDDIR
-BUILDDIR=bin
-SOURCEDIR=sources
-ASSEMBLYDIR=sources
+BUILDDIR = bin
+SOURCEDIR = sources
+ASSEMBLYDIR = sources
 
 #C source files
-SOURCES_=$(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
-SOURCES__=$(wildcard $(ASSEMBLYDIR)/*.S) #Grab all .S files in assemblydir dir
+C_SOURCES = $(wildcard $(SOURCEDIR)/*.c) #Grab all .c files in source dir
+#Assembly source files
+AS_SOURCES = $(wildcard $(ASSEMBLYDIR)/*.S) #Grab all .S files in assemblydir dir
 
-SOURCES = $(SOURCES_:$(SOURCEDIR)/%=%) #Remove leading $(SOURCEDIR)/
-SOURCES += $(SOURCES__:$(ASSEMBLYDIR)/%=%) #Remove leading $(ASSEMBLYDIR)/
 
-OBJECTS_=$(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
+#if SINGLEMODULE is defined, we make a C file which includes all others, and only compiles that
+ifdef SINGLEMODULE
+	SOURCES = MASTER.c
+else
+SOURCES = $(C_SOURCES:$(SOURCEDIR)/%=%) #Remove leading $(SOURCEDIR)/
+endif
+
+SOURCES += $(AS_SOURCES:$(ASSEMBLYDIR)/%=%) #Remove leading $(ASSEMBLYDIR)/
+
+
+OBJECTS_ = $(join $(addsuffix ${BUILDDIR}/, $(dir $(SOURCES))), $(notdir $(SOURCES:.c=.o)))
 OBJECTS = $(OBJECTS_:.S=.o)
 
 
@@ -67,7 +75,6 @@ CFLAGS+=${OPTS}
 # The flags passed to the assembler.
 #
 
-
 AFLAGS=-mthumb \
        ${CPU}  \
        ${FPU}  \
@@ -78,63 +85,4 @@ LDFLAGS=--gc-sections 								\
  				-T ${LDFILE} 									\
  				--entry=${ENTRY_${PROJECT}}		\
 
-all: ${BUILDDIR}
-all: ${PROJECT}.bin
-
-
-
-.PHONY: clean
-clean:
-	rm -rf ${BUILDDIR}
-	rm -rf ${PROJECT}.bin
-	rm -rf ${MAPFILE}
-
-
-flash: all
-	echo "Flashing chip"
-	sudo lm4flash ${PROJECT}.bin
-
-# pull in dependency info for *existing* .o files
--include $(OBJECTS:.o=.d)
-
-${BUILDDIR}:
-	mkdir ${BUILDDIR} -p
-
-${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
-	@${CC} ${CFLAGS} -c $< -o $@
-	@echo "CC $@"
-#create dependency file to detect changes in header
-#http://scottmcpeak.com/autodepend/autodepend.html is used as reference
-
-	@${CC} -MM $(CFLAGS) $< > ${@:.o=.d}
-	@mv -f ${@:.o=.d} ${@:.o=.d.tmp}
-	@sed -e 's|.*:|$@:|' < ${@:.o=.d.tmp} > ${@:.o=.d}
-	@sed -e 's/.*://' -e 's/\\$$//' < ${@:.o=.d.tmp} | fmt -1 | \
-	  sed -e 's/^ *//' -e 's/$$/:/' >> ${@:.o=.d}
-	@rm -f ${@:.o=.d.tmp}
-
-${BUILDDIR}/%.o: ${ASSEMBLYDIR}/%.S
-	@${AS} ${AFLAGS} -c $< -o $@
-	@echo "CC $@"
-	
-${BUILDDIR}/%.a:
-	@${AR} -cr ${@} ${^}
-	@echo "CC ${@}"
-
-${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${LDFILE}
-	@${LD}  ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LIBM} ${LIBC} ${LIBGCC}
-	@echo "LD ${@}"
-	
-${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
-	@${OBJCOPY} -O binary ${<} ${@}
-	@echo "OBJCOPY ${@}"
-
-
-projectname:
-	@echo "$(PROJECT)"	
-debug: clean
-debug: CFLAGS+=-g -D DEBUG
-debug: all
-debug:
-	@echo "Starting debugger. This may take a while"
-	gksudo ./debug_nemiver.sh
+include Makefile.rules

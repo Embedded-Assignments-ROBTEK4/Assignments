@@ -15,3 +15,6 @@ MAP.txt
 .cproject
 .project
 .settings
+
+#ignore c file for single module compilation
+MASTER.c
