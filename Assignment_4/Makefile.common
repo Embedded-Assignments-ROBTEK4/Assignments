@@ -73,7 +73,10 @@ AFLAGS=-mthumb \
        ${FPU}  \
        -MD
 
-LDFLAGS=--gc-sections -Map ${MAPFILE}
+LDFLAGS=--gc-sections 								\
+ 				-Map=${MAPFILE} 							\
+ 				-T ${LDFILE} 									\
+ 				--entry=${ENTRY_${PROJECT}}		\
 
 all: ${BUILDDIR}
 all: ${PROJECT}.bin
@@ -119,7 +122,7 @@ ${BUILDDIR}/%.a:
 	@echo "CC ${@}"
 
 ${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${LDFILE}
-	@${LD} -T ${LDFILE}  --entry ${ENTRY_${PROJECT}} ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LIBM} ${LIBC} ${LIBGCC}
+	@${LD}  ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LIBM} ${LIBC} ${LIBGCC}
 	@echo "LD ${@}"
 	
 ${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
@@ -134,4 +137,4 @@ debug: CFLAGS+=-g -D DEBUG
 debug: all
 debug:
 	@echo "Starting debugger. This may take a while"
-	sudo ./debug_nemiver.sh
+	gksudo ./debug_nemiver.sh

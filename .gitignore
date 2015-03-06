@@ -11,3 +11,7 @@
 *.bin
 #ignore MAP file
 MAP.txt
+#ignore eclipse files
+.cproject
+.project
+.settings
