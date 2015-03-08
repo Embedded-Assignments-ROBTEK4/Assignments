@@ -4,8 +4,11 @@ int vprintf_(void (*destfunc)(char *), size_t max_size, char *string, ...)
 {	//subset of vprintf. Only implents integers. Not threadsafe
 	
 	char *outstring = malloc(sizeof(char)*max_size); //Max at this. To bad if not enough.
-	if(outstring ==NULL) return 0; //check for error in allocation
-	
+	if(outstring == NULL) 
+	{
+		destfunc("vprintf_ could not allocate memory"); 
+		return 0;
+	}
 	INT16U outstring_index = 0;
 	INT16U instring_index = 0;
 	va_list args;
