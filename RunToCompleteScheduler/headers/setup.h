@@ -4,26 +4,27 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* MODULENAME.: ISR.h
+* MODULENAME.: setup.h
 *
 * PROJECT....: Assingment 3
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: Contains the different functions used in setup.c
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
 * 150212  MS    			Syntax Fixed.
-*	150217  StefanRvo 	Changed to only use systick interrupt.
+* 150217  StefanRvO 	Split setup into multiple functions.
 *****************************************************************************/
-#ifndef _SYSTICK_H
-  #define _SYSTICK_H
+#ifndef _SETUP_H
+  #define _SETUP_H
 
 /***************************** Include files ********************************/
+#include <stdint.h>
 #include "tm4c123gh6pm.h"
 #include "GLOBAL_DEFINITIONS.h"
-#include "emp_type.h"
 
 /*****************************    Defines    ********************************/
 #define SYSTICK_RELOAD_VALUE 		FCPU / 1000 * TIMEOUT_SYSTICK - 1
@@ -32,12 +33,30 @@
 	#error "SYSTICK_RELOAD_VALUE is too high"
 #endif
 
-
-extern volatile INT32U ticks; // System tick.
-
 /*****************************   Functions   ********************************/
-void systick_timer_isr(void);
-void setup_systick(void);
+void setup_gpio(void);
+__attribute__((unused)) static void enable_global_int(void);
+__attribute__((unused)) static void disable_global_int(void);
+
+static void enable_global_int()
+/**********************************************
+* Input : None.
+* Output : None.
+* Function : Enable global interrupt.
+**********************************************/
+{
+  __asm("cpsie i");	// Enable interrupts.
+}
+
+static void disable_global_int()
+/**********************************************
+* Input : None.
+* Output : None.
+* Function : Disable global interrupt.
+**********************************************/
+{
+  __asm("cpsid i");	// Disable interrupts.
+}
 
 /****************************** End of module *******************************/
 #endif

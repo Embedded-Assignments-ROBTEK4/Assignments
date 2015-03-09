@@ -17,8 +17,8 @@
 * 150212  MS    			Syntax Fixed.
 *	150217  StefanRvo 	Changed to only use systick interrupt.
 *****************************************************************************/
-#ifndef _SYSTICK_H
-  #define _SYSTICK_H
+#ifndef _SYSTICK_H_
+  #define _SYSTICK_H_
 
 /***************************** Include files ********************************/
 #include "tm4c123gh6pm.h"
