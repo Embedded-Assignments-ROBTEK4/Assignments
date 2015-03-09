@@ -16,7 +16,10 @@ int main(void)
 	enable_global_int();
 	init_scheduler();
 	
-	add_task(green_led_blink);
+	for(INT8U i = 0; i < 255; i++)
+	{
+		add_task(green_led_blink);
+	}
 	
 	start_scheduler();
 	

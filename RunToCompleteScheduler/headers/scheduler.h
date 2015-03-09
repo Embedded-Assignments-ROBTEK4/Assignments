@@ -1,5 +1,9 @@
 #pragma once
-#define MAX_TASKS 30
+#define MAX_TASKS 255
+
+#if MAX_TASKS > 255
+	#error "Can't have more than 255 tasks!"
+#endif
 
 #include "emp_type.h"
 #include <stdbool.h>
