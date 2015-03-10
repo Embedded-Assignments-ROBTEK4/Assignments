@@ -4,6 +4,10 @@
 static INT16U timers[MAX_TIMERS];
 static bool allocated[MAX_TIMERS];
 
+void stop_timer(INT8U id)
+{
+	timers[id] = 0;
+}
 void count_timer(INT8U id)
 {
 	if(timers[id])
