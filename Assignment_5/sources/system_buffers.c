@@ -1,6 +1,6 @@
 #include "../headers/system_buffers.h"
 ringbuffer_uchar system_buffers[BUFFER_NUM];
-bool allocated[BUFFER_NUM];
+bool allocated_buffers[BUFFER_NUM];
 
 
 INT8U sys_ringbuf_uchar_pop(INT8U id)
@@ -18,18 +18,18 @@ void sys_ringbuf_uchar_init()
 	for(INT8U i = 0; i < BUFFER_NUM; i++)
 	{
 		ringbuffer_uchar_init(&system_buffers[i]);
-		allocated[i] = false;
+		allocated_buffers[i] = false;
 	}
 }
 
-INT8U sys_ringbuf_uchar_request() //id 0xFF is none allocated
+INT8U sys_ringbuf_uchar_request() //id 0xFF is none allocated_buffers
 {
 	INT8U returnid = 0xFF;
 	for(INT8U i = 0; i < BUFFER_NUM && returnid == 0xFF; i++)
 	{
-		if(!allocated[i])
+		if(!allocated_buffers[i])
 		{
-			allocated[i] = true;
+			allocated_buffers[i] = true;
 			returnid = i;
 		}
 	}
@@ -38,7 +38,7 @@ INT8U sys_ringbuf_uchar_request() //id 0xFF is none allocated
 
 void sys_ringbuf_uchar_release(INT8U id)
 {
-	allocated[id] = false;
+	allocated_buffers[id] = false;
 	ringbuffer_uchar_init(&system_buffers[id]);
 }
 

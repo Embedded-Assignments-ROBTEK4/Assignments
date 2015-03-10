@@ -2,7 +2,7 @@
 
 
 static INT16U timers[MAX_TIMERS];
-static bool allocated[MAX_TIMERS];
+static bool allocated_timers[MAX_TIMERS];
 
 void stop_timer(INT8U id)
 {
@@ -29,9 +29,9 @@ INT8U request_timer(void)
 	INT8U returnid = 0xFF;
 	for(INT8U i = 0; i < MAX_TIMERS && returnid == 0xFF; i++)
 	{
-		if(!allocated[i])
+		if(!allocated_timers[i])
 		{
-			allocated[i] = true;
+			allocated_timers[i] = true;
 			returnid = i;
 		}
 	}
@@ -40,5 +40,5 @@ INT8U request_timer(void)
 
 void release_timer(INT8U id)
 {
-	allocated[id] = false;
+	allocated_timers[id] = false;
 }

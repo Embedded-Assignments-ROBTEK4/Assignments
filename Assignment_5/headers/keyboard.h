@@ -16,5 +16,5 @@ INT8U keyboard_in_char(void);
 #define KEYBOARD_Y4 (1<<0)
 #define KEYBOARD_IN_M (0xF)
 
-#define KEYBOARD_CHECK_TIME 10 //Time in ms between check of keyboard
-#define KEYBOARD_REPEAT_TIME 500
+#define KEYBOARD_REPEAT_TIME 500 //in ms
+#define KEYBOARD_CHECK_PERIOD 5   //in ms

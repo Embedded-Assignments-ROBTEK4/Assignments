@@ -73,6 +73,9 @@ static bool push_key(char key)
 			
 		
 }
+
+#pragma GCC optimize "-O0" //This is needed for keypresses to work at O2 or higher
+													 //It's a GCC extension and should be fixed sometime.										 
 void check_keyboard(void)
 {	/*The pressed keys are found by putting charge on
 		X1-X3 sequentially and for each of them, checking
@@ -109,6 +112,6 @@ void check_keyboard(void)
 	{
 		stop_timer(keyboard_timer);
 	}
-
-	wait(KEYBOARD_CHECK_TIME / TIMEOUT_SYSTICK);
+	
+	wait(KEYBOARD_CHECK_PERIOD / TIMEOUT_SYSTICK); //This ensure 
 }
