@@ -62,3 +62,6 @@ debug: all
 debug:
 	@echo "Starting debugger. This may take a while"
 	sudo ./debug_nemiver.sh
+	
+optflags:
+	@${CC} -Q --help=optimizers ${CFLAGS}

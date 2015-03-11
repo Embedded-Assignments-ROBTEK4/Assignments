@@ -74,8 +74,6 @@ static bool push_key(char key)
 		
 }
 
-#pragma GCC optimize "-O0" //This is needed for keypresses to work at O2 or higher
-													 //It's a GCC extension and should be fixed sometime.										 
 void check_keyboard(void)
 {	/*The pressed keys are found by putting charge on
 		X1-X3 sequentially and for each of them, checking
@@ -86,6 +84,7 @@ void check_keyboard(void)
 		
 	key_pressed = 0;
 	GPIO_PORTA_DATA_R |= KEYBOARD_X1;
+	__asm__("NOP"); //Need to wait 1 cycle before checking
 	INT8U in_keys = GPIO_PORTE_DATA_R & KEYBOARD_IN_M;
 	if(in_keys & KEYBOARD_Y1) push_key('1');
 	if(in_keys & KEYBOARD_Y2) push_key('4');
@@ -94,6 +93,7 @@ void check_keyboard(void)
 	GPIO_PORTA_DATA_R &= ~KEYBOARD_X1;
 
 	GPIO_PORTA_DATA_R |= KEYBOARD_X2;
+	__asm__("NOP");
 	in_keys = GPIO_PORTE_DATA_R & KEYBOARD_IN_M;
 	if(in_keys & KEYBOARD_Y1) push_key('2');
 	if(in_keys & KEYBOARD_Y2) push_key('5');
@@ -102,6 +102,7 @@ void check_keyboard(void)
 	GPIO_PORTA_DATA_R &= ~KEYBOARD_X2;
 
 	GPIO_PORTA_DATA_R |= KEYBOARD_X3;
+	__asm__("NOP");
 	in_keys = GPIO_PORTE_DATA_R & KEYBOARD_IN_M;
 	if(in_keys & KEYBOARD_Y1) push_key('3');
 	if(in_keys & KEYBOARD_Y2) push_key('6');

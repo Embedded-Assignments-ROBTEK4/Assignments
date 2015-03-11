@@ -10,6 +10,16 @@
 #include "../headers/display_clock.h"
 #include "../headers/SWDelay.h"
 #include "../headers/clock_uart0_controller.h"
+
+void keytester(void);
+
+void keytester(void)
+{
+	if(keyboard_data_avaliable())
+	{
+		uart0_out_char(keyboard_in_char());
+	}
+}
 int main(void)
 {
 	disable_global_int();
@@ -30,6 +40,7 @@ int main(void)
 	add_task(run_clock);
 	add_task(display_clock);
 	add_task(clock_uart0_controller);
+	add_task(keytester);
 	
 	start_scheduler();
 	
