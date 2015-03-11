@@ -89,6 +89,74 @@ static INT8U select_task()
 }
 
 
+
+
+void start_scheduler()
+{
+	while(1)
+	{
+		while(ticks)
+		{
+			ticks--;
+			scheduler_tasks();
+			system_tasks();
+		}
+		current_task = select_task();
+		if(current_task != 0xFF)
+		{
+			tasks[current_task].process_func();
+			if(tasks[current_task].status == RUNNING)
+				insert_running(current_task);
+		}
+	}
+}
+
+bool check_release(bool (*check)(void *), void* check_pointer)
+{
+	
+	if(check(check_pointer))
+	{
+		return true;
+	}
+	else
+	{
+		tasks[current_task].check_pointer = check_pointer;
+		tasks[current_task].check = check;
+		tasks[current_task].status = BLOCKED;
+		insert_blocked(tasks[current_task].id);
+		return false;
+	}
+}
+
+void wait(INT16U time)
+{ //This process wants to wait some time.
+	//Put the time in its timer, inset it in the waiting list and return
+	//to the process.
+	tasks[current_task].timer = time;
+	tasks[current_task].status = WAITING;
+	insert_waiting(current_task);
+}
+
+void init_scheduler(void)
+{
+	for (INT8U i = 0; i < MAX_TASKS; i += 1)
+	{
+		tasks[i].id = i;
+		tasks[i].process_func = NULL;
+		tasks[i].check = NULL;
+		tasks[i].check_pointer = NULL;
+		tasks[i].timer = 0;
+		tasks[i].status = DEAD;
+		running[0] = NULL;
+		running[1] = NULL;
+		waiting[0] = NULL;
+		waiting[1] = NULL;
+		blocked[0] = NULL;
+		blocked[1] = NULL;
+		
+	}
+}
+
 static void init_task(INT8U id, void (*process_func)(void))
 {
 	tasks[id].id = id;
@@ -131,63 +199,6 @@ void remove_task(INT8U id)
 		break;
 	}
 	tasks[id].status = DEAD;
-}
-
-bool check_release(bool (*check)(void *), void* check_pointer)
-{
-	
-	if(check(check_pointer))
-	{
-		return true;
-	}
-	else
-	{
-		tasks[current_task].check_pointer = check_pointer;
-		tasks[current_task].check = check;
-		tasks[current_task].status = BLOCKED;
-		insert_blocked(tasks[current_task].id);
-		return false;
-	}
-}
-
-void init_scheduler(void)
-{
-	for (INT8U i = 0; i < MAX_TASKS; i += 1)
-	{
-		tasks[i].id = i;
-		tasks[i].process_func = NULL;
-		tasks[i].check = NULL;
-		tasks[i].check_pointer = NULL;
-		tasks[i].timer = 0;
-		tasks[i].status = DEAD;
-		running[0] = NULL;
-		running[1] = NULL;
-		waiting[0] = NULL;
-		waiting[1] = NULL;
-		blocked[0] = NULL;
-		blocked[1] = NULL;
-		
-	}
-}
-
-void start_scheduler()
-{
-	while(1)
-	{
-		while(ticks)
-		{
-			ticks--;
-			scheduler_tasks();
-			system_tasks();
-		}
-		current_task = select_task();
-		if(current_task != 0xFF)
-		{
-			tasks[current_task].process_func();
-			if(tasks[current_task].status == RUNNING)
-				insert_running(current_task);
-		}
-	}
 }
 
 static void insert_running(INT8U id)
@@ -322,13 +333,4 @@ static void remove_from_list(INT8U id, process **list) //united function as they
 			cur->prev->next = cur->next;
 		}
 	}
-}
-
-void wait(INT16U time)
-{ //This process wants to wait some time.
-	//Put the time in its timer, inset it in the waiting list and return
-	//to the process.
-	tasks[current_task].timer = time;
-	tasks[current_task].status = WAITING;
-	insert_waiting(current_task);
 }

@@ -37,9 +37,9 @@ typedef struct process
 
 
 //Add the task to the pool. Returns process id. returns 0xff on fail.
+void init_scheduler(void);
+void start_scheduler(void);
 INT8U add_task(void (*process_func)(void));
 void remove_task(INT8U id); //Remove the task from the pool
 bool check_release(bool (*check)(void *), void* check_pointer);
 void wait(INT16U time);
-void init_scheduler(void);
-void start_scheduler(void);
