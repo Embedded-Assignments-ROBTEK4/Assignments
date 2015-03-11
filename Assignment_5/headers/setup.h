@@ -18,8 +18,7 @@
 * 150212  MS    			Syntax Fixed.
 * 150217  StefanRvO 	Split setup into multiple functions.
 *****************************************************************************/
-#ifndef _SETUP_H
-  #define _SETUP_H
+#pragma once
 
 /***************************** Include files ********************************/
 #include <stdint.h>
@@ -59,4 +58,3 @@ static void disable_global_int()
 }
 
 /****************************** End of module *******************************/
-#endif

@@ -17,8 +17,7 @@
 * --------------------
 * 050128  KA    Module created.
 *****************************************************************************/
-#ifndef _EMP_TYPE_H
-  #define _EMP_TYPE_H
+#pragma once
 
 /*****************************    Defines    *******************************/
 typedef unsigned char  			BOOLEAN;
@@ -34,4 +33,3 @@ typedef float          			FP32;      // Single precision floating point.
 typedef double         			FP64;      // Double precision floating point.
 
 /****************************** End Of Module *******************************/
-#endif

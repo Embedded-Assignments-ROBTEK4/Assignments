@@ -3,8 +3,7 @@
 #include <stddef.h>
 #include "mutex.h"
 
-#ifndef _RINGBUFFER_H_
-#define _RINGBUFFER_H_
+#pragma once
 
 #define BUFFER_SIZE 200
 #define BUFFER_NUM 10
@@ -35,7 +34,3 @@ void ringbuffer_uchar_push(ringbuffer_uchar *buffer, INT8U value);
 bool ringbuffer_uchar_full(ringbuffer_uchar *buffer);
 
 void ringbuffer_uchar_init(ringbuffer_uchar *buffer);
-
-
-
-#endif

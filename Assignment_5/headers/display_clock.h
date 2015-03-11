@@ -4,38 +4,26 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* MODULENAME.: ISR.h
+* MODULENAME.: display_clock.h
 *
 * PROJECT....: Assingment 3
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: Displays time on the LCD Display, but only the digits that
+* 						 have changed since.
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    			Syntax Fixed.
-*	150217  StefanRvo 	Changed to only use systick interrupt.
+* 150225  ALL		Created file.
+* 150226	MS 		Fixed syntax
 *****************************************************************************/
 #pragma once
 
 /***************************** Include files ********************************/
-#include "tm4c123gh6pm.h"
-#include "GLOBAL_DEFINITIONS.h"
-#include "emp_type.h"
-
-/*****************************    Defines    ********************************/
-#define SYSTICK_RELOAD_VALUE 		FCPU / 1000 * TIMEOUT_SYSTICK - 1
-
-#if (SYSTICK_RELOAD_VALUE > 0xFFFFFF)
-	#error "SYSTICK_RELOAD_VALUE is too high"
-#endif
-
-
-extern volatile INT32U ticks; // System tick.
 
 /*****************************   Functions   ********************************/
-void systick_timer_isr(void);
-void setup_systick(void);
+void display_clock(void);
 
 /****************************** End of module *******************************/

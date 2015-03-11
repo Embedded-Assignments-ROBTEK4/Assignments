@@ -34,21 +34,18 @@ void setup_gpio()
 {
 	// Enable the GPIO ports that is used for the on-board buttons, and for the lcd.
 	SYSCTL_RCGC2_R 		|= SYSCTL_RCGC2_GPIOF;
-	SYSCTL_RCGC2_R 		|= SYSCTL_RCGC2_GPIOC;
   SYSCTL_RCGC2_R 		|= SYSCTL_RCGC2_GPIOD;
-	
+  
+	__asm__("NOP");
+	__asm__("NOP");
 
 	// Enable the GPIO pins for digital function.
 	GPIO_PORTF_DEN_R |= LED_RED | LED_GREEN | LED_BLUE;
-	
-	GPIO_PORTF_DIR_R 	 |= LED_RED | LED_GREEN | LED_BLUE;
+	GPIO_PORTF_DIR_R |= LED_RED | LED_GREEN | LED_BLUE;
   
   //Setup LCD pins as output
-  GPIO_PORTC_DIR_R |= LCD_D4 | LCD_D5 | LCD_D6 | LCD_D7;
-  GPIO_PORTD_DIR_R |= LCD_E  | LCD_RS | LED_STATUS;
-  
-  GPIO_PORTC_DEN_R |= LCD_D4 | LCD_D5 | LCD_D6 | LCD_D7;
-  GPIO_PORTD_DEN_R |= LCD_E  | LCD_RS | LED_STATUS;
+  GPIO_PORTD_DIR_R |= LED_STATUS;
+  GPIO_PORTD_DEN_R |= LED_STATUS;
 }
 
 /****************************** End of module *******************************/

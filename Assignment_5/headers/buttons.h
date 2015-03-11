@@ -18,8 +18,7 @@
 * 150217  StefanRvo		Created file.
 * 150226	MS 					Fixed syntax.
 *****************************************************************************/
-#ifndef _BUTTON_EVENTS_
-	#define _BUTTON_EVENTS_
+#pragma once
 
 /***************************** Include files ********************************/
 #include "emp_type.h"
@@ -33,12 +32,13 @@
 #define LONG_PRESS_TIME 2000 	// Long press time in ms.
 #define DOUBLE_PRESS_TIME 100 // Double click time in ms.
 
-#define SW1_SINGLE_PRESS 	0
-#define SW2_SINGLE_PRESS 	1
-#define SW1_DOUBLE_PRESS 	2
-#define SW2_DOUBLE_PRESS 	3
-#define SW1_LONG_PRESS 		4
-#define SW2_LONG_PRESS 		5
+#define NO_BUTTON_EVENT		0
+#define SW1_SINGLE_PRESS 	1
+#define SW2_SINGLE_PRESS 	2
+#define SW1_DOUBLE_PRESS 	3
+#define SW2_DOUBLE_PRESS 	4
+#define SW1_LONG_PRESS 		5
+#define SW2_LONG_PRESS 		6
 
 #define BUTTON_CHECK_PERIODE 5 //in ms
 
@@ -50,5 +50,4 @@ INT8U button_in_char(void);
 void setup_buttons(void);
 
 /****************************** End of module *******************************/
-#endif
 

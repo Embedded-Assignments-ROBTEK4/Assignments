@@ -26,8 +26,7 @@
 // U0Rx (VCP receive) connected to PA0
 // U0Tx (VCP transmit) connected to PA1
 
-#ifndef _UART_H_
-#define _UART_H_
+#pragma once
 
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
@@ -59,5 +58,3 @@ void setup_uart0(void);
 void uart0_isr(void);
 void uart0_in_clear(void);
 void uart0_out_clear(void);
-
-#endif
