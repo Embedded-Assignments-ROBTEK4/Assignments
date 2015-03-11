@@ -3,6 +3,7 @@
 #include "../headers/systick.h"
 #include "../headers/emp_type.h"
 #include "../headers/system_timers.h"
+#include "../headers/leds.h"
 static void blink_status_led(void);
 static void count_system_timers(void);
 

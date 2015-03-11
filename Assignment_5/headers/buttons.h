@@ -22,7 +22,6 @@
 
 /***************************** Include files ********************************/
 #include "emp_type.h"
-#include "GLOBAL_DEFINITIONS.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
@@ -41,6 +40,9 @@
 #define SW2_LONG_PRESS 		6
 
 #define BUTTON_CHECK_PERIODE 5 //in ms
+
+#define SW1_PIN 		1<<4
+#define SW2_PIN			1<<0
 
 /*****************************   Functions   ********************************/
 

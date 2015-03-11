@@ -23,6 +23,7 @@
 #include "../headers/buttons.h"
 #include "../headers/system_timers.h"
 #include "../headers/scheduler.h"
+#include "../headers/systick.h"
 
 /***************************** Enums ****************************************/
 

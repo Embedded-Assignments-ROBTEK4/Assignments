@@ -25,6 +25,7 @@
 #include "emp_type.h"
 
 /*****************************    Defines    ********************************/
+#define TIMEOUT_SYSTICK	5
 #define SYSTICK_RELOAD_VALUE 		FCPU / 1000 * TIMEOUT_SYSTICK - 1
 
 #if (SYSTICK_RELOAD_VALUE > 0xFFFFFF)

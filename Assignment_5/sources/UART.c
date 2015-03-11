@@ -1,4 +1,5 @@
 #include "../headers/UART.h"
+#include "../headers/leds.h"
 static void uart0_tx_isr(void);
 static void uart0_rx_isr(void);
 
@@ -131,7 +132,7 @@ void uart0_isr(void)
 
 static void uart0_tx_isr(void)
 {
-	GPIO_PORTF_DATA_R |= LED_GREEN;
+	LED_RGB_PORT |= LED_GREEN;
 	//fill FIFO from ringbuffer
 	while( (!(UART0_FR_R & UART_FR_TXFF)) && sys_ringbuf_uchar_size(buffer_out)) //while not full and buffer not empty
 	{
@@ -142,12 +143,12 @@ static void uart0_tx_isr(void)
 	//clear interrupt
 	UART0_ICR_R |= UART_ICR_TXIC;
 	
-	GPIO_PORTF_DATA_R &= ~LED_GREEN;
+	LED_RGB_PORT &= ~LED_GREEN;
 }
 
 static void uart0_rx_isr(void)
 {
-	GPIO_PORTF_DATA_R |= LED_RED;
+	LED_RGB_PORT |= LED_RED;
 	//fill ringbuffer from FIFO
 	INT8U inchar;
 	while( !(UART0_FR_R & UART_FR_RXFE) ) //while FIFO not empty.
@@ -160,5 +161,5 @@ static void uart0_rx_isr(void)
 			enable_uart0_int();
 		}
 	}
-			GPIO_PORTF_DATA_R &= ~LED_RED;
+	LED_RGB_PORT &= ~LED_RED;
 }

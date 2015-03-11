@@ -23,6 +23,7 @@
 #include "../headers/clock.h"
 #include "../headers/buttons.h"
 #include "../headers/system_timers.h"
+#include "../headers/systick.h"
 
 static INT8U clock_timer = 0;
 static time clock;

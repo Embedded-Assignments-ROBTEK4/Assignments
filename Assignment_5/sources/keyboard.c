@@ -1,6 +1,6 @@
 #include "../headers/keyboard.h"
 #include "../headers/scheduler.h"
-#include "../headers/GLOBAL_DEFINITIONS.h"
+#include "../headers/systick.h"
 #include "../headers/system_timers.h"
 
 static bool push_key(char key);

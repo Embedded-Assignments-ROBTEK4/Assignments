@@ -1,6 +1,7 @@
 #include "../headers/scheduler.h"
 #include "../headers/systick.h"
 #include "../headers/setup.h"
+#include "../headers/leds.h"
 #include "../headers/system_buffers.h"
 #include "../headers/UART.h"
 #include "../headers/keyboard.h"
@@ -23,8 +24,8 @@ void keytester(void)
 int main(void)
 {
 	disable_global_int();
-	setup_gpio(); 				// Setup SW1, SW2 and LCD pins.
-	setup_systick(); 			// Setup systick timer.
+	setup_leds();
+	setup_systick();
 	init_scheduler();
 	sys_ringbuf_uchar_init();
 	setup_uart0();

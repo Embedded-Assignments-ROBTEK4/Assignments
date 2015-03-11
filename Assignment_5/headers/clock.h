@@ -21,7 +21,6 @@
 #pragma once
 
 /***************************** Include files ********************************/
-#include "GLOBAL_DEFINITIONS.h"
 #include "emp_type.h"
 #include <stdbool.h>
 
