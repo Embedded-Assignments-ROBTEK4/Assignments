@@ -24,6 +24,7 @@
 #include "../headers/clock.h"
 #include "../headers/lcd0.h"
 #include "../headers/emp_type.h"
+#include "../headers/scheduler.h"
 
 /*****************************   Functions   ********************************/
 void display_clock(void)
@@ -34,32 +35,37 @@ void display_clock(void)
 * 					 have changed and display them
 **********************************************/
 {
-	static time time_last ={99 , 99, 99};
-	time time_now = get_clock();
-	if(time_last.hour != time_now.hour)	// Update hour if changed.
+	if(check_release(lcd0_available))
 	{
-		lcd0_set_cursor(0,0);
-		lcd0_write_char('0' + time_now.hour / 10);
-		lcd0_write_char('0' + time_now.hour % 10);
+		lcd0_lock();
+		static time time_last ={99 , 99, 99};
+		time time_now = get_clock();
+		if(time_last.hour != time_now.hour)	// Update hour if changed.
+		{
+			lcd0_set_cursor(0,0);
+			lcd0_write_char('0' + time_now.hour / 10);
+			lcd0_write_char('0' + time_now.hour % 10);
+		}
+
+		if(time_last.sec != time_now.sec) 		// Update  if second changed.
+		{
+			lcd0_set_cursor(2, 0);
+
+			if(time_now.sec % 2 == 0)
+				lcd0_write_char(':');
+			else
+				lcd0_write_char(' ');
+		}
+
+		if(time_last.hour != time_now.min) 		// Update min if changed.
+		{
+			lcd0_set_cursor(3, 0);
+			lcd0_write_char('0' + time_now.min / 10);
+			lcd0_write_char('0' + time_now.min % 10);
+		}
+
+		time_last = time_now;
+		lcd0_unlock();
 	}
-
-	if(time_last.sec != time_now.sec) 		// Update  if second changed.
-	{
-		lcd0_set_cursor(2, 0);
-
-		if(time_now.sec % 2 == 0)
-			lcd0_write_char(':');
-		else
-			lcd0_write_char(' ');
-	}
-
-	if(time_last.hour != time_now.min) 		// Update min if changed.
-	{
-		lcd0_set_cursor(3, 0);
-		lcd0_write_char('0' + time_now.min / 10);
-		lcd0_write_char('0' + time_now.min % 10);
-	}
-
-	time_last = time_now;
 }
 /****************************** End of module *******************************/

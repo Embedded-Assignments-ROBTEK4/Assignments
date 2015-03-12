@@ -1,6 +1,25 @@
 #include "../headers/lcd0.h"
 #include "../headers/GLOBAL_DEFINITIONS.h"
+#include "../headers/mutex.h"
 lcd lcd0;
+mutex_t lcd0_mutex = UNLOCKED;
+
+bool lcd0_available(void)
+{
+	return is_mutex_unlocked(&lcd0_mutex);
+}
+
+void lcd0_lock(void)
+{
+	lock_mutex(&lcd0_mutex);
+}
+
+void lcd0_unlock(void)
+{
+	unlock_mutex(&lcd0_mutex);
+}
+
+
 
 void setup_lcd0(void)
 {

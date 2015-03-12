@@ -12,6 +12,7 @@ static void count_process_timers(void);
 static void scheduler_tasks(void);
 
 static process tasks[MAX_TASKS];
+
 static INT8U current_task = 0;
 static process *running[2] = {NULL, NULL}; //pointers to first and last of this process type
 static process *waiting[2] = {NULL, NULL}; //pointers to first and last of this process type
@@ -42,7 +43,7 @@ static INT8U select_task()
 	//We start by trying to find a blocked process, they are priotized highest.
 	//Find the first one with a function returning true, and start that.
 	process *cur = blocked[0];
-	while(cur != blocked[1] && !cur->check(cur->check_pointer))
+	while(cur != blocked[1] && !cur->check())
 	{
 		cur = cur->next;
 	}
@@ -50,7 +51,7 @@ static INT8U select_task()
 	{
 		returnid = cur->id;
 	}
-	else if(blocked[1] != NULL && cur->check(cur->check_pointer))
+	else if(blocked[1] != NULL && cur->check())
 	{ //We have found our function, set returnid
 		returnid = cur->id;
 	}
@@ -111,16 +112,15 @@ void start_scheduler()
 	}
 }
 
-bool check_release(bool (*check)(void *), void* check_pointer)
+bool check_release(bool (*check)(void))
 {
 	
-	if(check(check_pointer))
+	if(check())
 	{
 		return true;
 	}
 	else
 	{
-		tasks[current_task].check_pointer = check_pointer;
 		tasks[current_task].check = check;
 		tasks[current_task].status = BLOCKED;
 		insert_blocked(tasks[current_task].id);
@@ -144,7 +144,6 @@ void init_scheduler(void)
 		tasks[i].id = i;
 		tasks[i].process_func = NULL;
 		tasks[i].check = NULL;
-		tasks[i].check_pointer = NULL;
 		tasks[i].timer = 0;
 		tasks[i].status = DEAD;
 		running[0] = NULL;
@@ -162,7 +161,6 @@ static void init_task(INT8U id, void (*process_func)(void))
 	tasks[id].id = id;
 	tasks[id].process_func = process_func;
 	tasks[id].check = NULL;
-	tasks[id].check_pointer = NULL;
 	tasks[id].timer = 0;
 	tasks[id].status = RUNNING;
 	insert_running(id);

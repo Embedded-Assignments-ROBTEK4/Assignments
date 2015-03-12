@@ -1,0 +1,126 @@
+#include "../headers/clock_keyboard_controller.h"
+#include "../headers/clock.h"
+#include "../headers/scheduler.h"
+#include "../headers/keyboard.h"
+#include "../headers/lcd0.h"
+#include <stdbool.h>
+
+typedef enum {
+	SET_MIN_UNLOCKED,
+	SET_MIN_LOCKED,
+	SET_HOUR_UNLOCKED,
+	SET_HOUR_LOCKED,
+	IDLE,
+} controller_mode;
+
+static void release_lcd(void);
+
+void clock_keyboard_controller(void)
+{
+	static INT8U cursor_position = 0;
+	static time clock;
+	static controller_mode state = IDLE;
+	switch(state)
+	{
+		case IDLE:
+			if(keyboard_data_avaliable())
+			{
+				INT8U key = keyboard_in_char();
+				if (key == '*') 
+				{
+					state = SET_HOUR_UNLOCKED;
+					clock = get_clock();
+				}
+				else if(key == '#') 
+				{
+					state = SET_MIN_UNLOCKED;
+					clock = get_clock();
+				}
+			}
+		break;
+		case SET_MIN_UNLOCKED:
+			lcd0_lock();
+			state = SET_MIN_LOCKED;
+			lcd0_set_cursor(7, 0);
+			lcd0_write_string("SET MIN");
+			lcd0_set_cursor(0, 1);
+			lcd0_write_string("8====3     (o.O)"); //Very important!
+			lcd0_cursor();
+			lcd0_blink();
+				//There should not be a break here!
+		case SET_MIN_LOCKED:
+			lcd0_set_cursor(cursor_position+3, 0);
+			if(keyboard_data_avaliable())
+			{
+				INT8U key = keyboard_in_char();
+				if(cursor_position == 0 && key >= '0' && key <= '5')
+				{
+					lcd0_write_char(key);
+					clock.min = clock.min % 10 + (key - '0') * 10;
+					cursor_position++;
+				}
+				else if(cursor_position == 1 && key >= '0' && key <= '9')
+				{
+					lcd0_write_char(key);
+					clock.min = (clock.min / 10) * 10 + (key - '0');
+					cursor_position--;
+					set_clock(clock.hour, clock.min, 0);
+					release_lcd();
+					state = IDLE;
+				}
+			}
+		break;
+		
+		case SET_HOUR_UNLOCKED:
+			lcd0_lock();
+			state = SET_HOUR_LOCKED;
+			lcd0_set_cursor(7, 0);
+			lcd0_write_string("SET HOUR");
+			lcd0_set_cursor(0, 1);
+			lcd0_write_string("8====D   (.)Y(.)"); //Very important!
+			lcd0_cursor();
+			lcd0_blink();
+				//There should not be a break here!
+		case SET_HOUR_LOCKED:
+			lcd0_set_cursor(cursor_position, 0);
+			if(keyboard_data_avaliable())
+			{
+				INT8U key = keyboard_in_char();
+				if(cursor_position == 0 && key >= '0' && key <= '2')
+				{
+					lcd0_write_char(key);
+					clock.hour = clock.hour % 10 + (key - '0') * 10;
+					cursor_position++;
+				}
+				else if(cursor_position == 1 && (
+								((clock.hour / 10) == 2 && key >= '0' && key <= '3') ||
+								((clock.hour / 10) < 2 && key >= '0' && key <= '9')))
+				{
+					lcd0_write_char(key);
+					clock.hour = (clock.hour / 10) * 10 + (key - '0');
+					cursor_position--;
+					set_clock(clock.hour, clock.min, 0);
+					release_lcd();
+					state = IDLE;
+				}
+			}
+		break;
+		
+		default:
+		break; 
+		
+	
+	}
+	
+}
+
+static void release_lcd(void)
+{
+	lcd0_no_blink();
+	lcd0_no_cursor();
+	lcd0_set_cursor(7, 0);
+	lcd0_write_string("        ");
+	lcd0_set_cursor(0, 1);
+	lcd0_write_string("        ");
+	lcd0_unlock();
+}

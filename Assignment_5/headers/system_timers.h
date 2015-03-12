@@ -1,7 +1,7 @@
 #pragma once
 #include "emp_type.h"
 #include <stdbool.h>
-#define MAX_TIMERS 30
+#define MAX_TIMERS 200
 void count_timer(INT8U id);
 void start_timer(INT8U id, INT16U timer_val);
 void stop_timer(INT8U id);

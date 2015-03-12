@@ -2,7 +2,7 @@
 void setup_leds(void);
 
 #define LED_STATUS_PORT		GPIO_PORTD_DATA_R
-#define LED_RGB_PORT		GPIO_PORTD_DATA_R
+#define LED_RGB_PORT			GPIO_PORTF_DATA_R
 
 #define LED_RED 		1<<1
 #define LED_BLUE 		1<<2
