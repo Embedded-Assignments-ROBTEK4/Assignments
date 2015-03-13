@@ -14,6 +14,9 @@ CC=${COMPILER}
 #If the binary don't compile without them, you should use gcc instead
 
 
+COMPILER-RT-DIR=/home/stefan/armlib
+LINKOBJECTS=$(wildcard $(COMPILER-RT-DIR)/*.o)
+
 INCLUDES=-I/usr/arm-none-eabi/include/
 #add target to clang flags, and gcc include folder
 CFLAGS+= -target arm-none-eabi \

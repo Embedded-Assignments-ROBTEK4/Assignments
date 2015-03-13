@@ -67,6 +67,7 @@ int main(void)
 	
 	static INT32U led_status_timer = STATUS_BLINK_TIME / TIMEOUT_SYSTICK;
 	static time time_s ={0, 0, 0};
+	
 	while(1)
 	{
 		while(!ticks);

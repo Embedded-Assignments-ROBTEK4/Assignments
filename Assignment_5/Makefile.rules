@@ -42,7 +42,7 @@ ${BUILDDIR}/%.a:
 	@echo "CC ${@}"
 
 ${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${LDFILE}
-	@${LD}  ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LIBM} ${LIBC} ${LIBGCC}
+	@${LD}  ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LINKOBJECTS}
 	@echo "LD ${@}"
 	
 ${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf

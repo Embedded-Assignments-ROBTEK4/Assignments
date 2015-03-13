@@ -4,6 +4,8 @@ PROJECT=LCD_CLOCK_UART
 LDFILE = Linker.ld
 MAPFILE = MAP.txt
 
+LINKOBJECTS =
+
 #Define BUILDDIR
 BUILDDIR = bin
 SOURCEDIR = sources
@@ -53,6 +55,7 @@ CFLAGS=-mthumb             	\
        -nostdlib						\
        -ffunction-sections 	\
        -fdata-sections     	\
+       -fshort-enums				\
        -std=c99            	\
        -Wall               	\
        -Wextra             	\

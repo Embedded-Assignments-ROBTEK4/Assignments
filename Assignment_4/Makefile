@@ -12,3 +12,5 @@ CC=${PREFIX}${COMPILER}
 LIBGCC=${shell ${CC} ${CFLAGS} -print-libgcc-file-name}
 LIBC=${shell ${CC} ${CFLAGS} -print-file-name=libc.a}
 LIBM=${shell ${CC} ${CFLAGS} -print-file-name=libm.a}
+
+LINKOBJECTS = ${LIBM} ${LIBC} ${LIBGCC}
