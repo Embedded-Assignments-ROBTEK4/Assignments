@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 @Code for mutex's
 @Used http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dht0008a/ch01s03s02.html
 @As reference
@@ -26,6 +28,7 @@ lock_mutex:
     DMB                   @ Required before accessing protected resource
     BX      lr
 
+
 2:  @ Take appropriate action while waiting for mutex to become unlocked
    	@ WAIT_FOR_UPDATE
     B       1b           @ Retry from 1
@@ -41,3 +44,28 @@ unlock_mutex:
     @ SIGNAL_UPDATE	
     BX      lr
 
+@ try_lock_mutex
+@ Declare for use from C as extern bool try_lock_mutex(void * mutex);
+    .global try_lock_mutex
+try_lock_mutex:
+    LDR     r1, =locked
+1:  LDREX   r2, [r0]
+    CMP     r2, r1        @ Test if mutex is locked or unlocked
+		BEQ     2f           	@ If locked - branch to 2, and return false
+		
+		it ne
+    STREXNE r2, r1, [r0]  @ Not locked, attempt to lock it
+    it ne
+    CMPNE   r2, #1        @ Check if Store-Exclusive failed
+    
+    BEQ     2f           	@ If locked - branch to 2, and return false
+    @ Lock acquired
+    DMB                   @ Required before accessing protected resource
+    											@ Return true
+    LDR			r0, = true											
+    BX      lr
+
+2:
+		@ Return false
+		LDR 		r0, = false
+		BX			lr
