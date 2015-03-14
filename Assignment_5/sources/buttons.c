@@ -184,6 +184,7 @@ void setup_buttons(void)
 	SYSCTL_RCGC2_R 		|= SYSCTL_RCGC2_GPIOF;
 	GPIO_PORTF_DIR_R  &= ~(SW1_PIN | SW2_PIN); // Init SW1 and SW2 as input.
 	
+	//Unlock PF0
 	GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
 	GPIO_PORTF_CR_R  |= 0x01;
 	

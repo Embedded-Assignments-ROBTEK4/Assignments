@@ -25,7 +25,10 @@
 #include <stdbool.h>
 
 /*******************************   Defines    *******************************/
-#define SECOND_LENGTH 1000 // Length of a second in ms.
+#define SECOND_LENGTH 			1000 // Length of a second in ms.
+#define SECONDS_PER_MINUTE 	60
+#define MINUTES_PER_HOUR		60
+#define HOURS_PER_DAY				24
 
 /*******************************    Enums     *******************************/
 typedef enum {
