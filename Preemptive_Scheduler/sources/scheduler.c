@@ -178,7 +178,7 @@ __attribute__((naked)) void pendsv_isr()
 
 __attribute__((unused)) void kernel_task()
 {
-	while(true); //Do nothing
+	while(true); //Do nothing //We should somehow fix this so we don't waste time here.
 }
 
 void start_scheduler()
