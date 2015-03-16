@@ -26,8 +26,7 @@ int main(void)
 	setup_clock();
 	setup_delay(); //Used by lcd.
 	setup_lcd0();
-	enable_global_int();
-	
+	enable_global_int();	
 	add_task(check_keyboard);
 	add_task(collect_button_events);
 	add_task(run_clock);
