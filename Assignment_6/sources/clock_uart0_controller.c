@@ -8,7 +8,7 @@ void clock_uart0_controller(void)
 {
 	static INT8U buffer[7] = {0};
 	static INT8U buffer_index = 0;
-	while(uart0_data_avaliable())
+	while(uart0_data_available())
 	{
 		INT8U val = uart0_in_char();
 		if ((buffer_index == 0 && val == '1') || buffer[0] == '1')

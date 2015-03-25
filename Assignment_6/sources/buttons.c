@@ -165,7 +165,7 @@ void collect_button_events(void)
 	wait(BUTTON_CHECK_PERIODE / TIMEOUT_SYSTICK);
 }
 
-RBUF_INDEX_TYPE button_data_avaliable(void)
+RBUF_INDEX_TYPE button_data_available(void)
 {
 	return sys_ringbuf_uchar_size(button_event_buffer);
 }

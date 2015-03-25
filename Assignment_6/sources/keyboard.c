@@ -38,14 +38,14 @@ void setup_keyboard(void)
 	GPIO_PORTE_PUR_R   |=  ~(KEYBOARD_Y1 | KEYBOARD_Y2 | KEYBOARD_Y3 | KEYBOARD_Y4);     																									//Disable pull-up.
 }
 
-RBUF_INDEX_TYPE keyboard_data_avaliable(void)
+RBUF_INDEX_TYPE keyboard_data_available(void)
 {
 	return sys_ringbuf_uchar_size(keyboard_buffer);
 }
 
 INT8U keyboard_in_char(void) //Return 0 if no key
 {
-	if(keyboard_data_avaliable())
+	if(keyboard_data_available())
 	{
 		return sys_ringbuf_uchar_pop(keyboard_buffer);
 	}

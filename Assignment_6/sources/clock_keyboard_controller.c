@@ -18,7 +18,7 @@ static void release_lcd(void);
 static void set_min(controller_mode *state, time *clock, INT8U *cursor_position)
 {
 	lcd0_set_cursor(*cursor_position+3, 0);
-	if(keyboard_data_avaliable())
+	if(keyboard_data_available())
 	{
 		INT8U key = keyboard_in_char();
 		if(key == '#')
@@ -55,7 +55,7 @@ static void set_min(controller_mode *state, time *clock, INT8U *cursor_position)
 static void set_hour(controller_mode *state, time *clock, INT8U *cursor_position)
 {
 	lcd0_set_cursor(*cursor_position, 0);
-	if(keyboard_data_avaliable())
+	if(keyboard_data_available())
 	{
 		INT8U key = keyboard_in_char();
 		if(key == '*')
@@ -102,7 +102,7 @@ void clock_keyboard_controller(void)
 	switch(state)
 	{
 		case IDLE:
-			if(keyboard_data_avaliable())
+			if(keyboard_data_available())
 			{
 				INT8U key = keyboard_in_char();
 				if (key == '*')

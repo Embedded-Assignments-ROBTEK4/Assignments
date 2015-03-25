@@ -108,7 +108,7 @@ void run_clock(void)
 {
 	static clock_state state = NORMAL;
 	INT8U event_from_button = NO_BUTTON_EVENT;
-	if(button_data_avaliable())
+	if(button_data_available())
 	{
 		event_from_button = button_in_char();
 	}

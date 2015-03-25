@@ -5,7 +5,7 @@
 #include "tm4c123gh6pm.h"
 void setup_keyboard(void);
 void check_keyboard(void);
-RBUF_INDEX_TYPE keyboard_data_avaliable(void);
+RBUF_INDEX_TYPE keyboard_data_available(void);
 INT8U keyboard_in_char(void);
 
 #define KEYBOARD_X1 (1<<4)
