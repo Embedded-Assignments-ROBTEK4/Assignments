@@ -18,6 +18,8 @@ void print_encoder(void);
 
 void print_encoder(void)
 {
+	if(encoder0_pushed())
+			reset_encoder0();
 	INT32S encoderval = get_encoder0_pos();
 	lcd0_set_cursor(0,0);
 	vprintf_(lcd0_write_string, 100, "%d", (int)encoderval);

@@ -1,6 +1,7 @@
 #pragma once
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
+#include <stdbool.h>
 
 
 #define DIGI_A  (1 << 5)
@@ -10,3 +11,4 @@ INT32S get_encoder0_pos(void);
 void scan_encoder0(void);
 void setup_encoder0(void);
 void reset_encoder0(void);
+bool encoder0_pushed(void);
