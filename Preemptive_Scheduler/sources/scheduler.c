@@ -1,6 +1,7 @@
 #include "../headers/scheduler.h"
 #include "../headers/system_tasks.h"
 #include "../headers/tm4c123gh6pm.h"
+#include "../headers/assert.h"
 #include <stddef.h>
 static void init_task(INT8U id, void (*process_func)(void));
 static void insert_running(INT8U id);
@@ -14,6 +15,9 @@ static void disable_systick_int(void);
 static void enable_systick_int(void);
 static void kernel_task(void);
 static void remove_task_blocking(INT8U id);
+static bool in_list(INT8U id); //checks if task is in a list, for debugging
+static bool in_this_list(INT8U id, process **list); //checks if task is in a specific list, for debugging
+
 void unset_pendsv(void);
 
 static process tasks[MAX_TASKS];
@@ -65,17 +69,38 @@ static void enable_systick_int()
 	NVIC_ST_CTRL_R |= NVIC_ST_CTRL_INTEN;
 }
 
+static bool in_this_list(INT8U id, process **list)
+{
+	process *cur = list[0];
+	if(list[0] != NULL && list[1] != NULL)
+	{
+		do
+		{
+			if(cur->id == id) return true;
+			cur = cur-> next;
+		}while(cur != list[0]);
+	}
+	return false;
+}
+
+
+static __attribute__((unused)) bool in_list(INT8U id)
+{
+	return (in_this_list(id, running) || in_this_list(id, waiting) || in_this_list(id, blocked));
+}
+
+
 static void count_process_timers()
 {	//Run throug all process' in waiting and count their timer one down
+	if(waiting[0] ==NULL )
+		return;
+
 	process *cur =waiting[0];
-	while(cur != waiting[1] && cur->timer)
+	do
 	{
-		cur->timer--;
+		if(cur->timer) cur->timer--;
 		cur = cur->next;
-	}
-	//Do it also for the last process
-	if(cur != NULL && cur->timer)
-		cur->timer--;
+	}while(cur != waiting[0]);
 }
 
 static void scheduler_tasks()
@@ -300,6 +325,7 @@ static void remove_task_blocking(INT8U id)
 
 __attribute__((noinline)) static void insert_running(INT8U id)
 {
+	assert(!in_this_list(id, running));
 	if(running[0] == NULL) //this should only happen if no jobs are running
 	{
 		//Set prev and next to point to itself, and set running[0:1] to point to it also.
@@ -316,14 +342,16 @@ __attribute__((noinline)) static void insert_running(INT8U id)
 		tasks[id].next = running[0];
 		running[0]->prev = &tasks[id];
 		running[1] = &tasks[id];
-
 	}
+	assert(in_this_list(id, running));
 }
 
 __attribute__((noinline)) static void insert_blocked(INT8U id)
 {	//this code should be excatly the same as insert running
 	//But we don't combine it, as it would make it overly complicated.
 	//And it's important that there is not bugs in this code.
+	assert(!in_this_list(id, blocked));
+
 	if(blocked[0] == NULL) //this should only happen if no jobs are blocked
 	{
 		//Set prev and next to point to itself, and set blocked[0:1] to point to it also.
@@ -340,10 +368,13 @@ __attribute__((noinline)) static void insert_blocked(INT8U id)
 		blocked[0]->prev = &tasks[id];
 		blocked[1] = &tasks[id];
 	}
+	assert(in_this_list(id, blocked));
 }
+
 
 __attribute__((noinline)) static void insert_waiting(INT8U id)
 {
+	assert(!in_this_list(id, waiting));
 	if(waiting[0] == NULL) //this should only happen if no jobs are waiting
 	{
 		//Set prev and next to point to itself, and set waiting[0:1] to point to it also.
@@ -373,6 +404,8 @@ __attribute__((noinline)) static void insert_waiting(INT8U id)
 			tasks[id].next = waiting[0];
 			waiting[0]->prev = &tasks[id];
 			waiting[1] = &tasks[id];
+			assert(in_this_list(id, waiting));
+			return;
 		}
 		else if(cur->timer > tasks[id].timer)
 		{ //travel one step back
@@ -394,7 +427,7 @@ __attribute__((noinline)) static void insert_waiting(INT8U id)
 			tasks[id].prev = cur;
 			cur -> next = &tasks[id];
 		}
-
+		assert(in_this_list(id, waiting));
 	}
 }
 
@@ -402,36 +435,38 @@ __attribute__((noinline)) static void remove_from_list(INT8U id, process **list)
 {
 	//Travel the list until we reach the id. This may take long time,
 	//But most of the time the task will be at the begining.
+	assert(in_this_list(id, list));
+	//Travel the list until we reach the id. This may take long time,
+	//But most of the time the task will be at the begining.
 	process *cur = list[0];
 	while( cur->id != id && cur != list[1] )
 	{//We eighter reach the last or the correct one
 		cur = cur -> next;
 	}
-	if(cur -> id == id)
-	{ //we got the correct one!
-		if(cur == list[0] && cur == list[1])
-		{ //this means we are the only process
-			list[0] = NULL;
-			list[1] = NULL;
-		}
-		else if(cur == list[0])
-		{ //We are the first process
-			list[0] = cur->next;
-			cur->next->prev = cur->prev;
-			cur->prev->next = cur->next;
-		}
-		else if(cur == list[1])
-		{//We are the last process
-			running[1] = cur->prev;
-			cur->next->prev = cur->prev;
-			cur->prev->next = cur->next;
-		}
-		else
-		{//We just remove this process
-			cur->next->prev = cur->prev;
-			cur->prev->next = cur->next;
-		}
+	assert(cur -> id == id); //we got the correct one!
+	if(cur == list[0] && cur == list[1])
+	{ //this means we are the only process
+		list[0] = NULL;
+		list[1] = NULL;
 	}
+	else if(cur == list[0])
+	{ //We are the first process
+		list[0] = cur->next;
+		list[0]->prev = cur->prev;
+		cur->prev->next = list[0];
+	}
+	else if(cur == list[1])
+	{//We are the last process
+		list[1] = cur->prev;
+		cur->next->prev = cur->prev;
+		cur->prev->next = cur->next;
+	}
+	else
+	{//We just remove this process
+		cur->next->prev = cur->prev;
+		cur->prev->next = cur->next;
+	}
+	assert(!in_this_list(id, list));
 }
 
 void setup_systick(void)
