@@ -58,8 +58,11 @@ projectname:
 	@echo "$(PROJECT)"	
 debug: clean
 debug: CFLAGS+=-g -D DEBUG
+debug: CFLAGS:=$(filter-out -DNDEBUG,$(CFLAGS))
 debug: all
 debug:
+
+	@echo ${CFLAGS}
 	@echo "Starting debugger. This may take a while"
 	sudo ./debug_nemiver.sh
 	

@@ -67,6 +67,7 @@ CFLAGS=-mthumb             	\
 			 -Wno-keyword-macro		\
        -Werror							\
        -pedantic           	\
+       -DNDEBUG
      
      
 #
