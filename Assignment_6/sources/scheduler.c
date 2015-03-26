@@ -21,15 +21,15 @@ static process *blocked[2] = {NULL, NULL}; //pointers to first and last of this 
 
 static void count_process_timers()
 {	//Run throug all process' in waiting and count their timer one down
+	if(waiting[0] ==NULL )
+		return;
+
 	process *cur =waiting[0];
-	while(cur != waiting[1] && cur->timer)
+	do
 	{
-		cur->timer--;
+		if(cur->timer) cur->timer--;
 		cur = cur->next;
-	}
-	//Do it also for the last process
-	if(cur != NULL && cur->timer)
-		cur->timer--;
+	}while(cur != waiting[0]);
 }
 
 static void scheduler_tasks()
@@ -243,7 +243,7 @@ static void insert_blocked(INT8U id)
 	}
 }
 static void insert_waiting(INT8U id)
-{ /* THERE IS BUGS IN THIS CODE!!! */
+{ /* THERE MAY BE BUGS IN THIS CODE!!! */
 	if(waiting[0] == NULL) //this should only happen if no jobs are waiting
 	{
 		//Set prev and next to point to itself, and set waiting[0:1] to point to it also.
@@ -273,6 +273,7 @@ static void insert_waiting(INT8U id)
 			tasks[id].next = waiting[0];
 			waiting[0]->prev = &tasks[id];
 			waiting[1] = &tasks[id];
+			return;
 		}
 		else if(cur->timer > tasks[id].timer)
 		{ //travel one step back

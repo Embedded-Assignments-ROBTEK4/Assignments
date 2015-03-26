@@ -149,7 +149,6 @@ void alarm_task(void)
     break;
 
     case ALARM_ACTIVE_1:
-      LED_RGB_PORT ^= LED_RED;
       if(check_release(lcd0_available))
       {
         if(encoder0_pushed())
@@ -163,20 +162,19 @@ void alarm_task(void)
           lcd0_set_cursor(0,1);
           lcd0_write_string("ALARM");
           lcd0_unlock();
-          //wait(500 / TIMEOUT_SYSTICK); //wait 100 ms
+          wait(200 / TIMEOUT_SYSTICK); //wait 200 ms
           state = ALARM_ACTIVE_2;
         }
       }
     break;
     case ALARM_ACTIVE_2:
-      LED_RGB_PORT ^= LED_GREEN;
       if(check_release(lcd0_available))
       {
         lcd0_lock();
         lcd0_set_cursor(0,1);
         lcd0_write_string("     ");
         lcd0_unlock();
-        //wait(500 / TIMEOUT_SYSTICK); //wait 100 ms
+        wait(200 / TIMEOUT_SYSTICK); //wait 200 ms
         state = ALARM_ACTIVE_1;
       }
     break;
