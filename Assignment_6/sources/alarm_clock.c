@@ -141,7 +141,7 @@ void alarm_task(void)
       else
       {
         time cur_time = get_clock();
-        if(cur_time.hour == alarm_time.hour && cur_time.sec == alarm_time.sec)
+        if(cur_time.hour == alarm_time.hour && cur_time.min == alarm_time.min)
         {
           state = ALARM_ACTIVE_1;
         }
@@ -149,32 +149,34 @@ void alarm_task(void)
     break;
 
     case ALARM_ACTIVE_1:
-    if(check_release(lcd0_available))
-    {
-      if(encoder0_pushed())
+      LED_RGB_PORT ^= LED_RED;
+      if(check_release(lcd0_available))
       {
-        encoder0_consume_push();
-        state = ALARM_NOT_SET;
+        if(encoder0_pushed())
+        {
+          encoder0_consume_push();
+          state = ALARM_NOT_SET;
+        }
+        else
+        {
+          lcd0_lock();
+          lcd0_set_cursor(0,1);
+          lcd0_write_string("ALARM");
+          lcd0_unlock();
+          //wait(500 / TIMEOUT_SYSTICK); //wait 100 ms
+          state = ALARM_ACTIVE_2;
+        }
       }
-      else
-      {
-        lcd0_lock();
-        lcd0_set_cursor(0,1);
-        lcd0_write_string("ALARM");
-        lcd0_unlock();
-        wait(100 / TIMEOUT_SYSTICK); //wait 100 ms
-        state = ALARM_ACTIVE_2;
-      }
-    }
     break;
     case ALARM_ACTIVE_2:
+      LED_RGB_PORT ^= LED_GREEN;
       if(check_release(lcd0_available))
       {
         lcd0_lock();
         lcd0_set_cursor(0,1);
         lcd0_write_string("     ");
         lcd0_unlock();
-        wait(100 / TIMEOUT_SYSTICK); //wait 100 ms
+        //wait(500 / TIMEOUT_SYSTICK); //wait 100 ms
         state = ALARM_ACTIVE_1;
       }
     break;

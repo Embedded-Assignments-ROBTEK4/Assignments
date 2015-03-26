@@ -114,7 +114,7 @@ void start_scheduler()
 
 bool check_release(bool (*check)(void))
 {
-	
+
 	if(check())
 	{
 		return true;
@@ -152,7 +152,7 @@ void init_scheduler(void)
 		waiting[1] = NULL;
 		blocked[0] = NULL;
 		blocked[1] = NULL;
-		
+
 	}
 }
 
@@ -217,7 +217,7 @@ static void insert_running(INT8U id)
 		tasks[id].next = running[0];
 		running[0]->prev = &tasks[id];
 		running[1] = &tasks[id];
-		
+
 	}
 }
 
@@ -243,7 +243,7 @@ static void insert_blocked(INT8U id)
 	}
 }
 static void insert_waiting(INT8U id)
-{
+{ /* THERE IS BUGS IN THIS CODE!!! */
 	if(waiting[0] == NULL) //this should only happen if no jobs are waiting
 	{
 		//Set prev and next to point to itself, and set waiting[0:1] to point to it also.
@@ -294,7 +294,7 @@ static void insert_waiting(INT8U id)
 			tasks[id].prev = cur;
 			cur -> next = &tasks[id];
 		}
-	
+
 	}
 }
 static void remove_from_list(INT8U id, process **list) //united function as they are exctely the same
