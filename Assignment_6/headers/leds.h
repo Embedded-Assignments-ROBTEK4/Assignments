@@ -1,4 +1,5 @@
 #pragma once
+#include "tm4c123gh6pm.h"
 void setup_leds(void);
 
 #define LED_STATUS_PORT		GPIO_PORTD_DATA_R

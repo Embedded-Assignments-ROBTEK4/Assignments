@@ -5,6 +5,7 @@
 bool lcd0_available(void);
 void lcd0_lock(void);
 void lcd0_unlock(void);
+bool lcd0_try_lock(void);
 
 void setup_lcd0(void);
 void lcd0_home(void);

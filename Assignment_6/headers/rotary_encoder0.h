@@ -12,3 +12,4 @@ void scan_encoder0(void);
 void setup_encoder0(void);
 void reset_encoder0(void);
 bool encoder0_pushed(void);
+void encoder0_consume_push(void);

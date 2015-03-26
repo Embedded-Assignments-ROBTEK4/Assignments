@@ -14,19 +14,7 @@
 #include "../headers/clock_keyboard_controller.h"
 #include "../headers/rotary_encoder0.h"
 #include "../headers/print.h"
-void print_encoder(void);
-
-void print_encoder(void)
-{
-	if(encoder0_pushed())
-			reset_encoder0();
-	INT32S encoderval = get_encoder0_pos();
-	lcd0_set_cursor(0,0);
-	vprintf_(lcd0_write_string, 100, "%d", (int)encoderval);
-	lcd0_write_string("        ");
-
-}
-
+#include "../headers/alarm_clock.h"
 int main(void)
 {
 	disable_global_int();
@@ -42,8 +30,14 @@ int main(void)
 	setup_lcd0();
 	setup_encoder0();
 	enable_global_int();
+	add_task(check_keyboard);
+	add_task(collect_button_events);
+	add_task(run_clock);
+	add_task(display_clock);
+	add_task(clock_uart0_controller);
+	add_task(clock_keyboard_controller);
 	add_task(scan_encoder0);
-	add_task(print_encoder);
+	add_task(alarm_task);
 	start_scheduler();
 
 	return 0;

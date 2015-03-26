@@ -118,39 +118,46 @@ void clock_keyboard_controller(void)
 			}
 		break;
 		case SET_MIN_UNLOCKED:
-			lcd0_lock();
-			state = SET_MIN_LOCKED;
-			lcd0_set_cursor(7, 0);
-			lcd0_write_string("SET MIN");
-			lcd0_set_cursor(0, 1);
-			lcd0_write_string("8====3     (o.O)"); //Very important!
-			lcd0_cursor();
-			lcd0_blink();
+			if(check_release(lcd0_available))
+			{
+				lcd0_lock();
+				state = SET_MIN_LOCKED;
+				lcd0_set_cursor(7, 0);
+				lcd0_write_string("SET MIN");
+				lcd0_set_cursor(0, 1);
+				lcd0_write_string("8====3     (o.O)"); //Very important!
+				lcd0_cursor();
+				lcd0_blink();
 				//There should not be a break here!
+			}
+			else
+				break;
 		case SET_MIN_LOCKED:
 			set_min(&state, &clock, &cursor_position);
 		break;
 
 		case SET_HOUR_UNLOCKED:
-			lcd0_lock();
-			state = SET_HOUR_LOCKED;
-			lcd0_set_cursor(7, 0);
-			lcd0_write_string("SET HOUR");
-			lcd0_set_cursor(0, 1);
-			lcd0_write_string("8====D   (.)Y(.)"); //Very important!
-			lcd0_cursor();
-			lcd0_blink();
-				//There should not be a break here!
+			if(check_release(lcd0_available))
+			{
+				lcd0_lock();
+				state = SET_HOUR_LOCKED;
+				lcd0_set_cursor(7, 0);
+				lcd0_write_string("SET HOUR");
+				lcd0_set_cursor(0, 1);
+				lcd0_write_string("8====D   (.)Y(.)"); //Very important!
+				lcd0_cursor();
+				lcd0_blink();
+					//There should not be a break here!
+			}
+			else
+				break;
 		case SET_HOUR_LOCKED:
 			set_hour(&state, &clock, &cursor_position);
 		break;
 
 		default:
 		break;
-
-
 	}
-
 }
 
 static void release_lcd(void)

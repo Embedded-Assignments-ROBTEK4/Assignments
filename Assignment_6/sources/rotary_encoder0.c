@@ -41,13 +41,17 @@ void scan_encoder0(void)
   enc_button_last = enc_switch;
 }
 
-bool encoder0_pushed() //Return whether the encoder button has ben pushed since last request (which means encoder_pushes > 0)
-{
+void encoder0_consume_push()
+{ //Count encoder_pushes down.
   if(encoder_pushes)
   {
      encoder_pushes--;
-     return true;
   }
+}
+bool encoder0_pushed() //Return whether the encoder button has ben pushed since last request.
+{
+  if(encoder_pushes)
+    return true;
   else
     return false;
 }

@@ -8,7 +8,10 @@ bool lcd0_available(void)
 {
 	return is_mutex_unlocked(&lcd0_mutex);
 }
-
+bool lcd0_try_lock(void)
+{
+	return try_lock_mutex(&lcd0_mutex);
+}
 void lcd0_lock(void)
 {
 	lock_mutex(&lcd0_mutex);
@@ -25,19 +28,19 @@ void setup_lcd0(void)
 {
 	SYSCTL_RCGC2_R 		|= SYSCTL_RCGC2_GPIOC;
   SYSCTL_RCGC2_R 		|= SYSCTL_RCGC2_GPIOD;
-  
+
   __asm__("NOP");
 	__asm__("NOP");
-	
+
 	 GPIO_PORTC_DIR_R |= LCD_D4 | LCD_D5 | LCD_D6 | LCD_D7;
 	 GPIO_PORTD_DIR_R |= LCD_E  | LCD_RS;
-	 
+
 	 GPIO_PORTC_DEN_R |= LCD_D4 | LCD_D5 | LCD_D6 | LCD_D7;
 	 GPIO_PORTD_DEN_R |= LCD_E  | LCD_RS;
-	 
+
 	lcd0 = lcd_init_4bit(LCD_RS, LCD_E, (volatile INT32U *)&LCD_RS_E_PORT, LCD_D4,
 															 LCD_D5, LCD_D6, LCD_D7, (volatile INT32U *)&LCD_DATA_PORT);
-	lcd_begin(&lcd0, 2); 
+	lcd_begin(&lcd0, 2);
 }
 
 void lcd0_home(void)
