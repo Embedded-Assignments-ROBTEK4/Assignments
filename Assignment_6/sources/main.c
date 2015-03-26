@@ -15,6 +15,7 @@
 #include "../headers/rotary_encoder0.h"
 #include "../headers/print.h"
 #include "../headers/alarm_clock.h"
+#include "../headers/assert.h"
 void ledblink(void);
 int main(void)
 {
