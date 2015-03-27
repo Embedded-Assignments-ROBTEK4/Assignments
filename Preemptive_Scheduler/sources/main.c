@@ -3,36 +3,15 @@
 #include "../headers/leds.h"
 #include "../headers/system_buffers.h"
 #include "../headers/SWDelay.h"
+#include "../headers/UART.h"
+#include "../headers/clock.h"
+#include "../headers/buttons.h"
+#include "../headers/lcd0.h"
+#include "../headers/display_clock.h"
 void blinkred(void);
 void blinkgreen(void);
 void blinkyellow(void);
-
-
-void blinkgreen(void)
-{
-	while(1)
-	{
-		wait(90);
-		LED_RGB_PORT ^= LED_GREEN;
-	}
-}
-void blinkred(void)
-{
-	while(1)
-	{
-		wait(95);
-		LED_RGB_PORT ^= LED_RED;
-	}
-}
-void blinkyellow(void)
-{
-	while(1)
-	{
-		wait(105);
-		LED_RGB_PORT ^= LED_BLUE;
-	}
-}
-
+void uart_test(void);
 
 int main(void)
 {
@@ -42,11 +21,17 @@ int main(void)
 	init_scheduler();
 	sys_ringbuf_uchar_init();
 	setup_delay(); //Used by lcd.
+	setup_uart0();
+	setup_buttons();
+	setup_clock();
+	setup_lcd0();
+
+
 	enable_global_int();
 
-	add_task(blinkred);
-	add_task(blinkgreen);
-	add_task(blinkyellow);
+	add_task(collect_button_events);
+	add_task(run_clock);
+	add_task(display_clock);
 
 	start_scheduler();
 

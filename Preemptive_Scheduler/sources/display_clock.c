@@ -68,7 +68,7 @@ void display_clock(void)
 
 		time_last = time_now;
 		lcd0_unlock();
-		wait(SECOND_LENGTH / TIMEOUT_SYSTICK / 60);
+		wait(10);
 	}
 }
 /****************************** End of module *******************************/

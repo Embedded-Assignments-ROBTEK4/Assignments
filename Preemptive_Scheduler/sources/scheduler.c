@@ -15,7 +15,7 @@ static void disable_systick_int(void);
 static void enable_systick_int(void);
 static void kernel_task(void);
 static void remove_task_blocking(INT8U id);
-static bool in_list(INT8U id); //checks if task is in a list, for debugging
+static bool in_list(INT8U id); //checks if task is in a list, only one time, for debugging
 static bool in_this_list(INT8U id, process **list); //checks if task is in a specific list, for debugging
 
 void unset_pendsv(void);
@@ -71,7 +71,7 @@ static void enable_systick_int()
 
 static bool in_this_list(INT8U id, process **list)
 {
-	process *cur = list[0];
+  process *cur = list[0];
 	if(list[0] != NULL && list[1] != NULL)
 	{
 		do
@@ -165,13 +165,13 @@ uint32_t *switch_context(uint32_t *stackptr) //Does the same as systick_switch_c
 {
   tasks[current_task].process_stack_pointer = stackptr;
   if(tasks[current_task].status == RUNNING && current_task)
-    insert_running(current_task);
+    if(!in_this_list(current_task, running))
+      insert_running(current_task);
   current_task = select_task();
   if(current_task == 0xFF)
   {
     current_task = 0; //Start kernel thread
   }
-  remove_from_list(current_task, running);
   return tasks[current_task].process_stack_pointer;
 }
 

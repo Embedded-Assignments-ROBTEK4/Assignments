@@ -99,7 +99,7 @@ static void clock_count_hour(time *time_s, bool direction)
 
 void run_clock(void)
 /**********************************************
-* Input : SW1 event, SW2 event.
+* Input : SW1 event, SW2 event.SECOND_LENGTH / TIMEOUT_SYSTICK / 60
 * Output : Time.
 * Function : Count timer normally if buttons not pressed,
 * 					 else the time can be changed by the user
@@ -152,7 +152,7 @@ void run_clock(void)
 			default:
 				break;
 		}
-	wait(SECOND_LENGTH / TIMEOUT_SYSTICK / 2);
+	wait(SECOND_LENGTH / TIMEOUT_SYSTICK / 60);
 	}
 }
 bool set_clock(INT8U hour_, INT8U min_, INT8U sec_)
