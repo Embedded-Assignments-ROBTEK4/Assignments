@@ -28,75 +28,6 @@
 static INT8U clock_timer = 0;
 static time clock;
 
-
-static void clock_count_hour(time *time_s, bool direction);
-static void clock_count_min(time *time_s, bool direction);
-void clock_tick(time *time_s);
-
-/*****************************   Functions   ********************************/
-void clock_tick(time *time_s)
-/**********************************************
-* Input : Struct time.
-* Output : None.
-* Function : Count timer.
-**********************************************/
-{
-	if(++time_s->sec >= SECONDS_PER_MINUTE)
-	{
-		time_s->sec = 0;
-		if(++time_s->min >= MINUTES_PER_HOUR)
-		{
-			time_s->min = 0;
-			if(++time_s->hour >= HOURS_PER_DAY)
-				time_s->hour = 0;
-		}
-	}
-}
-
-static void clock_count_min(time *time_s, bool direction)
-/**********************************************
-* Input : Struct time, direction of count.
-* Output : None.
-* Function : Increment time_s->min if direction == true.
-* 					 Decrement time_s->min if direction == false.
-**********************************************/
-{
-	if(direction)
-		if(time_s->min >= MINUTES_PER_HOUR - 1)
-			 time_s->min = 0;
-		else
-			 time_s->min++;
-	else
-	{
-		if(time_s->min == 0)
-			 time_s->min = MINUTES_PER_HOUR - 1;
-		else
-			 time_s->min--;
-	}
-}
-
-static void clock_count_hour(time *time_s, bool direction)
-/**********************************************
-* Input : Struct time, direction of count.
-* Output : None.
-* Function : Increment time_s->hour if direction == true.
-* 					 Decrement time_s->hour if direction == false.
-**********************************************/
-{
-	if(direction)
-		if(time_s->hour >= HOURS_PER_DAY - 1)
-			 time_s->hour = 0;
-		else
-			 time_s->hour++;
-	else
-	{
-		if(time_s->hour == 0)
-			 time_s->hour = HOURS_PER_DAY - 1;
-		else
-			 time_s->hour--;
-	}
-}
-
 void run_clock(void)
 /**********************************************
 * Input : SW1 event, SW2 event.SECOND_LENGTH / TIMEOUT_SYSTICK / 60
@@ -112,7 +43,7 @@ void run_clock(void)
 	{
 		INT8U event_from_button = NO_BUTTON_EVENT;
 
-		if(button_data_avaliable())
+		if(button_data_available())
 		{
 			event_from_button = button_in_char();
 		}
@@ -123,13 +54,13 @@ void run_clock(void)
 				else if(get_timer_val(clock_timer) <= SECOND_LENGTH / TIMEOUT_SYSTICK)
 				{
 					increase_timer_val(clock_timer, SECOND_LENGTH / TIMEOUT_SYSTICK);
-					clock_tick(&clock);
+					time_count_sec(&clock, 1);
 				}
 				break;
 
 			case SET_MIN:
-				if(event_from_button == SW1_SINGLE_PRESS) clock_count_min(&clock, 1);
-				else if(event_from_button == SW2_SINGLE_PRESS) clock_count_min(&clock, 0);
+				if(event_from_button == SW1_SINGLE_PRESS) time_count_min(&clock, 1);
+				else if(event_from_button == SW2_SINGLE_PRESS) time_count_min(&clock, -1);
 				else if(event_from_button == SW1_LONG_PRESS or event_from_button == SW2_LONG_PRESS)
 				{
 					state 		 = NORMAL;
@@ -139,8 +70,8 @@ void run_clock(void)
 				break;
 
 			case SET_HOUR:
-				if(event_from_button == SW1_SINGLE_PRESS) clock_count_hour(&clock, 1);
-				else if(event_from_button == SW2_SINGLE_PRESS) clock_count_hour(&clock, 0);
+				if(event_from_button == SW1_SINGLE_PRESS) time_count_hour(&clock, 1);
+				else if(event_from_button == SW2_SINGLE_PRESS) time_count_hour(&clock, -1);
 				else if(event_from_button == SW1_LONG_PRESS or event_from_button == SW2_LONG_PRESS)
 				{
 					state = NORMAL;
@@ -155,6 +86,8 @@ void run_clock(void)
 	wait(SECOND_LENGTH / TIMEOUT_SYSTICK / 60);
 	}
 }
+
+
 bool set_clock(INT8U hour_, INT8U min_, INT8U sec_)
 {
 	if(hour_ < HOURS_PER_DAY && min_ < MINUTES_PER_HOUR && sec_ < SECONDS_PER_MINUTE)

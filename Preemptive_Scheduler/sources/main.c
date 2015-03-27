@@ -8,11 +8,13 @@
 #include "../headers/buttons.h"
 #include "../headers/lcd0.h"
 #include "../headers/display_clock.h"
+#include "../headers/clock_uart0_controller.h"
+
+
 void blinkred(void);
 void blinkgreen(void);
 void blinkyellow(void);
 void uart_test(void);
-
 int main(void)
 {
 	disable_global_int();
@@ -32,6 +34,7 @@ int main(void)
 	add_task(collect_button_events);
 	add_task(run_clock);
 	add_task(display_clock);
+	//add_task(clock_uart0_controller);
 
 	start_scheduler();
 

@@ -47,7 +47,7 @@
 /*****************************   Functions   ********************************/
 
 void collect_button_events(void);
-RBUF_INDEX_TYPE button_data_avaliable(void);
+RBUF_INDEX_TYPE button_data_available(void);
 INT8U button_in_char(void);
 void setup_buttons(void);
 

@@ -17,7 +17,7 @@ static void display_alarm_time(time *alarm_time)
   lcd0_set_cursor(0,0);
   lcd0_write_char(alarm_time->hour / 10 + '0');
   lcd0_write_char(alarm_time->hour % 10 + '0');
-  lcd0_write_char(' ');
+  lcd0_write_char(':');
   lcd0_write_char(alarm_time->min / 10 + '0');
   lcd0_write_char(alarm_time->min % 10 + '0');
 }
@@ -28,7 +28,7 @@ static void alarm_release_lcd(void)
   time cur_time = get_clock();
   lcd0_write_char(cur_time.hour / 10 + '0');
   lcd0_write_char(cur_time.hour % 10 + '0');
-  lcd0_write_char(' ');
+  lcd0_write_char(':');
   lcd0_write_char(cur_time.min / 10 + '0');
   lcd0_write_char(cur_time.min % 10 + '0');
   lcd0_write_string("           ");
@@ -162,6 +162,7 @@ void alarm_task(void)
           lcd0_set_cursor(0,1);
           lcd0_write_string("ALARM");
           lcd0_unlock();
+          LED_RGB_PORT |= LED_RED | LED_GREEN | LED_BLUE;
           wait(200 / TIMEOUT_SYSTICK); //wait 200 ms
           state = ALARM_ACTIVE_2;
         }
@@ -174,6 +175,7 @@ void alarm_task(void)
         lcd0_set_cursor(0,1);
         lcd0_write_string("     ");
         lcd0_unlock();
+        LED_RGB_PORT &= ~(LED_RED | LED_GREEN | LED_BLUE);
         wait(200 / TIMEOUT_SYSTICK); //wait 200 ms
         state = ALARM_ACTIVE_1;
       }

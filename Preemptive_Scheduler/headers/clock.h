@@ -23,26 +23,16 @@
 /***************************** Include files ********************************/
 #include "emp_type.h"
 #include <stdbool.h>
+#include "time.h"
 
 /*******************************   Defines    *******************************/
 #define SECOND_LENGTH 			1000 // Length of a second in ms.
-#define SECONDS_PER_MINUTE 	60
-#define MINUTES_PER_HOUR		60
-#define HOURS_PER_DAY				24
-
 /*******************************    Enums     *******************************/
 typedef enum {
 	NORMAL,
 	SET_MIN,
 	SET_HOUR,
 } clock_state;
-
-/*******************************   Structs    *******************************/
-typedef struct {
-	INT8U sec;
-	INT8U min;
-	INT8U hour;
-} time;
 
 /*****************************   Functions   ********************************/
 void run_clock(void);

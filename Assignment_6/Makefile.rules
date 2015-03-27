@@ -36,7 +36,7 @@ ${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
 ${BUILDDIR}/%.o: ${ASSEMBLYDIR}/%.S
 	@${AS} ${AFLAGS} -c $< -o $@
 	@echo "CC $@"
-	
+
 ${BUILDDIR}/%.a:
 	@${AR} -cr ${@} ${^}
 	@echo "CC ${@}"
@@ -44,7 +44,7 @@ ${BUILDDIR}/%.a:
 ${BUILDDIR}/${PROJECT}.axf: ${OBJECTS} ${LIBRARIES} ${LDFILE}
 	@${LD}  ${LDFLAGS} -o ${@} $(filter %.o %.a, ${^}) ${LINKOBJECTS}
 	@echo "LD ${@}"
-	
+
 ${PROJECT}.bin: ${BUILDDIR}/${PROJECT}.axf
 	@${OBJCOPY} -O binary ${<} ${@}
 	@echo "OBJCOPY ${@}"
@@ -55,16 +55,28 @@ ${SOURCEDIR}/MASTER.c: ${SOURCES_}
 
 
 projectname:
-	@echo "$(PROJECT)"	
+	@echo "$(PROJECT)"
+
+debug-assert: clean
+debug-assert: CFLAGS+=-g -D DEBUG
+debug-assert: CFLAGS:=$(filter-out -DNDEBUG,$(CFLAGS))
+debug-assert: all
+debug-assert:
+	@echo ${CFLAGS}
+	@echo "Starting debugger. This may take a while"
+	sudo ./debug_nemiver.sh
+
+
+
+
 debug: clean
 debug: CFLAGS+=-g -D DEBUG
-debug: CFLAGS:=$(filter-out -DNDEBUG,$(CFLAGS))
 debug: all
 debug:
 
 	@echo ${CFLAGS}
 	@echo "Starting debugger. This may take a while"
 	sudo ./debug_nemiver.sh
-	
+
 optflags:
 	@${CC} -Q --help=optimizers ${CFLAGS}
