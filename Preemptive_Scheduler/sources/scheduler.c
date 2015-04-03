@@ -64,7 +64,7 @@ static void enable_systick_int()
 static void count_process_timers()
 {	//Run throug all process'  and count their timer one down
 
-  for(INT8U i = 0; i < MAX_TASKS; i++)
+  for(INT8U i = 1; i < MAX_TASKS; i++)
   {
     if(tasks[i].status == WAITING && tasks[i].timer)  tasks[i].timer--;
   }
@@ -87,13 +87,10 @@ static INT8U select_task()
 
 	if(returnid == 0xFF)
 	{	//If we didn't find a blocking one, try to find a waiting which is ready.
-		//They should be in order, so we actually only need to try the first one
-    INT16U min_timer = 0xFFFF;
     for(INT8U i = 1; i < MAX_TASKS; i++)
     {
-      if(tasks[i].status == WAITING && tasks[i].timer <= min_timer)
+      if(tasks[i].status == WAITING && tasks[i].timer == 0)
       {
-        min_timer = tasks[i].timer;
         returnid = tasks[i].id;
       }
     }
@@ -101,36 +98,40 @@ static INT8U select_task()
 
 	if(returnid == 0xFF)
 	{//If we still didn't find one, find from running tasks.
-    INT8U min_turns = 0;
+    INT16U max_turns = 0;
     for(INT8U i = 1; i < MAX_TASKS; i++)
     {
       if(tasks[i].status == RUNNING)
       {
         tasks[i].times_since_run++;
-        if(tasks[i].times_since_run >= min_turns)
+        if(tasks[i].times_since_run > max_turns)
         {
-          min_turns = tasks[i].times_since_run;
+          max_turns = tasks[i].times_since_run;
           returnid = tasks[i].id;
         }
       }
     }
-    if(returnid != 0xFF) tasks[returnid].times_since_run = 0;
 	}
 	//remove from current queue and set status to running
   if(returnid != 0xFF)
+  {
 	  tasks[returnid].status = RUNNING;
+    tasks[returnid].times_since_run = 0;
+  }
 	return returnid;
 }
 
 
 uint32_t *switch_context(uint32_t *stackptr) //Does the same as systick_switch_context, but don't run system and scheduler tasks
 {
+  disable_systick_int();
   tasks[current_task].process_stack_pointer = stackptr;
   current_task = select_task();
   if(current_task == 0xFF)
   {
     current_task = 0; //Start kernel thread
   }
+  enable_systick_int();
   return tasks[current_task].process_stack_pointer;
 }
 
@@ -161,7 +162,10 @@ __attribute__((naked)) void pendsv_isr()
 
 __attribute__((unused)) void kernel_task()
 {
-	while(true); //Do nothing //We should somehow fix this so we don't waste time here.
+	while(true)
+  {
+    //request_context_switch();
+  } //Do nothing //We should somehow fix this so we don't waste time here.
 }
 
 void start_scheduler()
@@ -195,9 +199,7 @@ void wait(INT16U time)
 { //This process wants to wait some time.
 	//Put the time in its timer, inset it in the waiting list and request a pendsv interrupt.
 	tasks[current_task].timer = time;
-  disable_systick_int();
   tasks[current_task].status = WAITING;
-  enable_systick_int();
   request_context_switch();
 }
 
