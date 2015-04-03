@@ -15,6 +15,14 @@ void blinkred(void);
 void blinkgreen(void);
 void blinkyellow(void);
 void uart_test(void);
+void blinkgreen()
+{
+	while(true)
+	{
+		LED_RGB_PORT ^= LED_GREEN;
+		wait(100);
+	}
+}
 int main(void)
 {
 	disable_global_int();
@@ -28,9 +36,9 @@ int main(void)
 	setup_clock();
 	setup_lcd0();
 
-
 	enable_global_int();
 
+//	add_task(blinkgreen);
 	add_task(collect_button_events);
 	add_task(run_clock);
 	add_task(display_clock);

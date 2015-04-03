@@ -1,4 +1,4 @@
-all: ${BUILDDIR}
+all: ${BUILDDIRS}
 all: ${PROJECT}.bin
 
 
@@ -9,7 +9,6 @@ clean:
 	rm -rf ${MAPFILE}
 	rm -rf ${SOURCEDIR}/MASTER.c
 
-
 flash: all
 	echo "Flashing chip"
 	sudo lm4flash ${PROJECT}.bin
@@ -17,10 +16,11 @@ flash: all
 # pull in dependency info for *existing* .o files
 -include $(OBJECTS:.o=.d)
 
-${BUILDDIR}:
-	mkdir ${BUILDDIR} -p
+${BUILDDIR} ${BUILDDIRS}:
+	mkdir ${BUILDDIRS} -p
 
-${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
+
+${BUILDDIR}/%.o: %.c
 	@${CC} ${CFLAGS} -c $< -o $@
 	@echo "CC $@"
 #create dependency file to detect changes in header
@@ -33,7 +33,7 @@ ${BUILDDIR}/%.o: ${SOURCEDIR}/%.c
 	  sed -e 's/^ *//' -e 's/$$/:/' >> ${@:.o=.d}
 	@rm -f ${@:.o=.d.tmp}
 
-${BUILDDIR}/%.o: ${ASSEMBLYDIR}/%.S
+${BUILDDIR}/%.o: %.S
 	@${AS} ${AFLAGS} -c $< -o $@
 	@echo "CC $@"
 
