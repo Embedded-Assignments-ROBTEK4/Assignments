@@ -32,7 +32,7 @@ int main(void)
 	setup_delay(); //Used by lcd.
 	setup_lcd0();
 	setup_encoder0();
-	set_sysclk(80000);
+	set_sysclk(FCPU / 1000);
 	enable_global_int();
 	add_task(check_keyboard);
 	add_task(collect_button_events);

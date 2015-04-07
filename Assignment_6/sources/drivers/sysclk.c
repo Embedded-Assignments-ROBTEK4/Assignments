@@ -32,7 +32,7 @@ void set_sysclk(INT32U freq)
 	SYSCTL_RCC2_R &= ~SYSCTL_RCC2_PWRDN2;
 	
 	//Delay a bit, so the clock can stabilize.
-	for(volatile INT32U i = 0; i< 100000; i++);
+	for(volatile INT32U i = 0; i< 50000; i++);
 	
 	//Set SYSDIV.
 	SYSCTL_RCC2_R |= SYSCTL_RCC2_DIV400;
