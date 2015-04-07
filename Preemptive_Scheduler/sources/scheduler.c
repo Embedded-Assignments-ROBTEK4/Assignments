@@ -117,8 +117,12 @@ static INT8U select_task()
   {
 	  tasks[returnid].status = RUNNING;
     tasks[returnid].times_since_run = 0;
+    return returnid;
   }
-	return returnid;
+  else
+  {
+    return 0; //Start kernel thread
+  }
 }
 
 
@@ -127,10 +131,6 @@ uint32_t *switch_context(uint32_t *stackptr) //Does the same as systick_switch_c
   disable_systick_int();
   tasks[current_task].process_stack_pointer = stackptr;
   current_task = select_task();
-  if(current_task == 0xFF)
-  {
-    current_task = 0; //Start kernel thread
-  }
   enable_systick_int();
   return tasks[current_task].process_stack_pointer;
 }
@@ -172,9 +172,7 @@ void start_scheduler()
 {
 	init_task(0,kernel_task);
 	enable_systick_int();
-	__asm__ volatile (
-  "BL kernel_task\n" //Jump to kernel task
-  );
+  kernel_task(); //Jump to kernel task
 }
 
 

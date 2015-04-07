@@ -52,4 +52,3 @@ INT8U button_in_char(void);
 void setup_buttons(void);
 
 /****************************** End of module *******************************/
-

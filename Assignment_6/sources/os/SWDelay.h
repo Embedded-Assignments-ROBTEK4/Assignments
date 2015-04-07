@@ -22,10 +22,10 @@
 
 /***************************** Include files ********************************/
 #include "../../headers/emp_type.h"
+#include "../../headers/GLOBAL_DEFINITIONS.h"
 #include "../../headers/tm4c123gh6pm.h"
 
 /*******************************   Defines    *******************************/
-#define FCPU 			16000000
 #define US_CYCLES FCPU / 1000000
 #define MS_CYCLES FCPU / 1000
 

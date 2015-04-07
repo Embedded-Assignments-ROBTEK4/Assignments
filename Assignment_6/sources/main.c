@@ -16,6 +16,7 @@
 #include "libs/print.h"
 #include "tasks/alarm_clock.h"
 #include "../headers/assert.h"
+#include "drivers/sysclk.h"
 void ledblink(void);
 int main(void)
 {
@@ -31,6 +32,7 @@ int main(void)
 	setup_delay(); //Used by lcd.
 	setup_lcd0();
 	setup_encoder0();
+	set_sysclk(80000);
 	enable_global_int();
 	add_task(check_keyboard);
 	add_task(collect_button_events);

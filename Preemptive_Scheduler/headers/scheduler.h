@@ -1,4 +1,5 @@
 #pragma once
+
 #define MAX_TASKS 25
 #define TASK_STACK_SIZE 128
 
@@ -44,7 +45,7 @@ typedef struct process
 	struct process *prev; //Pointer to previous process with same status.
 	uint32_t process_stack[TASK_STACK_SIZE];
 	uint32_t *process_stack_pointer;
-	INT8U times_since_run;
+	INT16U times_since_run;
 } process;
 
 

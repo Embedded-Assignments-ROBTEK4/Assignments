@@ -10,7 +10,6 @@
 #include "../headers/display_clock.h"
 #include "../headers/clock_uart0_controller.h"
 
-
 void blinkred(void);
 void blinkgreen(void);
 void blinkyellow(void);
