@@ -27,7 +27,6 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
-#include "systick.h"
 #include "status_led.h"
 #include "os/system_buffers.h"
 #include "drivers/UART.h"
@@ -35,6 +34,11 @@
 #include "drivers/SSI3.h"
 #include "drivers/fpu.h"
 #include "drivers/sysclk.h"
+#include "drivers/lcd0.h"
+#include "drivers/keyboard.h"
+#include "os/system_timers.h"
+#include "libs/print.h"
+#include "drivers/adc.h"
 
 /*****************************    Defines    *******************************/
 #define USERTASK_STACK_SIZE configMINIMAL_STACK_SIZE
@@ -50,8 +54,7 @@
 /*****************************   Functions   *******************************/
 
 void uart_task(void *pvParameters);
-void spi_task(void *pvParameters);
-void spi2_task(void *pvParameters);
+void lcd_test(void  *pvParameters);
 
 static void setupHardware(void);
 
@@ -66,93 +69,52 @@ static void setupHardware(void)
 
   // Warning: If you do not initialize the hardware clock, the timings will be inaccurate
   set_sysclk(FCPU / 1000);
-  init_systick();
   enable_fpu();
   sys_ringbuf_uchar_init();
+  setup_delay();
   setup_uart0();
-  setup_ssi0();
-  setup_ssi3();
+  setup_lcd0();
+  setup_keyboard();
+  InitAdc();
   status_led_init();
-
-}
-void fpu_test(void __attribute__((unused)) *pvParameters);
-
-
-void fpu_test(void __attribute__((unused)) *pvParameters)
-{
-  float test = 1.;
-  float i = test / 2;
-  while(1)
-  {
-    if(test > 0.5)
-      i+=0.0000001;
-  }
 }
 
-void uart_task(void __attribute__((unused)) *pvParameters)
+void lcd_test(void __attribute__((unused)) *pvParameters)
 {
   while(1)
   {
-    uart0_out_char('t');
-  	vTaskDelay(100 / portTICK_RATE_MS); // wait 100 ms.
+    lcd0_write_string("Test");
+  	vTaskDelay(300 / portTICK_RATE_MS); // wait 100 ms.
   }
 }
 
 
-void spi_task(void __attribute__((unused)) *pvParameters)
-{
-  while(1)
-  {
-    ssi0_out_16bit(0b0000000011011000);
-    ssi0_out_16bit(0b0000000100000000);
-    ssi0_out_16bit(0b0000000100000000);
+void keyboard_test_task(void __attribute__((unused)) *pvParameters);
 
-    ssi0_in_16bit();
-    INT32U in_data = ssi0_in_16bit() << 16;
-    in_data |= ssi0_in_16bit();
-    bool index_bit = in_data & 0x400000;
-    if(index_bit)
+void keyboard_test_task(void __attribute__((unused)) *pvParameters)
+{
+  while(true)
+  {
+    if(keyboard_data_available())
     {
-      ssi0_out_16bit(0b0000000000000000);
-      while(1)
-        vTaskDelay(1000 / portTICK_RATE_MS); // wait 100 ms.
+      uart0_out_char(keyboard_in_char());
     }
-    //uart0_out_char((in_data >> 24) & 0xFF);
-    //uart0_out_char((in_data >> 16) & 0xFF);
-    //uart0_out_char((in_data >> 8) & 0xFF);
-    //uart0_out_char((in_data     ) & 0xFF);
-
-    vTaskDelay(1 / portTICK_RATE_MS); // wait 100 ms.
   }
 }
+void ADC_test_taskforce(void __attribute__((unused)) *pvParameters);
 
-void spi2_task(void __attribute__((unused)) *pvParameters)
+void ADC_test_taskforce(void __attribute__((unused)) *pvParameters)
 {
   while(1)
   {
-    ssi3_out_16bit(0b0000000001001000);
-    ssi3_out_16bit(0b0000000100000000);
-    ssi3_out_16bit(0b0000000100000000);
-
-    ssi3_in_16bit();
-    INT32U in_data = ssi3_in_16bit() << 16;
-    in_data |= ssi3_in_16bit();
-    bool index_bit = in_data & 0x400000;
-    if(index_bit)
-    {
-      ssi3_out_16bit(0b0000000000000000);
-      while(1)
-        vTaskDelay(1000 / portTICK_RATE_MS); // wait 100 ms.
-    }
-    //uart0_out_char((in_data >> 24) & 0xFF);
-    //uart0_out_char((in_data >> 16) & 0xFF);
-    //uart0_out_char((in_data >> 8) & 0xFF);
-    //uart0_out_char((in_data     ) & 0xFF);
-
-    vTaskDelay(1 / portTICK_RATE_MS); // wait 100 ms.
+    INT16U adcstuff = GetADC() * 0.5;
+    lcd0_set_cursor(0,0);
+    vprintf_(lcd0_write_string, 50, "%d\n", adcstuff);
+  	vTaskDelay(5 / portTICK_RATE_MS); // wait 100 ms.
+    lcd0_set_cursor(0,0);
+    lcd0_write_string("     ");
   }
 }
-
 
 int main(void)
 /*****************************************************************************
@@ -167,9 +129,10 @@ int main(void)
    Start the tasks defined within this file/specific to this demo.
    */
   return_value &= xTaskCreate( status_led_task, ( signed portCHAR * ) "Status_led", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( spi_task, (signed portCHAR *) "Uart", USERTASK_STACK_SIZE,NULL,LOW_PRIO,NULL);
-  return_value &= xTaskCreate( spi2_task, (signed portCHAR *) "Uart", USERTASK_STACK_SIZE,NULL,LOW_PRIO,NULL);
-  return_value &= xTaskCreate( fpu_test, (signed portCHAR *) "Uart", USERTASK_STACK_SIZE,NULL,LOW_PRIO,NULL);
+  return_value &= xTaskCreate( check_keyboard, ( signed portCHAR * ) "Keyboard Task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( timer_task, ( signed portCHAR * ) "Status_led", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( keyboard_test_task, ( signed portCHAR * ) "ForCE1!1", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( ADC_test_taskforce, ( signed portCHAR * ) "ForCE1!1", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
 
   if (return_value != pdTRUE)
   {

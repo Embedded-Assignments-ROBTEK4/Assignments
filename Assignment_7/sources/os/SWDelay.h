@@ -4,27 +4,35 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* MODULENAME.: GLOBAL_DEFINITIONS.h
+* MODULENAME.: SWDelay.h
 *
 * PROJECT....: Assingment 3
 *
-* DESCRIPTION: Definitions which is used for many parts of the application.
+* DESCRIPTION: A set of delays used to control the LCD Display.
 *
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150217  StefanRvo   Created file.
+* 150224  StefanRvo		Created file.
 * 150226	MS 					Fixed syntax.
 *****************************************************************************/
 #pragma once
 
 /***************************** Include files ********************************/
-#include <stdint.h>
-#include <iso646.h>
+#include "../../headers/emp_type.h"
+#include "../../headers/GLOBAL_DEFINITIONS.h"
+#include "../../headers/tm4c123gh6pm.h"
 
 /*******************************   Defines    *******************************/
-#define FCPU              16000000 // Hz.
+#define US_CYCLES FCPU / 1000000
+#define MS_CYCLES FCPU / 1000
+
+/*****************************   Functions   ********************************/
+void setup_delay(void); // Setup the timer0 to be used in the delay functions.
+void delay_cycles(INT32U delay);
+void delay_microseconds(INT32U delayus);
+void delay_milliseconds(INT32U delayms);
 
 /****************************** End of module *******************************/

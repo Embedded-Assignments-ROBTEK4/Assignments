@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "../os/mutex.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 #pragma once
 
@@ -24,7 +26,7 @@ typedef struct
 	RBUF_INDEX_TYPE tail;
 	RBUF_INDEX_TYPE size;
 	INT8U buffer[BUFFER_SIZE];
-	mutex_t mutex;
+	xSemaphoreHandle mutx;
 } ringbuffer_uchar;
 
 INT8U ringbuffer_uchar_pop(ringbuffer_uchar *buffer);
