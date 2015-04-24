@@ -4,40 +4,36 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* MODULENAME.: ISR.h
+* MODULENAME.: clock.h
 *
 * PROJECT....: Assingment 3
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: Real time clock that can be set using SW1 and SW2.
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    			Syntax Fixed.
-*	150217  StefanRvo 	Changed to only use systick interrupt.
+* 150225  ALL		Created file.
+* 150226	MS 		Fixed syntax.
 *****************************************************************************/
 #pragma once
 
 /***************************** Include files ********************************/
-#include "../../headers/tm4c123gh6pm.h"
-#include "../../headers/GLOBAL_DEFINITIONS.h"
 #include "../../headers/emp_type.h"
+#include <stdbool.h>
+#include "../libs/time.h"
 
-/*****************************    Defines    ********************************/
-#define TIMEOUT_SYSTICK	5
-#define SYSTICK_RELOAD_VALUE 		16000000 / 1000 * TIMEOUT_SYSTICK - 1
-#
+/*******************************   Defines    *******************************/
+#define SECOND_LENGTH 			1000 // Length of a second in ms.
+/*******************************    Enums     *******************************/
 
-#if (SYSTICK_RELOAD_VALUE > 0xFFFFFF)
-	#error "SYSTICK_RELOAD_VALUE is too high"
-#endif
-
-
-extern volatile INT32U ticks; // System tick.
 
 /*****************************   Functions   ********************************/
-void systick_timer_isr(void);
-void setup_systick(void);
+void run_clock(void __attribute__((unused)) *pvParameters);
+time get_clock(void);
+bool set_clock(INT8U hour_, INT8U min_, INT8U sec_);
+void setup_clock(void);
 
 /****************************** End of module *******************************/

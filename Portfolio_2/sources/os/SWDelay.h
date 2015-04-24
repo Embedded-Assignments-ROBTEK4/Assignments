@@ -4,40 +4,35 @@
 *
 * Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* MODULENAME.: ISR.h
+* MODULENAME.: SWDelay.h
 *
 * PROJECT....: Assingment 3
 *
-* DESCRIPTION: Interrupt functions.
+* DESCRIPTION: A set of delays used to control the LCD Display.
+*
 * Change Log:
 ******************************************************************************
 * Date    Id    Change
 * YYMMDD
 * --------------------
-* 150212  MS    			Syntax Fixed.
-*	150217  StefanRvo 	Changed to only use systick interrupt.
+* 150224  StefanRvo		Created file.
+* 150226	MS 					Fixed syntax.
 *****************************************************************************/
 #pragma once
 
 /***************************** Include files ********************************/
-#include "../../headers/tm4c123gh6pm.h"
-#include "../../headers/GLOBAL_DEFINITIONS.h"
 #include "../../headers/emp_type.h"
+#include "../../headers/GLOBAL_DEFINITIONS.h"
+#include "../../headers/tm4c123gh6pm.h"
 
-/*****************************    Defines    ********************************/
-#define TIMEOUT_SYSTICK	5
-#define SYSTICK_RELOAD_VALUE 		16000000 / 1000 * TIMEOUT_SYSTICK - 1
-#
-
-#if (SYSTICK_RELOAD_VALUE > 0xFFFFFF)
-	#error "SYSTICK_RELOAD_VALUE is too high"
-#endif
-
-
-extern volatile INT32U ticks; // System tick.
+/*******************************   Defines    *******************************/
+#define US_CYCLES FCPU / 1000000
+#define MS_CYCLES FCPU / 1000
 
 /*****************************   Functions   ********************************/
-void systick_timer_isr(void);
-void setup_systick(void);
+void setup_delay(void); // Setup the timer0 to be used in the delay functions.
+void delay_cycles(INT32U delay);
+void delay_microseconds(INT32U delayus);
+void delay_milliseconds(INT32U delayms);
 
 /****************************** End of module *******************************/
