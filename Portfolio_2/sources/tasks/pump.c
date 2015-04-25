@@ -12,7 +12,8 @@
 #include "../drivers/buttons.h"
 #include "../drivers/leds.h"
 #include "fuel.h"
-
+#include "../libs/purchase_database.h"
+#include "clock.h"
 static bool get_event(queue_type type, INT8U *value);
 static pump_state choose_payment(void);
 static INT8U select_account_id(void);
@@ -24,19 +25,26 @@ static fuel select_fuel_type(void);
 static void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel);
 static void display_fueling(fuel selected_fuel, double pumped_amount);
 static void display_finished_dialog(INT8U account_id, double pumped_amount);
+static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type);
 
 
 
+purchase_database purchase_db = {NULL, NULL};
+double global_balance = 0;
 
 //no account should have id 0
-double global_balance = 0;
-static account __attribute__((unused)) accounts[2] = {{"000000", "0000", 1, 10000}, {"111111", "1111", 2, 10000}};
+static account __attribute__((unused)) accounts[] =
+{
+	{"000000", "0000", 1, 10000},
+	{"111111", "1111", 2, 10000}
+};
+
 static fuel fuel_types[] =
 {
-{"92 Octane",   12.17},
-{"95 Octane",   11.10},
-{"E10",         18.98},
-{"Rocket Fuel", 56.27}
+	{"92 Octane",   12.17, 0},
+	{"95 Octane",   11.10, 1},
+	{"E10",         18.98, 2},
+	{"Rocket Fuel", 56.27, 3}
 };
 
 xQueueHandle pump_queue;
@@ -270,6 +278,18 @@ static void display_finished_dialog(INT8U __attribute__((unused)) account_id, do
   lcd0_clear();
 }
 
+static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type)
+{
+	purchase new_purchase;
+	new_purchase.amount = pumped_amount;
+	new_purchase.purchase_type = fuel_type->id;
+	new_purchase.total_price = fuel_type->price * pumped_amount;
+	new_purchase.time_of_day = get_clock();
+	new_purchase.account_id = account_id;
+	add_purchase(&purchase_db, new_purchase);
+}
+
+
 static void display_fueling(fuel selected_fuel, double pumped_amount)
 {
   lcd0_set_cursor(0, 0);
@@ -396,6 +416,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             if(item.value == SW1_PRESSED)
             {
               state = VALVE_PRESSED;
+							LED_RGB_PORT |= LED_GREEN;
               if(account_id != 0)
                 set_max_fuel(UNLIMITED);
 
@@ -423,7 +444,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
 				break;
       case STOP:
         LED_RGB_PORT &= ~LED_RED;
-				//do_accounting(account_id, pumped_amount);
+				do_accounting(account_id, pumped_amount, &selected_fuel);
 				display_finished_dialog(account_id, pumped_amount);
         return;
     }
@@ -438,7 +459,7 @@ void pump_task(void __attribute__((unused)) *pvParameters)
 	//INT8U pump_timer = request_timer();
   INT8U account_id = 0;
   INT32U prepaid_amount = 0;
-  fuel selected_fuel = {"", 0};
+  fuel selected_fuel = {"", 0, 0};
   while(true)
   {
     switch(state)
@@ -471,6 +492,7 @@ void pump_task(void __attribute__((unused)) *pvParameters)
           state = COMPLETE;
         break;
       case COMPLETE:
+				state = CHOOSE_PAYMENT;
         break;
       default:
         break;

@@ -38,6 +38,7 @@ typedef struct
 {
   char name[20];
   double price;
+  INT8U id;
 } fuel;
 
 typedef enum
