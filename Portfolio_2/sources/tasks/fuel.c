@@ -24,7 +24,6 @@ void set_max_fuel(double max_fuel)
   else
   {
     fuel_max = max_fuel * PULSES_PER_LITER * PULSE_MULTIPLICATION;
-    vprintf_(uart0_out_string, 200, "bob %d,  %d\n", max_fuel, fuel_max );
   }
 }
 
@@ -96,7 +95,6 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
     			xSemaphoreGive(pump_queue_sem);
         }
       }
-      vprintf_(uart0_out_string, 200, "%d,  %d,  %d\n", fuel_max, fuel_level, (int)(SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION));
       if(fuel_level > (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION))
       {
         if((fuel_max == UNLIMITED || (fuel_max - fuel_level) > (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION)) && shunt )
@@ -107,12 +105,17 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
     if(shunt)
     {
       goal_time += SHUNT_WAIT_TIME * portTICK_RATE_MS;
-      vTaskDelayUntil(&xLastWakeTime, SHUNT_WAIT_TIME / portTICK_RATE_MS );
+      portTickType tick_to_wait = ((portTickType)goal_time) - xLastWakeTime;
+      //vprintf_(uart0_out_string, 200, "%d %d %d\n", (int)goal_time, (int) xLastWakeTime, tick_to_wait);
+
+      vTaskDelayUntil(&xLastWakeTime, tick_to_wait );
     }
     else
     {
       goal_time += WAIT_TIME * portTICK_RATE_MS;
-      vTaskDelayUntil(&xLastWakeTime, WAIT_TIME / portTICK_RATE_MS );
+      portTickType tick_to_wait = ((portTickType)goal_time) - xLastWakeTime;
+      //vprintf_(uart0_out_string, 200, "%d %d %d\n", (int)goal_time, (int) xLastWakeTime, tick_to_wait);
+      vTaskDelayUntil(&xLastWakeTime, tick_to_wait );
     }
   }
 }
