@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "../libs/print.h"
 #include "../drivers/UART.h"
+#include "../drivers/leds.h"
 
 static INT32S fuel_level = 0;
 static INT32S fuel_max   = 0;
@@ -21,7 +22,10 @@ void set_max_fuel(double max_fuel)
   if(max_fuel == UNLIMITED)
     fuel_max = UNLIMITED;
   else
+  {
     fuel_max = max_fuel * PULSES_PER_LITER * PULSE_MULTIPLICATION;
+    vprintf_(uart0_out_string, 200, "bob %d,  %d\n", max_fuel, fuel_max );
+  }
 }
 
 void start_fuel(void)
@@ -35,18 +39,21 @@ void stop_fuel(void)
   fueling = false;
   fuel_max -= fuel_level;
   fuel_level = 0;
+  deactivate_shunt();
 }
 
 void activate_shunt()
 {
   shunt = true;
-  //vprintf_(uart0_out_string, 200, "activated shunt\n");
+  LED_RGB_PORT |= LED_YELLOW;
+  uart0_out_string("activated shunt\n");
 }
 
 void deactivate_shunt()
 {
   shunt = false;
-  //vprintf_(uart0_out_string, 200, "deactivated shunt\n");
+  LED_RGB_PORT &= ~LED_YELLOW;
+  uart0_out_string("deactivated shunt\n");
 }
 
 void fuel_task(void __attribute__((unused)) *pvParameters)
@@ -54,6 +61,10 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
   portTickType xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
   double goal_time = xLastWakeTime;
+  vprintf_(uart0_out_string, 200, "%f\n", PUMP_SPEED);
+  vprintf_(uart0_out_string, 200, "%f\n", WAIT_TIME);
+  vprintf_(uart0_out_string, 200, "%f\n", SHUNT_WAIT_TIME);
+
   while(true)
   {
     if(fueling)
@@ -70,7 +81,7 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
       }
       if(fuel_max != UNLIMITED)
       {
-        if(fuel_max - fuel_level <= SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION)
+        if((fuel_max - fuel_level) <= (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION) && !shunt)
         {
           activate_shunt();
         }
@@ -85,24 +96,23 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
     			xSemaphoreGive(pump_queue_sem);
         }
       }
-
-      if(fuel_max - fuel_level > SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION &&
-          fuel_level >= SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION  )
+      vprintf_(uart0_out_string, 200, "%d,  %d,  %d\n", fuel_max, fuel_level, (int)(SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION));
+      if(fuel_level > (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION))
       {
-        deactivate_shunt();
+        if((fuel_max == UNLIMITED || (fuel_max - fuel_level) > (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION)) && shunt )
+          deactivate_shunt();
       }
     }
 
     if(shunt)
     {
-      goal_time += SHUNT_WAIT_TIME;
-      vTaskDelayUntil(&xLastWakeTime, ((portTickType)goal_time - xLastWakeTime)   / portTICK_RATE_MS );
-
+      goal_time += SHUNT_WAIT_TIME * portTICK_RATE_MS;
+      vTaskDelayUntil(&xLastWakeTime, SHUNT_WAIT_TIME / portTICK_RATE_MS );
     }
     else
     {
-      goal_time += WAIT_TIME;
-      vTaskDelayUntil(&xLastWakeTime, ((portTickType)goal_time - xLastWakeTime)   / portTICK_RATE_MS );
+      goal_time += WAIT_TIME * portTICK_RATE_MS;
+      vTaskDelayUntil(&xLastWakeTime, WAIT_TIME / portTICK_RATE_MS );
     }
   }
 }

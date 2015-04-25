@@ -23,6 +23,7 @@ static void show_denied_dialog(void);
 static fuel select_fuel_type(void);
 static void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel);
 static void display_fueling(fuel selected_fuel, double pumped_amount);
+static void display_finished_dialog(INT8U account_id, double pumped_amount);
 
 
 
@@ -259,14 +260,24 @@ void show_denied_dialog(void)
   lcd0_clear();
 }
 
+static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount)
+{
+  lcd0_set_cursor(0,0);
+  lcd0_write_string("FUELING FINISHED");
+  lcd0_set_cursor(0,1);
+  vprintf_(lcd0_write_string, 200, "FUELED %f L ", pumped_amount);
+  vTaskDelay(FINISHED_SHOW_TIME  / portTICK_RATE_MS);
+  lcd0_clear();
+}
+
 static void display_fueling(fuel selected_fuel, double pumped_amount)
 {
   lcd0_set_cursor(0, 0);
-  vprintf_(lcd0_write_string, 200, "Fueled: %d L", (int)(pumped_amount*100));
+  vprintf_(lcd0_write_string, 200, "Fueled: %f L", pumped_amount);
   lcd0_set_cursor(0,1);
-  vprintf_(lcd0_write_string, 200, "%d", (int)selected_fuel.price);
+  vprintf_(lcd0_write_string, 200, "%f", selected_fuel.price);
   lcd0_set_cursor(7,1);
-  vprintf_(lcd0_write_string, 200, "%d", (int)(pumped_amount * selected_fuel.price));
+  vprintf_(lcd0_write_string, 200, "%f", (pumped_amount * selected_fuel.price));
 }
 
 void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
@@ -297,15 +308,15 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
         display_fueling(selected_fuel, pumped_amount);
         if(is_timer_finished(fuel_timer))
         {
+					lcd0_clear();
           state = STOP;
         }
         if(get_event(BUTTON, &event))
         {
           if(event == SW1_PRESSED)
           {
-            lcd0_clear();
             state = VALVE_PRESSED;
-            if(account_id == 0)
+            if(account_id != 0)
               set_max_fuel(UNLIMITED);
             else
             {
@@ -314,52 +325,12 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             }
             start_fuel();
             LED_RGB_PORT |= LED_GREEN;
-            start_timer(fuel_timer, VALVE_RELEASED_TIMEOUT / SYS_TIMER_PERIODE);
           }
-        }
-        while(true)
-        {
-          bool got_item = false;
-          queue_item item;
-          xSemaphoreTake(pump_queue_sem, portMAX_DELAY);
-          if(uxQueueMessagesWaiting(pump_queue))
-          {
-            got_item = true;
-            xQueueReceive(pump_queue, &item, 0);
-          }
-          xSemaphoreGive(pump_queue_sem);
-          if(!got_item) break;
-          if(item.type == BUTTON)
-          {
-            if(item.value == SW1_PRESSED)
-            {
-              state = VALVE_PRESSED;
-              if(account_id == 0)
-                set_max_fuel(UNLIMITED);
-              else
-              {
-                double max_fuel = prepaid_amount / selected_fuel.price;
-                set_max_fuel(max_fuel);
-              }
-              start_fuel();
-              LED_RGB_PORT |= LED_GREEN;
-            }
-            else if(item.value == SW2_RELEASED)
-            {
-              state = STOP;
-            }
-          }
-          else if(item.type == FUEL)
-          {
-            if(item.value == FUEL_PULSE)
-            {
-              pumped_amount += 1./PULSES_PER_LITER;
-            }
-            else if(item.value == FUEL_DONE)
-            {
-              state = STOP;
-            }
-          }
+					else if(event == SW2_RELEASED)
+					{
+						lcd0_clear();
+						state = STOP;
+					}
         }
 
         break;
@@ -382,7 +353,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             if(item.value == SW1_RELEASED)
             {
               start_timer(fuel_timer, VALVE_RELEASED_TIMEOUT / SYS_TIMER_PERIODE);
-              state = TRUNK_LIFTED;
+              state = VALVE_RELEASED;
               stop_fuel();
               LED_RGB_PORT &= ~LED_GREEN;
             }
@@ -395,13 +366,65 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             }
             else if(item.value == FUEL_DONE)
             {
+							lcd0_clear();
               state = STOP;
             }
           }
         }
         break;
+			case VALVE_RELEASED:
+				display_fueling(selected_fuel, pumped_amount);
+        if(is_timer_finished(fuel_timer))
+        {
+					lcd0_clear();
+          state = STOP;
+        }
+        while(true)
+        {
+          bool got_item = false;
+          queue_item item;
+          xSemaphoreTake(pump_queue_sem, portMAX_DELAY);
+          if(uxQueueMessagesWaiting(pump_queue))
+          {
+            got_item = true;
+            xQueueReceive(pump_queue, &item, 0);
+          }
+          xSemaphoreGive(pump_queue_sem);
+          if(!got_item) break;
+          if(item.type == BUTTON)
+          {
+            if(item.value == SW1_PRESSED)
+            {
+              state = VALVE_PRESSED;
+              if(account_id != 0)
+                set_max_fuel(UNLIMITED);
+
+              start_fuel();
+            }
+            else if(item.value == SW2_RELEASED)
+            {
+							lcd0_clear();
+              state = STOP;
+            }
+          }
+          else if(item.type == FUEL)
+          {
+            if(item.value == FUEL_PULSE)
+            {
+              pumped_amount += 1./PULSES_PER_LITER;
+            }
+            else if(item.value == FUEL_DONE)
+            {
+							lcd0_clear();
+              state = STOP;
+            }
+          }
+        }
+				break;
       case STOP:
         LED_RGB_PORT &= ~LED_RED;
+				//do_accounting(account_id, pumped_amount);
+				display_finished_dialog(account_id, pumped_amount);
         return;
     }
     vTaskDelay(UPDATE_INTERVAL / portTICK_RATE_MS);

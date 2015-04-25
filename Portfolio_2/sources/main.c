@@ -46,6 +46,7 @@
 #include "libs/print.h"
 #include "tasks/debug_task.h"
 #include "tasks/fuel.h"
+#include "drivers/leds.h"
 
 /*****************************    Defines    *******************************/
 #define USERTASK_STACK_SIZE 200
@@ -60,8 +61,6 @@
 
 /*****************************   Functions   *******************************/
 
-void uart_task(void *pvParameters);
-void lcd_test(void  *pvParameters);
 
 static void setupHardware(void);
 
@@ -75,14 +74,15 @@ static void setupHardware(void)
   // TODO: Put hardware configuration and initialisation in here
 
   // Warning: If you do not initialize the hardware clock, the timings will be inaccurate
-  set_sysclk(FCPU / 1000);
   enable_fpu();
   setup_pump();
   sys_ringbuf_uchar_init();
   setup_delay();
   setup_uart0();
   setup_lcd0();
+  setup_leds();
   InitAdc();
+  set_sysclk(FCPU / 1000);
 
   status_led_init();
 }
