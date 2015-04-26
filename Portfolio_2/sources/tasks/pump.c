@@ -27,8 +27,10 @@ static void display_fueling(fuel selected_fuel, double pumped_amount);
 static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type);
 static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount, fuel *fuel_type);
 
+xQueueHandle pump_queue;
+xSemaphoreHandle pump_queue_sem;
 
-static purchase_database purchase_db = {NULL, NULL};
+static purchase_database purchase_db;
 
 
 
@@ -83,9 +85,6 @@ INT8U get_number_of_fuels(void)
 	return sizeof(fuel_types) / sizeof(fuel_types[0]);
 }
 
-xQueueHandle pump_queue;
-xSemaphoreHandle pump_queue_sem;
-
 static bool get_event(queue_type type, INT8U *value)
 {
 	queue_item item;
@@ -115,6 +114,7 @@ void setup_pump()
 {
   pump_queue = xQueueCreate(128, sizeof(queue_item));
   vSemaphoreCreateBinary(pump_queue_sem);
+	init_purchase_db(&purchase_db);
 }
 
 static pump_state choose_payment()
