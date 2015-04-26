@@ -49,6 +49,9 @@
 #include "drivers/leds.h"
 #include "tasks/uart_task.h"
 
+
+void rand_input(void __attribute__((unused)) *pvParameters);
+
 /*****************************    Defines    *******************************/
 #define USERTASK_STACK_SIZE 200
 #define IDLE_PRIO 0
@@ -106,6 +109,7 @@ int main(void)
   return_value &= xTaskCreate( fuel_task, ( signed portCHAR * ) "fuel task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
   return_value &= xTaskCreate( pump_task, ( signed portCHAR * ) "pump task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
   return_value &= xTaskCreate( uart_task, ( signed portCHAR * ) "uart task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  //return_value &= xTaskCreate( rand_input, ( signed portCHAR * ) "uart task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
 
 
   if (return_value != pdPASS)

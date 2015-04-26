@@ -9,7 +9,7 @@
 
 #define PREPAID_ID 0
 #define UPDATE_INTERVAL 1 //in ms
-#define DENIED_SHOW_TIME 5000//in ms
+#define DENIED_SHOW_TIME 3000//in ms
 #define FINISHED_SHOW_TIME 3000 //in ms
 #define VALVE_RELEASED_TIMEOUT 15000 //in ms
 
