@@ -28,7 +28,9 @@ static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_typ
 static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount, fuel *fuel_type);
 
 
-purchase_database purchase_db = {NULL, NULL};
+static purchase_database purchase_db = {NULL, NULL};
+
+
 
 //no account should have id 0
 static account __attribute__((unused)) accounts[] =
@@ -45,10 +47,25 @@ static fuel fuel_types[] =
 	{"Rocket Fuel", 56.27, 3}
 };
 
+INT8U get_number_of_accounts()
+{
+	return sizeof(accounts) / sizeof(accounts[0]);
+}
 
 void set_price(INT8U id, double price)
 {
 	fuel_types[id].price = price;
+}
+
+fuel *get_fuel(INT8U id)
+{
+	if(id >= get_number_of_fuels()) return NULL;
+	else return fuel_types + id;
+}
+
+purchase_database *get_purchase_db()
+{
+	return &purchase_db;
 }
 
 INT8U get_number_of_fuels(void)

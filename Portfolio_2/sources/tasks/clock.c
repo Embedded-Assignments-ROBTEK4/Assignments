@@ -29,6 +29,8 @@
 
 static time clock;
 
+static INT32U operating_time = 0;
+
 void run_clock(void __attribute__((unused)) *pvParameters)
 /**********************************************
 * Input : SW1 event, SW2 event.SECOND_LENGTH / TIMEOUT_SYSTICK / 60
@@ -44,6 +46,7 @@ void run_clock(void __attribute__((unused)) *pvParameters)
 	while(1)
 	{
 		time_count_sec(&clock, 1);
+    operating_time++;
 		vTaskDelayUntil(&xLastWakeTime, SECOND_LENGTH / portTICK_RATE_MS );
 	}
 }
@@ -69,5 +72,10 @@ void setup_clock(void)
 { //Just accuire a timer for the clock, and set the time to 12:00:00.
 	//Start the timer at 2*second lenght
 	set_clock(12, 0, 0);
+}
+
+INT32U get_operating_time(void)
+{
+  return operating_time;
 }
 /****************************** End of module *******************************/

@@ -35,5 +35,7 @@ void run_clock(void __attribute__((unused)) *pvParameters);
 time get_clock(void);
 bool set_clock(INT8U hour_, INT8U min_, INT8U sec_);
 void setup_clock(void);
+INT32U get_operating_time(void);
+
 
 /****************************** End of module *******************************/

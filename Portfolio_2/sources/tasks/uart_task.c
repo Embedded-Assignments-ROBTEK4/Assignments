@@ -6,9 +6,53 @@
 #include "pump.h"
 #include <math.h>
 #include "../libs/print.h"
+#include "../libs/purchase_database.h"
+#include "../tasks/clock.h"
 
 static INT8U check_for_command(char *buffer, INT8U index, size_t size);
 static void set_price_command(void);
+static void send_report(void);
+double get_total_account_purchases(void);
+
+double get_total_account_purchases(void)
+{
+  purchase_database *purchase_db = get_purchase_db();
+  INT8U number_of_accounts = get_number_of_accounts();
+  double total = 0;
+  for(INT8U i = 0; i < number_of_accounts; i++)
+  {
+    total += get_total_purchase(purchase_db, i + 1);
+  }
+  return total;
+}
+
+
+
+static void send_report()
+{
+  //get the database
+  purchase_database *purchase_db = get_purchase_db();
+  INT8U number_of_fuels = get_number_of_fuels();
+  vprintf_(uart0_out_string, 200, "\n\n\nOPERATION REPORT:\n");
+
+  vprintf_(uart0_out_string, 200, "\nTotal sales of gasoline:\n");
+
+  for(INT8U i = 0; i < number_of_fuels; i++)
+  {
+    vprintf_(uart0_out_string, 200, "%s:   %f L\n", get_fuel(i)->name,
+            get_total_amount(purchase_db, i));
+  }
+  vprintf_(uart0_out_string, 200, "\nCash purchases:\n%f DKK\n", get_total_purchase(purchase_db, 0));
+
+  vprintf_(uart0_out_string, 200, "\nAccount purchases:\n%f DKK\n", get_total_account_purchases());
+
+  vprintf_(uart0_out_string, 200, "\nTotal operation time:\n%d s\n", (int)get_operating_time());
+
+}
+
+
+
+
 
 command commands[] =
 {
@@ -41,7 +85,6 @@ static void set_price_command()
         if(rec_char >= 10)
         {
           set_price(type, price / 100);
-          vprintf_(uart0_out_string, 200, "%f\n", price);
           return;
         }
         else
@@ -99,7 +142,7 @@ void uart_task(void __attribute__((unused)) *pvParameters)
           set_price_command();
           break;
         case 2:
-          //get_report();
+          send_report();
           break;
       }
     }

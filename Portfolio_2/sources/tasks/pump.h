@@ -5,11 +5,12 @@
 #include "semphr.h"
 
 #include "../../headers/emp_type.h"
+#include "../libs/purchase_database.h"
 
 #define PREPAID_ID 0
 #define UPDATE_INTERVAL 1 //in ms
 #define DENIED_SHOW_TIME 5000//in ms
-#define FINISHED_SHOW_TIME 5000 //in ms
+#define FINISHED_SHOW_TIME 3000 //in ms
 #define VALVE_RELEASED_TIMEOUT 15000 //in ms
 
 typedef enum
@@ -69,6 +70,9 @@ void setup_pump(void);
 void set_price(INT8U id, double price);
 double get_price(INT8U id);
 INT8U get_number_of_fuels(void);
+purchase_database *get_purchase_db(void);
+fuel *get_fuel(INT8U id);
+INT8U get_number_of_accounts(void);
 
 
 void pump_task(void __attribute__((unused)) *pvParameters);

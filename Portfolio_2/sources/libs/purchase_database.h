@@ -1,7 +1,6 @@
 //implement a list of purchases as a linked list
 //implemented for purchases of fuel
 #pragma once
-#include "../tasks/pump.h"
 #include <stdbool.h>
 #include "../../headers/emp_type.h"
 #include "time.h"
