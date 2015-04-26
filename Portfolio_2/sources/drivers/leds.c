@@ -16,4 +16,6 @@ void setup_leds(void)
   //Setup LCD pins as output
   GPIO_PORTD_DIR_R |= LED_STATUS;
   GPIO_PORTD_DEN_R |= LED_STATUS;
+
+	LED_RGB_PORT |= LED_RED | LED_GREEN | LED_YELLOW;
 }

@@ -30,7 +30,6 @@ static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_typ
 
 
 purchase_database purchase_db = {NULL, NULL};
-double global_balance = 0;
 
 //no account should have id 0
 static account __attribute__((unused)) accounts[] =
@@ -320,7 +319,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             lcd0_clear();
             state = TRUNK_LIFTED;
             start_timer(fuel_timer, VALVE_RELEASED_TIMEOUT / SYS_TIMER_PERIODE);
-            LED_RGB_PORT |= LED_RED;
+            LED_RGB_PORT &= ~LED_RED;
           }
         }
         break;
@@ -344,7 +343,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
               set_max_fuel(max_fuel);
             }
             start_fuel();
-            LED_RGB_PORT |= LED_GREEN;
+            LED_RGB_PORT &= ~LED_GREEN;
           }
 					else if(event == SW2_RELEASED)
 					{
@@ -375,7 +374,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
               start_timer(fuel_timer, VALVE_RELEASED_TIMEOUT / SYS_TIMER_PERIODE);
               state = VALVE_RELEASED;
               stop_fuel();
-              LED_RGB_PORT &= ~LED_GREEN;
+              LED_RGB_PORT |= LED_GREEN;
             }
           }
           else if(item.type == FUEL)
@@ -416,7 +415,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             if(item.value == SW1_PRESSED)
             {
               state = VALVE_PRESSED;
-							LED_RGB_PORT |= LED_GREEN;
+							LED_RGB_PORT &= ~LED_GREEN;
               if(account_id != 0)
                 set_max_fuel(UNLIMITED);
 
@@ -443,7 +442,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
         }
 				break;
       case STOP:
-        LED_RGB_PORT &= ~LED_RED;
+        LED_RGB_PORT |= LED_RED;
 				do_accounting(account_id, pumped_amount, &selected_fuel);
 				display_finished_dialog(account_id, pumped_amount);
         return;

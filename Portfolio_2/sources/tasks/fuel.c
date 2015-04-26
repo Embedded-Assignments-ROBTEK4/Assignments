@@ -44,15 +44,15 @@ void stop_fuel(void)
 void activate_shunt()
 {
   shunt = true;
-  LED_RGB_PORT |= LED_YELLOW;
-  uart0_out_string("activated shunt\n");
+  LED_RGB_PORT &= ~LED_YELLOW;
+  //uart0_out_string("activated shunt\n");
 }
 
 void deactivate_shunt()
 {
   shunt = false;
-  LED_RGB_PORT &= ~LED_YELLOW;
-  uart0_out_string("deactivated shunt\n");
+  LED_RGB_PORT |= LED_YELLOW;
+  //uart0_out_string("deactivated shunt\n");
 }
 
 void fuel_task(void __attribute__((unused)) *pvParameters)
@@ -60,9 +60,9 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
   portTickType xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
   double goal_time = xLastWakeTime;
-  vprintf_(uart0_out_string, 200, "%f\n", PUMP_SPEED);
-  vprintf_(uart0_out_string, 200, "%f\n", WAIT_TIME);
-  vprintf_(uart0_out_string, 200, "%f\n", SHUNT_WAIT_TIME);
+  //vprintf_(uart0_out_string, 200, "%f\n", PUMP_SPEED);
+  //vprintf_(uart0_out_string, 200, "%f\n", WAIT_TIME);
+  //vprintf_(uart0_out_string, 200, "%f\n", SHUNT_WAIT_TIME);
 
   while(true)
   {
