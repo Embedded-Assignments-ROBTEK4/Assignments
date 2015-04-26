@@ -9,7 +9,7 @@
 #define PREPAID_ID 0
 #define UPDATE_INTERVAL 1 //in ms
 #define DENIED_SHOW_TIME 5000//in ms
-#define FINISHED_SHOW_TIME 2000 //in ms
+#define FINISHED_SHOW_TIME 5000 //in ms
 #define VALVE_RELEASED_TIMEOUT 15000 //in ms
 
 typedef enum
@@ -68,5 +68,7 @@ extern xSemaphoreHandle pump_queue_sem;
 void setup_pump(void);
 void set_price(INT8U id, double price);
 double get_price(INT8U id);
+INT8U get_number_of_fuels(void);
+
 
 void pump_task(void __attribute__((unused)) *pvParameters);

@@ -24,9 +24,8 @@ static void show_denied_dialog(void);
 static fuel select_fuel_type(void);
 static void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel);
 static void display_fueling(fuel selected_fuel, double pumped_amount);
-static void display_finished_dialog(INT8U account_id, double pumped_amount);
 static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type);
-
+static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount, fuel *fuel_type);
 
 
 purchase_database purchase_db = {NULL, NULL};
@@ -45,6 +44,17 @@ static fuel fuel_types[] =
 	{"E10",         18.98, 2},
 	{"Rocket Fuel", 56.27, 3}
 };
+
+
+void set_price(INT8U id, double price)
+{
+	fuel_types[id].price = price;
+}
+
+INT8U get_number_of_fuels(void)
+{
+	return sizeof(fuel_types) / sizeof(fuel_types[0]);
+}
 
 xQueueHandle pump_queue;
 xSemaphoreHandle pump_queue_sem;
@@ -82,7 +92,7 @@ void setup_pump()
 
 static pump_state choose_payment()
 {
-  bool selected_type = false;
+  bool selected_type = true;
   while(1)
   {
     lcd0_set_cursor(0,0);
@@ -267,12 +277,12 @@ void show_denied_dialog(void)
   lcd0_clear();
 }
 
-static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount)
+static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount, fuel *fuel_type)
 {
   lcd0_set_cursor(0,0);
   lcd0_write_string("FUELING FINISHED");
   lcd0_set_cursor(0,1);
-  vprintf_(lcd0_write_string, 200, "FUELED %f L ", pumped_amount);
+  vprintf_(lcd0_write_string, 200, "%fL %f DKK ", pumped_amount, fuel_type->price * pumped_amount);
   vTaskDelay(FINISHED_SHOW_TIME  / portTICK_RATE_MS);
   lcd0_clear();
 }
@@ -295,8 +305,8 @@ static void display_fueling(fuel selected_fuel, double pumped_amount)
   vprintf_(lcd0_write_string, 200, "Fueled: %f L", pumped_amount);
   lcd0_set_cursor(0,1);
   vprintf_(lcd0_write_string, 200, "%f", selected_fuel.price);
-  lcd0_set_cursor(7,1);
-  vprintf_(lcd0_write_string, 200, "%f", (pumped_amount * selected_fuel.price));
+  lcd0_set_cursor(6,1);
+  vprintf_(lcd0_write_string, 200, "%f DKK", pumped_amount * selected_fuel.price);
 }
 
 void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
@@ -444,7 +454,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
       case STOP:
         LED_RGB_PORT |= LED_RED;
 				do_accounting(account_id, pumped_amount, &selected_fuel);
-				display_finished_dialog(account_id, pumped_amount);
+				display_finished_dialog(account_id, pumped_amount, &selected_fuel);
         return;
     }
     vTaskDelay(UPDATE_INTERVAL / portTICK_RATE_MS);
