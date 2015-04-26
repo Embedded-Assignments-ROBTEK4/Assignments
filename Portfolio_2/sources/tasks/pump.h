@@ -32,7 +32,6 @@ typedef struct
   char   number[7];
   char   password[5];
   INT8U   id;
-  double  balance;
 } account;
 
 typedef struct

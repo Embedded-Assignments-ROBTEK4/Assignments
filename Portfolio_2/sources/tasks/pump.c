@@ -24,7 +24,7 @@ static void show_denied_dialog(void);
 static fuel select_fuel_type(void);
 static void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel);
 static void display_fueling(fuel selected_fuel, double pumped_amount);
-static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type);
+static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type, double paid_amount);
 static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount, fuel *fuel_type);
 
 xQueueHandle pump_queue;
@@ -37,17 +37,17 @@ static purchase_database purchase_db;
 //no account should have id 0
 static account __attribute__((unused)) accounts[] =
 {
-	{"000000", "0000", 1, 10000},
-	{"111111", "1111", 2, 10000},
-	{"123456", "1234", 3, 10000},
-	{"654321", "4321", 4, 10000},
-	{"222222", "2222", 5, 10000},
-	{"333333", "3333", 6, 10000},
-	{"444444", "4444", 7, 10000},
-	{"987654", "9876", 8, 10000},
-	{"######", "####", 9, 10000},
-	{"875852", "2574", 10, 10000},
-	{"******", "****", 11, 10000},
+	{"000000", "0000", 1},
+	{"111111", "1111", 2},
+	{"123456", "1234", 3},
+	{"654321", "4321", 4},
+	{"222222", "2222", 5},
+	{"333333", "3333", 6},
+	{"444444", "4444", 7},
+	{"987654", "9876", 8},
+	{"######", "####", 9},
+	{"875852", "2574", 10},
+	{"******", "****", 11},
 
 };
 
@@ -314,12 +314,12 @@ static void display_finished_dialog(INT8U __attribute__((unused)) account_id, do
   lcd0_clear();
 }
 
-static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type)
+static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type, double paid_amount)
 {
 	purchase new_purchase;
 	new_purchase.amount = pumped_amount;
 	new_purchase.purchase_type = fuel_type->id;
-	new_purchase.total_price = fuel_type->price * pumped_amount;
+	new_purchase.total_price = paid_amount;
 	new_purchase.time_of_day = get_clock();
 	new_purchase.account_id = account_id;
 	add_purchase(&purchase_db, new_purchase);
@@ -423,6 +423,7 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
             else if(item.value == FUEL_DONE)
             {
 							lcd0_clear();
+							LED_RGB_PORT |= LED_GREEN;
               state = STOP;
             }
           }
@@ -480,7 +481,10 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
 				break;
       case STOP:
         LED_RGB_PORT |= LED_RED;
-				do_accounting(account_id, pumped_amount, &selected_fuel);
+				if(account_id == 0)
+					do_accounting(account_id, pumped_amount, &selected_fuel, prepaid_amount);
+				else
+					do_accounting(account_id, pumped_amount, &selected_fuel, pumped_amount * selected_fuel.price);
 				display_finished_dialog(account_id, pumped_amount, &selected_fuel);
         return;
     }
