@@ -6,9 +6,9 @@
 *
 * MODULENAME.: clock.c
 *
-* PROJECT....: Assingment 3
+* PROJECT....: Portfolio_2
 *
-* DESCRIPTION: See header.
+* DESCRIPTION: See module specification file (.h-file).
 *
 * Change Log:
 ******************************************************************************
@@ -27,21 +27,27 @@
 #include "queue.h"
 #include "semphr.h"
 
+/*****************************    Defines    *******************************/
+
+/*****************************   Constants   *******************************/
+
+/*****************************   Variables   *******************************/
+
 static time clock;
 
 static INT32U operating_time = 0;
 
+/*****************************   Functions   *******************************/
+
 void run_clock(void __attribute__((unused)) *pvParameters)
 /**********************************************
-* Input : SW1 event, SW2 event.SECOND_LENGTH / TIMEOUT_SYSTICK / 60
-* Output : Time.
-* Function : Count timer normally if buttons not pressed,
-* 					 else the time can be changed by the user
-* 					 in SET_MIN / SET_HOUR state.
+* Input : -
+* Output : -
+* Function : Setup and count RTC
 **********************************************/
 {
-  portTickType xLastWakeTime;
-  xLastWakeTime = xTaskGetTickCount();
+ portTickType xLastWakeTime;
+ xLastWakeTime = xTaskGetTickCount();
 	setup_clock();
 	while(1)
 	{
@@ -51,8 +57,12 @@ void run_clock(void __attribute__((unused)) *pvParameters)
 	}
 }
 
-
 bool set_clock(INT8U hour_, INT8U min_, INT8U sec_)
+/**********************************************
+* Input : hour, min and sec.
+* Output : Success.
+* Function : Set time
+**********************************************/
 {
 	if(hour_ < HOURS_PER_DAY && min_ < MINUTES_PER_HOUR && sec_ < SECONDS_PER_MINUTE)
 	{
@@ -65,17 +75,35 @@ bool set_clock(INT8U hour_, INT8U min_, INT8U sec_)
 }
 
 time get_clock(void)
+/**********************************************
+* Input : -
+* Output : -
+* Function : Get current time
+**********************************************/
 {
 	return clock;
 }
+
 void setup_clock(void)
-{ //Just accuire a timer for the clock, and set the time to 12:00:00.
+/**********************************************
+* Input : -
+* Output : -
+* Function : Set clock to 12:00:00.
+**********************************************/
+{
+	//Just accuire a timer for the clock, and set the time to 12:00:00.
 	//Start the timer at 2*second lenght
 	set_clock(12, 0, 0);
 }
 
 INT32U get_operating_time(void)
+/**********************************************
+* Input : -
+* Output : Operating time
+* Function : Get operating time
+**********************************************/
 {
   return operating_time;
 }
+
 /****************************** End of module *******************************/

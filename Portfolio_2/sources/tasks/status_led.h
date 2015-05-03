@@ -18,20 +18,17 @@
 *****************************************************************************/
 #pragma once
 
-#define STATUS_LED_PIN (1 << 6)
-#define LED_STATUS_PORT GPIO_PORTD_DATA_R
 /***************************** Include files *******************************/
 
 /*****************************    Defines    *******************************/
+#define STATUS_LED_PIN (1 << 6)
+#define LED_STATUS_PORT GPIO_PORTD_DATA_R
 
 /*****************************   Constants   *******************************/
 
 /*****************************   Functions   *******************************/
-
-
 void status_led_init(void);
 
 void status_led_task(void *pvParameters);
-
 
 /****************************** End Of Module *******************************/

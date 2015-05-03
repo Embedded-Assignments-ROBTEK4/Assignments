@@ -2,9 +2,11 @@
 * University of Southern Denmark
 * Embedded C Programming (ECP)
 *
-* MODULENAME.: leds.c
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* PROJECT....: ECP
+* MODULENAME.: status_leds.c
+*
+* PROJECT....: Portfolio_2
 *
 * DESCRIPTION: See module specification file (.h-file).
 *
@@ -42,7 +44,7 @@ void status_led_init(void)
 /*****************************************************************************
 *   Input    : 	-
 *   Output   : 	-
-*   Function :
+*   Function :  Setup status led.
 *****************************************************************************/
 {
   // Enable the GPIO port that is used for the on-board LED.
@@ -54,8 +56,12 @@ void status_led_init(void)
   GPIO_PORTD_DEN_R |= STATUS_LED_PIN;
 }
 
-
 void status_led_task(void __attribute__((unused)) *pvParameters)
+/*****************************************************************************
+*   Input    : 	-
+*   Output   : 	-
+*   Function :  Toggle status led each 100 ms.
+*****************************************************************************/
 {
 
 	while(1)

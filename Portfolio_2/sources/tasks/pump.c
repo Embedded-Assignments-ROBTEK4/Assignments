@@ -1,3 +1,25 @@
+/*****************************************************************************
+* University of Southern Denmark
+* Embedded Programming (EMP)
+*
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
+*
+* MODULENAME.: pump.c
+*
+* PROJECT....: Portfolio_2
+*
+* DESCRIPTION: See module specification file (.h-file).
+*
+* Change Log:
+******************************************************************************
+* Date    Id    Change
+* YYMMDD
+* --------------------
+* 150225  ALL		Created file.
+* 150226	MS 		Fixed syntax.
+*****************************************************************************/
+
+/***************************** Include files ********************************/
 #include "pump.h"
 #include "../os/system_timers.h"
 #include "../drivers/lcd0.h"
@@ -14,6 +36,13 @@
 #include "fuel.h"
 #include "../libs/purchase_database.h"
 #include "clock.h"
+
+/*****************************    Defines    *******************************/
+
+/*****************************   Constants   *******************************/
+
+/*****************************   Variables   *******************************/
+
 static bool get_event(queue_type type, INT8U *value);
 static pump_state choose_payment(void);
 static INT8U select_account_id(void);
@@ -59,33 +88,65 @@ static fuel fuel_types[] =
 	{"Rocket Fuel", 56.27, 3}
 };
 
+/*****************************   Functions   *******************************/
+
 INT8U get_number_of_accounts()
+/**********************************************
+* Input : -
+* Output : Number of accounts
+* Function : Return number of accounts
+**********************************************/
 {
 	return sizeof(accounts) / sizeof(accounts[0]);
 }
 
 void set_price(INT8U id, double price)
+/**********************************************
+* Input : Fuel id and price.
+* Output : -
+* Function : Set price on fuel.
+**********************************************/
 {
 	fuel_types[id].price = price;
 }
 
 fuel *get_fuel(INT8U id)
+/**********************************************
+* Input : Fuel id.
+* Output : Fuel struct.
+* Function : Return fuel struct based on id.
+**********************************************/
 {
 	if(id >= get_number_of_fuels()) return NULL;
 	else return fuel_types + id;
 }
 
 purchase_database *get_purchase_db()
+/**********************************************
+* Input : -
+* Output : Database.
+* Function : Return database.
+**********************************************/
 {
 	return &purchase_db;
 }
 
 INT8U get_number_of_fuels(void)
+/**********************************************
+* Input : -
+* Output : Number of fuel types.
+* Function : Return number of fuel types.
+**********************************************/
 {
 	return sizeof(fuel_types) / sizeof(fuel_types[0]);
 }
 
 static bool get_event(queue_type type, INT8U *value)
+/**********************************************
+* Input : -
+* Output : -
+* Function : 
+**********************************************/
 {
 	queue_item item;
 
@@ -111,6 +172,11 @@ static bool get_event(queue_type type, INT8U *value)
 }
 
 void setup_pump()
+/**********************************************
+* Input : -
+* Output : -
+* Function : Setup pump.
+**********************************************/
 {
   pump_queue = xQueueCreate(128, sizeof(queue_item));
   vSemaphoreCreateBinary(pump_queue_sem);
@@ -118,6 +184,11 @@ void setup_pump()
 }
 
 static pump_state choose_payment()
+/**********************************************
+* Input : -
+* Output : Payment type.
+* Function : Select and return selected payment type.
+**********************************************/
 {
   bool selected_type = true;
   while(1)
@@ -153,6 +224,11 @@ static pump_state choose_payment()
 }
 
 static INT32U insert_cash(void)
+/**********************************************
+* Input : -
+* Output : Inserted amount of chash.
+* Function : Return inserted amount of chash.
+**********************************************/
 {
   INT32U inserted_cash = 0;
   while(true)
@@ -185,6 +261,11 @@ static INT32U insert_cash(void)
 }
 
 INT8U get_account_id(char *string) //find the account id from the given string
+/**********************************************
+* Input : Account name
+* Output : Account id
+* Function : Return account id based on account name.
+**********************************************/
 {
   for(INT8U i = 0; i < sizeof(accounts) /sizeof(accounts[0]); i++)
   {
@@ -197,6 +278,11 @@ INT8U get_account_id(char *string) //find the account id from the given string
 }
 
 static INT8U select_account_id()
+/**********************************************
+* Input : -
+* Output : Account id
+* Function : Select and return account id.
+**********************************************/
 {
   char entered_id[7] = "";
   INT8U index = 0;
@@ -222,6 +308,11 @@ static INT8U select_account_id()
 }
 
 static bool validate_account(INT8U id, char *code)
+/**********************************************
+* Input : Account id and account code
+* Output : Validation
+* Function : Return validation of code and id
+**********************************************/
 {
   if(id && strcmp(code, accounts[id - 1].password) == 0)
     return true;
@@ -230,6 +321,11 @@ static bool validate_account(INT8U id, char *code)
 }
 
 static fuel select_fuel_type()
+/**********************************************
+* Input : -
+* Output : fuel type
+* Function : Select and return fuel type
+**********************************************/
 {
   INT8U selected_type = 0;
   while(1)
@@ -267,6 +363,12 @@ static fuel select_fuel_type()
 }
 
 static pump_state check_account_code(INT8U account_id)
+/**********************************************
+* Input : Account id.
+* Output : Fuel type.
+* Function : Validata account, select fuel type and
+             return the selected fuel type.
+**********************************************/
 {
   char entered_code[5] = "";
   INT8U index = 0;
@@ -295,6 +397,11 @@ static pump_state check_account_code(INT8U account_id)
 }
 
 void show_denied_dialog(void)
+/**********************************************
+* Input : -
+* Output : -
+* Function : Show denied dialog.
+**********************************************/
 {
   lcd0_set_cursor(0,0);
   lcd0_write_string("ACCESS DENIED!!!");
@@ -305,6 +412,11 @@ void show_denied_dialog(void)
 }
 
 static void display_finished_dialog(INT8U __attribute__((unused)) account_id, double pumped_amount, fuel *fuel_type)
+/**********************************************
+* Input : Account id, amount of pumped fuel and fuel type
+* Output : -
+* Function : Display finish pump status.
+**********************************************/
 {
   lcd0_set_cursor(0,0);
   lcd0_write_string("FUELING FINISHED");
@@ -315,6 +427,11 @@ static void display_finished_dialog(INT8U __attribute__((unused)) account_id, do
 }
 
 static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_type, double paid_amount)
+/**********************************************
+* Input : Account id, amount of pumped fuel and paid amount
+* Output : -
+* Function : Handle account data.
+**********************************************/
 {
 	purchase new_purchase;
 	new_purchase.amount = pumped_amount;
@@ -327,6 +444,11 @@ static void do_accounting(INT8U account_id, double pumped_amount, fuel *fuel_typ
 
 
 static void display_fueling(fuel selected_fuel, double pumped_amount)
+/**********************************************
+* Input : Fuel type, amount of pumped fuel.
+* Output : -
+* Function : Display fuel type and amount of pumped fuel and fuel price
+**********************************************/
 {
   lcd0_set_cursor(0, 0);
   vprintf_(lcd0_write_string, 200, "Fueled: %f L", pumped_amount);
@@ -337,6 +459,11 @@ static void display_fueling(fuel selected_fuel, double pumped_amount)
 }
 
 void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
+/**********************************************
+* Input : Prepayed amount of cash, account id and fuel type.
+* Output : -
+* Function : Handle fuelling and observing fuel price
+**********************************************/
 {
   INT8U fuel_timer = request_timer();
   double pumped_amount = 0;
@@ -494,6 +621,11 @@ void do_fueling(INT32U prepaid_amount, INT8U account_id, fuel selected_fuel)
 }
 
 void pump_task(void __attribute__((unused)) *pvParameters)
+/**********************************************
+* Input : -
+* Output : -
+* Function : Handle paymeent and start/stop fulling
+**********************************************/
 {
   pump_state state = CHOOSE_PAYMENT;
 	//INT8U pump_timer = request_timer();
@@ -540,3 +672,5 @@ void pump_task(void __attribute__((unused)) *pvParameters)
     vTaskDelay(UPDATE_INTERVAL / portTICK_RATE_MS);
   }
 }
+
+/****************************** End of module *******************************/

@@ -6,9 +6,9 @@
 *
 * MODULENAME.: clock.h
 *
-* PROJECT....: Assingment 3
+* PROJECT....: Portfolio_2
 *
-* DESCRIPTION: Real time clock that can be set using SW1 and SW2.
+* DESCRIPTION: Real time clock.
 *
 * Change Log:
 ******************************************************************************
@@ -27,8 +27,8 @@
 
 /*******************************   Defines    *******************************/
 #define SECOND_LENGTH 			1000 // Length of a second in ms.
-/*******************************    Enums     *******************************/
 
+/*******************************    Enums     *******************************/
 
 /*****************************   Functions   ********************************/
 void run_clock(void __attribute__((unused)) *pvParameters);
@@ -36,6 +36,5 @@ time get_clock(void);
 bool set_clock(INT8U hour_, INT8U min_, INT8U sec_);
 void setup_clock(void);
 INT32U get_operating_time(void);
-
 
 /****************************** End of module *******************************/

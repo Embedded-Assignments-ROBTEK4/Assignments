@@ -1,11 +1,12 @@
-
 /*****************************************************************************
 * University of Southern Denmark
 * Embedded C Programming (ECP)
 *
-* MODULENAME.: leds.c
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
 *
-* PROJECT....: ECP
+* MODULENAME.: main.c
+*
+* PROJECT....: Portfolio_2
 *
 * DESCRIPTION: See module specification file (.h-file).
 *
@@ -62,18 +63,15 @@
 
 /*****************************   Functions   *******************************/
 
-
 static void setupHardware(void);
 
 static void setupHardware(void)
 /*****************************************************************************
 *   Input    :  -
 *   Output   :  -
-*   Function :
+*   Function :  Setup hardware taskes
 *****************************************************************************/
 {
-  // TODO: Put hardware configuration and initialisation in here
-
   // Warning: If you do not initialize the hardware clock, the timings will be inaccurate
   enable_fpu();
   setup_pump();
@@ -84,7 +82,6 @@ static void setupHardware(void)
   setup_leds();
   InitAdc();
   set_sysclk(FCPU / 1000);
-
   status_led_init();
 }
 
@@ -92,34 +89,34 @@ int main(void)
 /*****************************************************************************
 *   Input    :  -
 *   Output   :  -
-*   Function :
+*   Function :  
 *****************************************************************************/
 {
   portBASE_TYPE return_value = pdPASS;
+  
   setupHardware();
-  return_value &= xTaskCreate( status_led_task, ( signed portCHAR * ) "Status_led", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( check_keyboard, ( signed portCHAR * ) "Keyboard Task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( timer_task, ( signed portCHAR * ) "Timers task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( run_clock, ( signed portCHAR * ) "RTC task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( collect_button_events, ( signed portCHAR * ) "button task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( scan_encoder0, ( signed portCHAR * ) "Rotary encoder task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( fuel_task, ( signed portCHAR * ) "fuel task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( pump_task, ( signed portCHAR * ) "pump task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-  return_value &= xTaskCreate( uart_task, ( signed portCHAR * ) "uart task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
-
-
+  
+  return_value &= xTaskCreate( status_led_task,       ( signed portCHAR * ) "Status_led",          USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( check_keyboard,        ( signed portCHAR * ) "Keyboard Task",       USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( timer_task,            ( signed portCHAR * ) "Timers task",         USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( run_clock,             ( signed portCHAR * ) "RTC task",            USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( collect_button_events, ( signed portCHAR * ) "button task",         USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( scan_encoder0,         ( signed portCHAR * ) "Rotary encoder task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( fuel_task,             ( signed portCHAR * ) "fuel task",           USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( pump_task,             ( signed portCHAR * ) "pump task",           USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( uart_task,             ( signed portCHAR * ) "uart task",           USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  
   if (return_value != pdPASS)
   {
     GPIO_PORTD_DATA_R &= 0xBF;  // Turn on status LED.
-    while(1);  // cold not create one or more tasks.
+    while(1);                   // cold not create one or more tasks.
   }
-  /*
-   * Start the scheduler.
-   */
+  
+  // Start the scheduler.
   vTaskStartScheduler();
-
-  /*
-   * Will only get here if there was insufficient memory to create the idle task.
-   */
+  
+  // Will only get here if there was insufficient memory to create the idle task.
   return 1;
 }
+
+/****************************** End of module *******************************/

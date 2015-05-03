@@ -1,3 +1,26 @@
+/*****************************************************************************
+* University of Southern Denmark
+* Embedded C Programming (ECP)
+*
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
+*
+* MODULENAME.: uart_task.c
+*
+* PROJECT....: Portfolio_2
+*
+* DESCRIPTION: See module specification file (.h-file).
+*
+* Change Log:
+******************************************************************************
+* Date    Id    Change
+* YYMMDD
+* --------------------
+* 050128  KA    Module created.
+*
+*****************************************************************************/
+
+/***************************** Include files *******************************/
+
 #include "uart_task.h"
 #include "../drivers/UART.h"
 #include <string.h>
@@ -9,10 +32,18 @@
 #include "../libs/purchase_database.h"
 #include "../tasks/clock.h"
 
+/*****************************    Defines    *******************************/
+
+/*****************************   Constants   *******************************/
+
+/*****************************   Variables   *******************************/
+
 static INT8U check_for_command(char *buffer, INT8U index, size_t size);
 static void set_price_command(void);
 static void send_report(void);
 double get_total_account_purchases(void);
+
+/*****************************   Functions   *******************************/
 
 double get_total_account_purchases(void)
 {
@@ -25,8 +56,6 @@ double get_total_account_purchases(void)
   }
   return total;
 }
-
-
 
 static void send_report()
 {
@@ -49,10 +78,6 @@ static void send_report()
   vprintf_(uart0_out_string, 200, "\nTotal operation time:\n%d s\n", (int)get_operating_time());
 
 }
-
-
-
-
 
 command commands[] =
 {
@@ -123,6 +148,12 @@ static INT8U check_for_command(char *buffer, INT8U index, size_t size)
 }
 
 void uart_task(void __attribute__((unused)) *pvParameters)
+/*****************************************************************************
+*   Input    : 	-
+*   Output   : 	-
+*   Function :  Handle comunication with uart device, send status report and
+*		allow the uart device to set prices
+*****************************************************************************/
 {
   char buffer[20];
   INT8U buffer_index = 0;
@@ -149,3 +180,5 @@ void uart_task(void __attribute__((unused)) *pvParameters)
     vTaskDelay(CHECK_INTERVAL / portTICK_RATE_MS);
   }
 }
+
+/****************************** End of module *******************************/

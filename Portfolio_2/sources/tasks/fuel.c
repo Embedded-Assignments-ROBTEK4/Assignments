@@ -1,3 +1,26 @@
+/*****************************************************************************
+* University of Southern Denmark
+* Embedded C Programming (ECP)
+*
+* Author.....: Martin Steenberg, Niels Hvid, Rasmus Stagsted & Stefan Van Overeem
+*
+* MODULENAME.: fuel.c
+*
+* PROJECT....: Portfolio_2
+*
+* DESCRIPTION: See module specification file (.h-file).
+*
+* Change Log:
+******************************************************************************
+* Date    Id    Change
+* YYMMDD
+* --------------------
+* 050128  KA    Module created.
+*
+*****************************************************************************/
+
+/***************************** Include files *******************************/
+
 #include "fuel.h"
 #include "../../headers/emp_type.h"
 #include "pump.h"
@@ -11,12 +34,24 @@
 #include "../drivers/UART.h"
 #include "../drivers/leds.h"
 
+/*****************************    Defines    *******************************/
+
+/*****************************   Constants   *******************************/
+
+/*****************************   Variables   *******************************/
 static INT32S fuel_level = 0;
 static INT32S fuel_max   = 0;
 static bool shunt = false;
 static bool fueling = false;
 
+/*****************************   Functions   *******************************/
+
 void set_max_fuel(double max_fuel)
+/**********************************************
+* Input : Maximum of fuel
+* Output : -
+* Function : Set maximum of fuel
+**********************************************/
 {
   fuel_level = 0;
   if(max_fuel == UNLIMITED)
@@ -28,12 +63,22 @@ void set_max_fuel(double max_fuel)
 }
 
 void start_fuel(void)
+/**********************************************
+* Input : -
+* Output : -
+* Function : Start fulling
+**********************************************/
 {
   activate_shunt();
   fueling = true;
 }
 
 void stop_fuel(void)
+/**********************************************
+* Input : -
+* Output : -
+* Function : Stop fulling
+**********************************************/
 {
   fueling = false;
   fuel_max -= fuel_level;
@@ -42,6 +87,11 @@ void stop_fuel(void)
 }
 
 void activate_shunt()
+/**********************************************
+* Input : -
+* Output : -
+* Function : Activate shunt
+**********************************************/
 {
   shunt = true;
   LED_RGB_PORT &= ~LED_YELLOW;
@@ -49,6 +99,11 @@ void activate_shunt()
 }
 
 void deactivate_shunt()
+/**********************************************
+* Input : -
+* Output : -
+* Function : Deactivate shunt
+**********************************************/
 {
   shunt = false;
   LED_RGB_PORT |= LED_YELLOW;
@@ -56,6 +111,11 @@ void deactivate_shunt()
 }
 
 void fuel_task(void __attribute__((unused)) *pvParameters)
+/**********************************************
+* Input : -
+* Output : -
+* Function : Handle pumping and shunt. 
+**********************************************/
 {
   portTickType xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
@@ -63,7 +123,7 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
   //vprintf_(uart0_out_string, 200, "%f\n", PUMP_SPEED);
   //vprintf_(uart0_out_string, 200, "%f\n", WAIT_TIME);
   //vprintf_(uart0_out_string, 200, "%f\n", SHUNT_WAIT_TIME);
-
+  
   while(true)
   {
     if(fueling)
@@ -74,13 +134,13 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
         queue_item fuel_item;
         fuel_item.type = FUEL;
         fuel_item.value =  FUEL_PULSE;
-  			xSemaphoreTake(pump_queue_sem, portMAX_DELAY);
-  			xQueueSendToBack(pump_queue, &fuel_item, 0);
-  			xSemaphoreGive(pump_queue_sem);
+  	  xSemaphoreTake(pump_queue_sem, portMAX_DELAY);
+  	  xQueueSendToBack(pump_queue, &fuel_item, 0);
+  	  xSemaphoreGive(pump_queue_sem);
       }
       if(fuel_max != UNLIMITED)
       {
-        if((fuel_max - fuel_level) <= (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION) && !shunt)
+        if ((fuel_max - fuel_level) <= (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION) && !shunt)
         {
           activate_shunt();
         }
@@ -90,9 +150,9 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
           queue_item fuel_item;
           fuel_item.type = FUEL;
           fuel_item.value =  FUEL_DONE;
-    			xSemaphoreTake(pump_queue_sem, portMAX_DELAY);
-    			xQueueSendToBack(pump_queue, &fuel_item, 0);
-    			xSemaphoreGive(pump_queue_sem);
+    	  xSemaphoreTake(pump_queue_sem, portMAX_DELAY);
+    	  xQueueSendToBack(pump_queue, &fuel_item, 0);
+    	  xSemaphoreGive(pump_queue_sem);
         }
       }
       if(fuel_level > (SHUNT_LIMIT * PULSES_PER_LITER * PULSE_MULTIPLICATION))
@@ -101,7 +161,7 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
           deactivate_shunt();
       }
     }
-
+    
     if(shunt)
     {
       goal_time += SHUNT_WAIT_TIME * portTICK_RATE_MS;
@@ -119,3 +179,5 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
     }
   }
 }
+
+/****************************** End of module *******************************/
