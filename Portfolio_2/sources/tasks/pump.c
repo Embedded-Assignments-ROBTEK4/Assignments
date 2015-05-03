@@ -82,10 +82,16 @@ static account __attribute__((unused)) accounts[] =
 
 static fuel fuel_types[] =
 {
-	{"92 Octane",   12.17, 0},
-	{"95 Octane",   11.10, 1},
-	{"E10",         18.98, 2},
-	{"Rocket Fuel", 56.27, 3}
+	{"92 Octane",   	12.17, 	0},
+	{"95 Octane",   	11.10,	1},
+	{"E10",         	18.98, 	2},
+	{"Rocket Fuel", 	56.27, 	3},
+	{"Ost", 					107.54,	4},
+	{"Holy Water",		1.99, 	5},
+	{"Hydrogen", 			9.12, 	6},
+	{"Captain Morgan",144.95, 7},
+	{"Whale Semen", 	67.35, 	8},
+	{"Virgin Blood",	512.96, 9}
 };
 
 /*****************************   Functions   *******************************/

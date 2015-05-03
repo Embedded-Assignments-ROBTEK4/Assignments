@@ -165,6 +165,7 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
     if(shunt)
     {
       goal_time += SHUNT_WAIT_TIME * portTICK_RATE_MS;
+      if(goal_time > 0xFFFFFFFF) goal_time -= 0xFFFFFFFF;
       portTickType tick_to_wait = ((portTickType)goal_time) - xLastWakeTime;
       //vprintf_(uart0_out_string, 200, "%d %d %d\n", (int)goal_time, (int) xLastWakeTime, tick_to_wait);
 
@@ -173,6 +174,7 @@ void fuel_task(void __attribute__((unused)) *pvParameters)
     else
     {
       goal_time += WAIT_TIME * portTICK_RATE_MS;
+      if(goal_time > 0xFFFFFFFF) goal_time -= 0xFFFFFFFF;
       portTickType tick_to_wait = ((portTickType)goal_time) - xLastWakeTime;
       //vprintf_(uart0_out_string, 200, "%d %d %d\n", (int)goal_time, (int) xLastWakeTime, tick_to_wait);
       vTaskDelayUntil(&xLastWakeTime, tick_to_wait );

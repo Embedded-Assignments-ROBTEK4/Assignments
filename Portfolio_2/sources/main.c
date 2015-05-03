@@ -49,6 +49,8 @@
 #include "tasks/fuel.h"
 #include "drivers/leds.h"
 #include "tasks/uart_task.h"
+#include "tasks/rand_input_task.h"
+
 
 /*****************************    Defines    *******************************/
 #define USERTASK_STACK_SIZE 200
@@ -95,6 +97,7 @@ int main(void)
   portBASE_TYPE return_value = pdPASS;
   
   setupHardware();
+<<<<<<< HEAD
   
   return_value &= xTaskCreate( status_led_task,       ( signed portCHAR * ) "Status_led",          USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
   return_value &= xTaskCreate( check_keyboard,        ( signed portCHAR * ) "Keyboard Task",       USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
@@ -106,6 +109,20 @@ int main(void)
   return_value &= xTaskCreate( pump_task,             ( signed portCHAR * ) "pump task",           USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
   return_value &= xTaskCreate( uart_task,             ( signed portCHAR * ) "uart task",           USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
   
+=======
+  return_value &= xTaskCreate( status_led_task, ( signed portCHAR * ) "Status_led", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( check_keyboard, ( signed portCHAR * ) "Keyboard Task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( timer_task, ( signed portCHAR * ) "Timers task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( run_clock, ( signed portCHAR * ) "RTC task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( collect_button_events, ( signed portCHAR * ) "button task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( scan_encoder0, ( signed portCHAR * ) "Rotary encoder task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( fuel_task, ( signed portCHAR * ) "fuel task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( pump_task, ( signed portCHAR * ) "pump task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  return_value &= xTaskCreate( uart_task, ( signed portCHAR * ) "uart task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+  //return_value &= xTaskCreate( rand_input, ( signed portCHAR * ) "uart task", USERTASK_STACK_SIZE, NULL, LOW_PRIO, NULL );
+
+
+>>>>>>> 328b7545371f6c5ddf5d93b68d0de960ec8cbc09
   if (return_value != pdPASS)
   {
     GPIO_PORTD_DATA_R &= 0xBF;  // Turn on status LED.
