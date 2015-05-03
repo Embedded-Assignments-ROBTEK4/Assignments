@@ -1,11 +1,9 @@
+#include "rand_input_task.h"
 #include "pump.h"
 
 #include <stdlib.h>
-#include "FreeRTOS.h"
 #include "semphr.h"
 #include "task.h"
-
-void rand_input(void __attribute__((unused)) *pvParameters);
 
 
 void rand_input(void __attribute__((unused)) *pvParameters)

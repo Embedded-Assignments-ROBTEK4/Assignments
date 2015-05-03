@@ -48,9 +48,8 @@
 #include "tasks/fuel.h"
 #include "drivers/leds.h"
 #include "tasks/uart_task.h"
+#include "tasks/rand_input_task.h"
 
-
-void rand_input(void __attribute__((unused)) *pvParameters);
 
 /*****************************    Defines    *******************************/
 #define USERTASK_STACK_SIZE 200
